@@ -3,6 +3,7 @@ package org.bk.ass;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.function.Consumer;
@@ -27,7 +28,7 @@ public class BWAPI4JAgentFactory {
           UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon);
   private static EnumMap<UnitType, Integer> stopFrames = new EnumMap<>(UnitType.class);
 
-  private Consumer<UnorderedList<Agent>> bunkerReplacer =
+  private Consumer<Collection<Agent>> bunkerReplacer =
       agents -> {
         agents.add(of(UnitType.Terran_Marine, 0, 0));
         agents.add(of(UnitType.Terran_Marine, 0, 0));
@@ -72,6 +73,12 @@ public class BWAPI4JAgentFactory {
       rangeExtension = 64;
       hitsFactor = 4;
     }
+    WeaponType airWeapon = unitType.airWeapon();
+    WeaponType groundWeapon = unitType.groundWeapon();
+    if (unitType == UnitType.Terran_Bunker) {
+      airWeapon = groundWeapon = UnitType.Terran_Marine.groundWeapon();
+    }
+
     Agent agent =
         new Agent(unitType.name())
             .setFlyer(unitType.isFlyer())
@@ -86,18 +93,14 @@ public class BWAPI4JAgentFactory {
                     .setMaxRange(unitType.airWeapon().maxRange() + rangeExtension)
                     .setMinRange(unitType.airWeapon().minRange())
                     .setDamage(
-                        damageOf(unitType.airWeapon(), unitType.maxAirHits(), airWeaponUpgrades)
-                            * hitsFactor)
+                        damageOf(airWeapon, unitType.maxAirHits(), airWeaponUpgrades) * hitsFactor)
                     .setDamageType(damageType(unitType.airWeapon().damageType())))
             .setGroundWeapon(
                 new Weapon()
                     .setMaxRange(unitType.groundWeapon().maxRange() + rangeExtension)
                     .setMinRange(unitType.groundWeapon().minRange())
                     .setDamage(
-                        damageOf(
-                            unitType.groundWeapon(),
-                            unitType.maxGroundHits(),
-                            groundWeaponUpgrades)
+                        damageOf(groundWeapon, unitType.maxGroundHits(), groundWeaponUpgrades)
                             * hitsFactor)
                     .setDamageType(damageType(unitType.groundWeapon().damageType())))
             .setMaxShields(unitType.maxShields())
@@ -114,7 +117,8 @@ public class BWAPI4JAgentFactory {
             .setSpeed(unitType.topSpeed())
             .setArmor(unitType.armor())
             .setKiter(KITERS.contains(unitType))
-            .setMaxEnergy(unitType.maxEnergy());
+            .setMaxEnergy(unitType.maxEnergy())
+            .setDetected(true);
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
     }
@@ -131,7 +135,9 @@ public class BWAPI4JAgentFactory {
         .setShields(unit.getShields())
         .setEnergy(energy)
         .setX(unit.getX())
-        .setY(unit.getY());
+        .setY(unit.getY())
+        // Should be "adjusted" for own cloaked units
+        .setDetected(unit.isDetected());
   }
 
   private UnitSize size(UnitSizeType sizeType) {

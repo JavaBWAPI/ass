@@ -18,7 +18,7 @@ public class AttackerSimulator {
     for (int i = 0; i < enemies.size(); i++) {
       Agent enemy = enemies.get(i);
       Weapon wpn = agent.weaponVs(enemy);
-      if (enemy.healthShifted < 1 || wpn.damageShifted == 0) {
+      if (enemy.healthShifted < 1 || wpn.damageShifted == 0 || !enemy.detected) {
         continue;
       }
       int distance = distanceSquared(agent, enemy);

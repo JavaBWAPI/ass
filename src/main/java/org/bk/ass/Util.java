@@ -69,22 +69,28 @@ public class Util {
     if (remainingDamage == 0) {
       return;
     }
-    remainingDamage -= target.armorShifted;
+    remainingDamage = reduceDamageByTargetAndDamageType(target, damageType, remainingDamage);
+
+    target.healthShifted -= max(128, remainingDamage);
+  }
+
+  public static int reduceDamageByTargetAndDamageType(
+      Agent target, DamageType damageType, int damageShifted) {
+    damageShifted -= target.armorShifted;
 
     if (damageType == DamageType.CONCUSSIVE) {
       if (target.size == UnitSize.MEDIUM) {
-        remainingDamage /= 2;
+        damageShifted /= 2;
       } else if (target.size == UnitSize.LARGE) {
-        remainingDamage /= 4;
+        damageShifted /= 4;
       }
     } else if (damageType == DamageType.EXPLOSIVE) {
       if (target.size == UnitSize.SMALL) {
-        remainingDamage /= 2;
+        damageShifted /= 2;
       } else if (target.size == UnitSize.MEDIUM) {
-        remainingDamage /= 4;
+        damageShifted /= 4;
       }
     }
-
-    target.healthShifted -= max(128, remainingDamage);
+    return damageShifted;
   }
 }

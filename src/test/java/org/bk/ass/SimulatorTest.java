@@ -13,12 +13,12 @@ class SimulatorTest {
   private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory();
 
   @BeforeAll
-  public static void setup() throws Exception {
+  static void setup() throws Exception {
     BWDataProvider.injectValues();
   }
 
   @Test
-  public void MMVsSunkens() {
+  void MMVsSunkens() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
@@ -39,7 +39,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void MMvsMM() {
+  void MMvsMM() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
@@ -63,7 +63,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void vultureVs4Zergling() {
+  void vultureVs4Zergling() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Vulture, 0, 0));
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
@@ -79,7 +79,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void twoMarinesVsOneToTheDeath() {
+  void twoMarinesVsOneToTheDeath() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
@@ -94,7 +94,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void marineVsValkyrieSingleFrame() {
+  void marineVsValkyrieSingleFrame() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
     simulator.addAgentB(factory.of(UnitType.Terran_Valkyrie, 0, 0));
@@ -109,7 +109,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void GoonCloseToSiegedTank() {
+  void GoonCloseToSiegedTank() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0));
     simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0));
@@ -123,7 +123,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void GoonAwayFromSiegedTank() {
+  void GoonAwayFromSiegedTank() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0).setX(1000));
     simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0));
@@ -137,7 +137,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void GoonVsTank() {
+  void GoonVsTank() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0));
     simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Tank_Mode, 0, 0));
@@ -151,7 +151,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void _6MutaVs1BunkerAndSCV() {
+  void _6MutaVs1BunkerAndSCV() {
     // GIVEN
     for (int i = 0; i < 6; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
@@ -168,7 +168,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void _7MutasVs8Hydras() {
+  void _7MutasVs8Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
@@ -186,7 +186,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void MutaVsVulture() {
+  void MutaVsVulture() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
     simulator.addAgentB(factory.of(UnitType.Terran_Vulture, 0, 0));
@@ -200,7 +200,7 @@ class SimulatorTest {
   }
 
   @Test
-  public void LargeArmiesTest() {
+  void LargeArmiesTest() {
     // GIVEN
     for (int i = 0; i < 1000; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
@@ -213,5 +213,21 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isNotEmpty();
     assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void _10HydrasVsDT() {
+    // GIVEN
+    for (int i = 0; i < 10; i++) {
+      simulator.addAgentA(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+    }
+    simulator.addAgentB(factory.of(UnitType.Protoss_Dark_Templar, 0, 0).setDetected(false));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
   }
 }

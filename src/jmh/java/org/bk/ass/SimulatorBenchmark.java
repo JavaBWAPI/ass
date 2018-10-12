@@ -8,7 +8,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
-public class TypicalScenarios {
+public class SimulatorBenchmark {
 
   @State(Scope.Thread)
   public static class MyState {

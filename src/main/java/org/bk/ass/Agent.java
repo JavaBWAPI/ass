@@ -1,5 +1,6 @@
 package org.bk.ass;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
 public class Agent {
@@ -45,6 +46,8 @@ public class Agent {
   boolean isFlyer;
   boolean isOrganic;
   boolean isKiter;
+  // Visible to the other force
+  boolean detected;
 
   UnitSize size;
 
@@ -52,7 +55,7 @@ public class Agent {
   private Weapon groundWeapon;
 
   // Allow replacement of units on death (for example bunker -> marines)
-  Consumer<UnorderedList<Agent>> onDeathReplacer = $ -> {
+  Consumer<Collection<Agent>> onDeathReplacer = $ -> {
   };
 
   public Agent(String name) {
@@ -79,6 +82,11 @@ public class Agent {
         + (healthShifted >> 8)
         + ", sh: "
         + (shieldsShifted >> 8);
+  }
+
+  public Agent setDetected(boolean detected) {
+    this.detected = detected;
+    return this;
   }
 
   public Agent setArmor(int armor) {
@@ -196,7 +204,7 @@ public class Agent {
     return this;
   }
 
-  public Agent setOnDeathReplacer(Consumer<UnorderedList<Agent>> onDeathReplacer) {
+  public Agent setOnDeathReplacer(Consumer<Collection<Agent>> onDeathReplacer) {
     this.onDeathReplacer = onDeathReplacer;
     return this;
   }
