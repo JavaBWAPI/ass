@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 plugins {
     java
     id("me.champeau.gradle.jmh") version "0.4.7"
@@ -37,4 +39,7 @@ tasks {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+    }
 }
