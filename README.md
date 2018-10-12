@@ -14,13 +14,19 @@ is working out of the box.
 To get it, either download and build it yourself or grab the
 [Appveyor Build](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts).
 
+`Agent` is a the `Unit` abstraction used. It can be either created directly, or 
+the `BWAPI4JAgentFactory` can be used to create an `Agent` for an existing `Unit`.
+Creating `Agents` by using just a `UnitType` is also possible.
+
+### Simulator
 The main class is `Simulator`. You can add `Agents` for player A or player B here.
 After doing that, you can simulate a number of frames (default: 96). Next, you
 retrieve the result and check if it's to your liking (some of your units survived?).
 
-`Agent` is a the `Unit` abstraction used. It can be either created directly, or 
-the `BWAPI4JAgentFactory` can be used to create an `Agent` for an existing `Unit`.
-Creating `Agents` by using just a `UnitType` is also possible.
+### Evaluator
+Another way to estimate outcome of a battle is to use the `Evaluator`. It does not simulate
+agents as the `Simulator does`. Instead it uses some heuristics to determine a 
+"how well is player A going to be vs B" ranging from [0-1].
 
 ## Features
 Simulates:
@@ -31,6 +37,7 @@ Simulates:
 * Basic movement
 * Kiting
 * Elevation affecting damage
+* Cloaked units
 
 ## Limitations
 * No collision
