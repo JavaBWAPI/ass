@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/Bytekeeper/ass.svg?branch=master)](https://travis-ci.com/Bytekeeper/ass)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/Bytekeeper/ass)](https://ci.appveyor.com/project/Bytekeeper/ass)
 
 # Agent Starcraft Simulator
 A hard problem for BW bots is the decision on when to attack and what to attack.
