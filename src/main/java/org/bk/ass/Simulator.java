@@ -52,6 +52,11 @@ public class Simulator {
     return frames;
   }
 
+  public void reset() {
+    playerA.clear();
+    playerB.clear();
+  }
+
   /**
    * Simulate one frame.
    *
@@ -108,6 +113,10 @@ public class Simulator {
         if (agent.shieldsShifted > agent.maxShieldsShifted) {
           agent.shieldsShifted = agent.maxShieldsShifted;
         }
+      }
+      agent.energyShifted += 8;
+      if (agent.energyShifted > agent.maxEnergyShifted) {
+        agent.energyShifted = agent.maxEnergyShifted;
       }
     }
   }

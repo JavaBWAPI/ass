@@ -2,8 +2,6 @@ package org.bk.ass;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Duration;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class UnorderedListTest {
@@ -60,29 +58,5 @@ class UnorderedListTest {
 
     // THEN
     assertThat(sut).containsExactly("test2");
-  }
-
-  @Test
-  public void idioticBenchmark1() {
-    Assertions.assertTimeout(Duration.ofSeconds(5), () -> {
-      String element = "";
-      for (int i = 0; i < 300000000; i++) {
-        sut.add(element);
-      }
-      sut.clear();
-    });
-  }
-
-  @Test
-  public void idioticBenchmark2() {
-    Assertions.assertTimeout(Duration.ofSeconds(5), () -> {
-      String element = "";
-      for (int i = 0; i < 300000000; i++) {
-        sut.add(element);
-      }
-      for (int i = 0; i < 300000000; i++) {
-        sut.removeAt(0);
-      }
-    });
   }
 }

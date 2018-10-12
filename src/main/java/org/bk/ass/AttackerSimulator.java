@@ -41,7 +41,10 @@ public class AttackerSimulator {
       return simFlee(agent, enemies);
     }
 
-    boolean shouldKite = agent.isKiter && agent.cooldown > 0;
+    boolean shouldKite =
+        agent.isKiter
+            && agent.cooldown > 0
+            && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared;
     Weapon wpn = agent.weaponVs(selectedEnemy);
     if (shouldKite) {
       double distance = sqrt(selectedDistanceSquared);

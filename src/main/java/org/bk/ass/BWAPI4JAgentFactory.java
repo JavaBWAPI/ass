@@ -10,6 +10,8 @@ import org.openbw.bwapi4j.type.Race;
 import org.openbw.bwapi4j.type.UnitSizeType;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openbw.bwapi4j.type.WeaponType;
+import org.openbw.bwapi4j.unit.PlayerUnit;
+import org.openbw.bwapi4j.unit.SpellCaster;
 
 public class BWAPI4JAgentFactory {
 
@@ -57,6 +59,13 @@ public class BWAPI4JAgentFactory {
   }
 
   public Agent of(UnitType unitType, int groundWeaponUpgrades, int airWeaponUpgrades) {
+    return fromUnitType(unitType, groundWeaponUpgrades, airWeaponUpgrades)
+        .setHealth(unitType.maxHitPoints())
+        .setShields(unitType.maxShields())
+        .setEnergy(unitType.maxEnergy());
+  }
+
+  private Agent fromUnitType(UnitType unitType, int groundWeaponUpgrades, int airWeaponUpgrades) {
     int rangeExtension = 0;
     int hitsFactor = 1;
     if (unitType == UnitType.Terran_Bunker) {
@@ -68,7 +77,6 @@ public class BWAPI4JAgentFactory {
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-            .setHealth(unitType.maxHitPoints())
             .setMaxCooldown(
                 max(
                     unitType.groundWeapon().damageCooldown(),
@@ -93,7 +101,6 @@ public class BWAPI4JAgentFactory {
                             * hitsFactor)
                     .setDamageType(damageType(unitType.groundWeapon().damageType())))
             .setMaxShields(unitType.maxShields())
-            .setShields(unitType.maxShields())
             .setOrganic(unitType.isOrganic())
             .setRegeneratesHealth(
                 unitType.getRace() == Race.Zerg
@@ -106,12 +113,25 @@ public class BWAPI4JAgentFactory {
             .setSize(size(unitType.size()))
             .setSpeed(unitType.topSpeed())
             .setArmor(unitType.armor())
-            .setKiter(KITERS.contains(unitType));
+            .setKiter(KITERS.contains(unitType))
+            .setMaxEnergy(unitType.maxEnergy());
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
     }
-
     return agent;
+  }
+
+  public Agent of(PlayerUnit unit, int groundWeaponUpgrades, int airWeaponUpgrades) {
+    int energy = 0;
+    if (unit instanceof SpellCaster) {
+      energy = ((SpellCaster) unit).getEnergy();
+    }
+    return fromUnitType(unit.getType(), 0, 0)
+        .setHealth(unit.getHitPoints())
+        .setShields(unit.getShields())
+        .setEnergy(energy)
+        .setX(unit.getX())
+        .setY(unit.getY());
   }
 
   private UnitSize size(UnitSizeType sizeType) {

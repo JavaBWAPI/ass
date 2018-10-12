@@ -9,11 +9,15 @@ public class HealerSimulator {
   public static final int MEDICS_HEAL_RANGE = 30;
 
   public boolean simUnit(Agent agent, UnorderedList<Agent> allies) {
+    if (agent.energyShifted < 256) {
+      return true;
+    }
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = 0; i < allies.size(); i++) {
       Agent ally = allies.get(i);
-      if (!ally.isOrganic || ally.healthShifted >= ally.maxHealthShifted || agent.healedThisFrame) {
+      if (!ally.isOrganic || ally.healthShifted >= ally.maxHealthShifted || agent.healedThisFrame
+          || ally == agent) {
         continue;
       }
 
@@ -34,6 +38,7 @@ public class HealerSimulator {
     }
 
     moveToward(agent, selectedAlly, selectedDistanceSquared);
+    agent.energyShifted -= 256;
     selectedAlly.healedThisFrame = true;
     selectedAlly.healthShifted += 150;
     if (selectedAlly.healthShifted > selectedAlly.maxHealthShifted) {

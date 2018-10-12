@@ -18,6 +18,51 @@ class SimulatorTest {
   }
 
   @Test
+  public void MMVsSunkens() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony, 0, 0));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(5);
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  public void MMvsMM() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic, 0, 0));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(2);
+    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(2);
+  }
+
+  @Test
   public void vultureVs4Zergling() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Vulture, 0, 0));
@@ -101,8 +146,8 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).isEmpty();
-    assertThat(simulator.getAgentsB()).isNotEmpty();
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
   }
 
   @Test
@@ -136,7 +181,7 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(1);
     assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(4);
   }
 
@@ -166,7 +211,7 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).isEmpty();
-    assertThat(simulator.getAgentsB()).isNotEmpty();
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
   }
 }

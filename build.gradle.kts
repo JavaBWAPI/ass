@@ -13,9 +13,8 @@ repositories {
 dependencies {
     compileOnly(fileTree("lib").include("*.jar"))
 
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
-    testCompile("org.junit.platform:junit-platform-launcher:1.2.0")
-    testCompile("org.junit.platform:junit-platform-engine:1.2.0")
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     testCompile("org.assertj:assertj-core:3.9.0")
 }
 
@@ -31,3 +30,6 @@ tasks {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}

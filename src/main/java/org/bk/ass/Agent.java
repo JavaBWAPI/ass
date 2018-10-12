@@ -7,7 +7,7 @@ public class Agent {
   private final String name;
   int armorShifted;
   int shieldUpgrades;
-  int id = -1;
+  Object userObject;
 
   int elevationLevel;
   int x;
@@ -25,6 +25,9 @@ public class Agent {
 
   int shieldsShifted;
   int maxShieldsShifted;
+
+  int energyShifted;
+  int maxEnergyShifted;
 
   int cooldown;
   int maxCooldown;
@@ -56,20 +59,18 @@ public class Agent {
     this.name = name;
   }
 
-  public Agent setId(int id) {
-    this.id = id;
+  public Agent setUserObject(Object userObject) {
+    this.userObject = userObject;
     return this;
   }
 
-  public int getId() {
-    return id;
+  public Object getUserObject() {
+    return userObject;
   }
 
   @Override
   public String toString() {
     return name
-        + " "
-        + id
         + " ("
         + x
         + ", "
@@ -82,6 +83,16 @@ public class Agent {
 
   public Agent setArmor(int armor) {
     this.armorShifted = armor << 8;
+    return this;
+  }
+
+  public Agent setMaxEnergy(int maxEnergyShifted) {
+    this.maxEnergyShifted = maxEnergyShifted << 8;
+    return this;
+  }
+
+  public Agent setEnergy(int energyShifted) {
+    this.energyShifted = energyShifted << 8;
     return this;
   }
 
