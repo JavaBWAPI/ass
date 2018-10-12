@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class UnorderedListTest {
 
-  private UnorderedList<String> sut = new UnorderedList<>();
+  private UnorderedList<Object> sut = new UnorderedList<>();
 
   @Test
   public void shouldNotHoldReferencesAfterClearAndRelease() {

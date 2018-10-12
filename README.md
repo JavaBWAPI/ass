@@ -36,6 +36,22 @@ Simulates:
 * Elevation is deemed "constant" within the simulation
 * Visibility is ignored
 * Spellcasters are doing nothing
+* Distance mechanism does not match BW's "boxed" distances
+* Instant movement 
+
+## Behaviors
+Medics:
+* Find any unit that can be healed this frame (in range and damaged)
+* Otherwise find closest unit in need of healing and move toward it
+
+Suiciders:
+* Find any unit that can be attacked this frame and dive in
+* Otherwise find closest targetable unit and close in
+
+Attackers:
+* Find any unit that can be attacked this frame and attack
+* Otherwise find closest targetable unit and close in
+* Otherwise flee from any unit that could attack us
 
 ## Credits
 * [Fco. Javier Sacido](https://github.com/Jabbo16) for his JFAP port
