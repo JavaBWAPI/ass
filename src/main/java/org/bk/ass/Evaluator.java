@@ -31,22 +31,37 @@ public class Evaluator {
     finalAgentsB.addAll(agentsB);
     int damageToA = damageSum(finalAgentsB, finalAgentsA);
     int damageToB = damageSum(finalAgentsA, finalAgentsB);
-    int healingToA = healing(finalAgentsA);
-    int healingToB = healing(finalAgentsB);
-    damageToA -= healingToA;
+    int regenToA = regeneration(finalAgentsA);
+    int regenToB = regeneration(finalAgentsB);
+    damageToA -= regenToA;
     if (damageToA < 0) {
       damageToA = 0;
     }
-    damageToB -= healingToB;
+    damageToB -= regenToB;
     if (damageToB < 0) {
       damageToB = 0;
     }
-    double evalA = (double) damageToA / finalAgentsA.stream().mapToInt(Agent::getHealth).sum();
-    double evalB = (double) damageToB / finalAgentsB.stream().mapToInt(Agent::getHealth).sum();
+    double evalA =
+        (double) damageToA
+            / finalAgentsA
+            .stream()
+            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+            .sum();
+    double evalB =
+        (double) damageToB
+            / finalAgentsB
+            .stream()
+            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+            .sum();
+    // eval is a rough estimate on how many units where lost.
+    // Directly comparing is bad since one might have lost more agents than he had.
+    // So we just multiply with the enemy count and compare that instead.
+    evalB *= finalAgentsA.size();
+    evalA *= finalAgentsB.size();
     return (evalB + EPS / 2) / (evalA + evalB + EPS);
   }
 
-  private int healing(Collection<Agent> agents) {
+  private int regeneration(Collection<Agent> agents) {
     return agents
         .stream()
         .mapToInt(
@@ -54,6 +69,9 @@ public class Evaluator {
               int healed = 0;
               if (a.regeneratesHealth) {
                 healed = parameters.healthRegen;
+              }
+              if (a.maxShieldsShifted > 0) {
+                healed += parameters.shieldRegen;
               }
               if (a.isHealer) {
                 healed +=
@@ -99,9 +117,27 @@ public class Evaluator {
 
   public static class Parameters {
 
-    public int healthRegen = 300;
-    public int heal = 200;
-    public double rangeScale = 0.05;
-    public double speedScale = 0.008;
+    public double shieldScale;
+    public double speedScale;
+    public double rangeScale;
+    public int heal;
+    public int healthRegen;
+    public int shieldRegen;
+
+    public Parameters() {
+      double[] source =
+          new double[]{1.99425, 0.0155, 0.001125, 126.375625, 267.651375, 443.103125};
+
+      setFrom(source);
+    }
+
+    public void setFrom(double[] source) {
+      shieldScale = source[0];
+      speedScale = source[1];
+      rangeScale = source[2];
+      heal = (int) source[3];
+      healthRegen = (int) source[4];
+      shieldRegen = (int) source[5];
+    }
   }
 }

@@ -34,6 +34,8 @@ public class Agent {
   int maxCooldown;
   // Number of frames a move would break the attack
   int stopFrames;
+  int remainingStimFrames;
+  boolean canStim;
 
   // Is Zerg and not an Egg/Larva
   boolean regeneratesHealth;
@@ -69,6 +71,16 @@ public class Agent {
 
   public Object getUserObject() {
     return userObject;
+  }
+
+  public Agent setCanStim(boolean canStim) {
+    this.canStim = canStim;
+    return this;
+  }
+
+  public Agent setRemainingStimFrames(int remainingStimFrames) {
+    this.remainingStimFrames = remainingStimFrames;
+    return this;
   }
 
   @Override
@@ -147,6 +159,10 @@ public class Agent {
   public Agent setShields(int shields) {
     this.shieldsShifted = shields << 8;
     return this;
+  }
+
+  public int getShields() {
+    return shieldsShifted >> 8;
   }
 
   public Agent setMaxShields(int maxShields) {

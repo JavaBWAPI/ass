@@ -28,6 +28,11 @@ Another way to estimate outcome of a battle is to use the `Evaluator`. It does n
 agents as the `Simulator does`. Instead it uses some heuristics to determine a 
 "how well is player A going to be vs B" ranging from [0-1].
 
+The basic idea is:
+* Let all agents of A shoot at B and all agents of B shoot at A
+* Divide through the combined health to determine how many agents would have died in that round
+* Medic heal, health and shield regen are also factored in
+
 ## Features
 Simulates:
 * Medics

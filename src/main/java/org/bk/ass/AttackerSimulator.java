@@ -8,6 +8,10 @@ import static org.bk.ass.Util.moveToward;
 
 public class AttackerSimulator {
 
+  // Retrieved from OpenBW
+  public static final int STIM_TIMER = 37;
+  public static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
+
   public boolean simUnit(Agent agent, UnorderedList<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
@@ -44,7 +48,8 @@ public class AttackerSimulator {
     boolean shouldKite =
         agent.isKiter
             && agent.cooldown > 0
-            && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared;
+            && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared
+            && selectedEnemy.speed < agent.speed;
     Weapon wpn = agent.weaponVs(selectedEnemy);
     if (shouldKite) {
       double distance = sqrt(selectedDistanceSquared);
@@ -56,8 +61,17 @@ public class AttackerSimulator {
     }
 
     if (agent.cooldown == 0 && selectedDistanceSquared <= wpn.maxRangeSquared) {
+      if (agent.canStim
+          && agent.remainingStimFrames == 0
+          && agent.healthShifted >= agent.maxHealthShifted / 2) {
+        agent.remainingStimFrames = STIM_TIMER;
+        agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
+      }
       dealDamage(agent, wpn, selectedEnemy);
       agent.cooldown = agent.maxCooldown;
+      if (agent.remainingStimFrames > 0) {
+        agent.cooldown /= 2;
+      }
     }
 
     return true;

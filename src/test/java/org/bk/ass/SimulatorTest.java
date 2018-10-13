@@ -18,6 +18,25 @@ class SimulatorTest {
   }
 
   @Test
+  void stimmedVsUnstimmed() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setCanStim(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setCanStim(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic, 0, 0));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
   void MMVsSunkens() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
@@ -168,6 +187,22 @@ class SimulatorTest {
   }
 
   @Test
+  void _5MutaVs1BunkerAndSCV() {
+    // GIVEN
+    for (int i = 0; i < 5; i++) {
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+    }
+    simulator.addAgentB(factory.of(UnitType.Terran_Bunker, 0, 0));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
   void _7MutasVs8Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
@@ -230,4 +265,23 @@ class SimulatorTest {
     assertThat(simulator.getAgentsA()).isEmpty();
     assertThat(simulator.getAgentsB()).isNotEmpty();
   }
+
+  @Test
+  void _7MutasVs14Marines() {
+    // GIVEN
+    for (int i = 0; i < 7; i++) {
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+    }
+    for (int i = 0; i < 14; i++) {
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
 }

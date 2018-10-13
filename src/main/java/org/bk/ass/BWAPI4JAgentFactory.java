@@ -69,14 +69,15 @@ public class BWAPI4JAgentFactory {
   private Agent fromUnitType(UnitType unitType, int groundWeaponUpgrades, int airWeaponUpgrades) {
     int rangeExtension = 0;
     int hitsFactor = 1;
-    if (unitType == UnitType.Terran_Bunker) {
-      rangeExtension = 64;
-      hitsFactor = 4;
-    }
     WeaponType airWeapon = unitType.airWeapon();
+    int maxAirHits = unitType.maxAirHits();
     WeaponType groundWeapon = unitType.groundWeapon();
+    int maxGroundHits = unitType.maxGroundHits();
     if (unitType == UnitType.Terran_Bunker) {
       airWeapon = groundWeapon = UnitType.Terran_Marine.groundWeapon();
+      maxAirHits = maxGroundHits = UnitType.Terran_Marine.maxAirHits();
+      rangeExtension = 64;
+      hitsFactor = 4;
     }
 
     Agent agent =
@@ -84,25 +85,20 @@ public class BWAPI4JAgentFactory {
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-            .setMaxCooldown(
-                max(
-                    unitType.groundWeapon().damageCooldown(),
-                    unitType.airWeapon().damageCooldown()))
+            .setMaxCooldown(max(groundWeapon.damageCooldown(), airWeapon.damageCooldown()))
             .setAirWeapon(
                 new Weapon()
-                    .setMaxRange(unitType.airWeapon().maxRange() + rangeExtension)
-                    .setMinRange(unitType.airWeapon().minRange())
-                    .setDamage(
-                        damageOf(airWeapon, unitType.maxAirHits(), airWeaponUpgrades) * hitsFactor)
-                    .setDamageType(damageType(unitType.airWeapon().damageType())))
+                    .setMaxRange(airWeapon.maxRange() + rangeExtension)
+                    .setMinRange(airWeapon.minRange())
+                    .setDamage(damageOf(airWeapon, maxAirHits, airWeaponUpgrades) * hitsFactor)
+                    .setDamageType(damageType(airWeapon.damageType())))
             .setGroundWeapon(
                 new Weapon()
-                    .setMaxRange(unitType.groundWeapon().maxRange() + rangeExtension)
-                    .setMinRange(unitType.groundWeapon().minRange())
+                    .setMaxRange(groundWeapon.maxRange() + rangeExtension)
+                    .setMinRange(groundWeapon.minRange())
                     .setDamage(
-                        damageOf(groundWeapon, unitType.maxGroundHits(), groundWeaponUpgrades)
-                            * hitsFactor)
-                    .setDamageType(damageType(unitType.groundWeapon().damageType())))
+                        damageOf(groundWeapon, maxGroundHits, groundWeaponUpgrades) * hitsFactor)
+                    .setDamageType(damageType(groundWeapon.damageType())))
             .setMaxShields(unitType.maxShields())
             .setOrganic(unitType.isOrganic())
             .setRegeneratesHealth(

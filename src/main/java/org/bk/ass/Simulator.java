@@ -102,6 +102,9 @@ public class Simulator {
       if (agent.cooldown > 0) {
         agent.cooldown--;
       }
+      if (agent.remainingStimFrames > 0) {
+        agent.remainingStimFrames--;
+      }
       if (agent.regeneratesHealth && agent.healthShifted < agent.maxHealthShifted) {
         agent.healthShifted += 4;
         if (agent.healthShifted > agent.maxHealthShifted) {
