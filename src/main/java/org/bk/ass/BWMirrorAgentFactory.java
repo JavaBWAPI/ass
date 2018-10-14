@@ -3,6 +3,7 @@ package org.bk.ass;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 
+import bwapi.Game;
 import bwapi.Race;
 import bwapi.Unit;
 import bwapi.UnitSizeType;
@@ -136,7 +137,27 @@ public class BWMirrorAgentFactory {
         .setX(unit.getX())
         .setY(unit.getY())
         // Should be "adjusted" for own cloaked units
-        .setDetected(unit.isDetected());
+        .setDetected(unit.isDetected())
+        // By default set unit as user object
+        .setUserObject(unit);
+  }
+
+  public Agent of(Unit unit) {
+    WeaponType airWeapon =
+        unit.getType() != UnitType.Terran_Bunker
+            ? unit.getType().airWeapon()
+            : WeaponType.Gauss_Rifle;
+    WeaponType groundWeapon =
+        unit.getType() != UnitType.Terran_Bunker
+            ? unit.getType().groundWeapon()
+            : WeaponType.Gauss_Rifle;
+    int groundWeaponUpgrades = unit.getPlayer().getUpgradeLevel(groundWeapon.upgradeType());
+    int airWeaponUpgrades = unit.getPlayer().getUpgradeLevel(airWeapon.upgradeType());
+    return of(unit, groundWeaponUpgrades, airWeaponUpgrades);
+  }
+
+  public Agent of(Unit unit, Game game) {
+    return of(unit).setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
   }
 
   private UnitSize size(UnitSizeType sizeType) {

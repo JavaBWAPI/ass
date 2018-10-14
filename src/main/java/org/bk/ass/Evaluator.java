@@ -43,16 +43,16 @@ public class Evaluator {
     }
     double evalA =
         (double) damageToA
-            / finalAgentsA
+            / (finalAgentsA
             .stream()
             .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-            .sum();
+            .sum() + EPS);
     double evalB =
         (double) damageToB
-            / finalAgentsB
+            / (finalAgentsB
             .stream()
             .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-            .sum();
+            .sum() + EPS);
     // eval is a rough estimate on how many units where lost.
     // Directly comparing is bad since one might have lost more agents than he had.
     // So we just multiply with the enemy count and compare that instead.

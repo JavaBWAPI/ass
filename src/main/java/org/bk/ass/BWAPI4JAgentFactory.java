@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.function.Consumer;
+import org.openbw.bwapi4j.BWMap;
 import org.openbw.bwapi4j.type.Race;
 import org.openbw.bwapi4j.type.UnitSizeType;
 import org.openbw.bwapi4j.type.UnitType;
@@ -126,14 +127,36 @@ public class BWAPI4JAgentFactory {
     if (unit instanceof SpellCaster) {
       energy = ((SpellCaster) unit).getEnergy();
     }
-    return fromUnitType(unit.getType(), 0, 0)
+
+    return fromUnitType(unit.getType(), groundWeaponUpgrades, airWeaponUpgrades)
         .setHealth(unit.getHitPoints())
         .setShields(unit.getShields())
         .setEnergy(energy)
         .setX(unit.getX())
         .setY(unit.getY())
+        .setArmor(unit.getArmor())
         // Should be "adjusted" for own cloaked units
-        .setDetected(unit.isDetected());
+        .setDetected(unit.isDetected())
+        // By default set unit as user object
+        .setUserObject(unit);
+  }
+
+  public Agent of(PlayerUnit unit) {
+    WeaponType airWeapon =
+        unit.getType() != UnitType.Terran_Bunker
+            ? unit.getType().airWeapon()
+            : WeaponType.Gauss_Rifle;
+    WeaponType groundWeapon =
+        unit.getType() != UnitType.Terran_Bunker
+            ? unit.getType().groundWeapon()
+            : WeaponType.Gauss_Rifle;
+    int groundWeaponUpgrades = unit.getPlayer().getUpgradeLevel(groundWeapon.upgradeType());
+    int airWeaponUpgrades = unit.getPlayer().getUpgradeLevel(airWeapon.upgradeType());
+    return of(unit, groundWeaponUpgrades, airWeaponUpgrades);
+  }
+
+  public Agent of(PlayerUnit unit, BWMap map) {
+    return of(unit).setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
   }
 
   private UnitSize size(UnitSizeType sizeType) {

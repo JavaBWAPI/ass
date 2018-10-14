@@ -38,6 +38,16 @@ class EvaluatorTest {
   }
 
   @Test
+  void noAgentsShouldNotResultInNaN() {
+    // WHEN
+    double result = evaluator.evaluate(Collections.emptyList(), Collections.emptyList());
+
+    // THEN
+    assertThat(result).isBetween(0.49, 0.51);
+  }
+
+
+  @Test
   void MMvsMM() {
     // GIVEN
     List<Agent> agentsA =
