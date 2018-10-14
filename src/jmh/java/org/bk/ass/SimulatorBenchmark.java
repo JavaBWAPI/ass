@@ -14,7 +14,7 @@ public class SimulatorBenchmark {
   public static class MyState {
 
     Simulator simulator;
-    BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory();
+    BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
 
     @Setup(Level.Invocation)
     public void setup() {

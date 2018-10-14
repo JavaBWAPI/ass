@@ -10,7 +10,7 @@ import org.openbw.bwapi4j.type.UnitType;
 class SimulatorTest {
 
   private Simulator simulator = new Simulator();
-  private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory();
+  private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
 
   @BeforeAll
   static void setup() throws Exception {

@@ -63,6 +63,16 @@ public class BWMirrorAgentFactory {
     stopFrames.put(UnitType.Terran_Valkyrie, 40);
   }
 
+  private final Game game;
+
+  public BWMirrorAgentFactory(Game game) {
+    this.game = game;
+  }
+
+  public BWMirrorAgentFactory() {
+    this(null);
+  }
+
   public Agent of(UnitType unitType, int groundWeaponUpgrades, int airWeaponUpgrades) {
     return fromUnitType(unitType, groundWeaponUpgrades, airWeaponUpgrades)
         .setHealth(unitType.maxHitPoints())
@@ -153,11 +163,11 @@ public class BWMirrorAgentFactory {
             : WeaponType.Gauss_Rifle;
     int groundWeaponUpgrades = unit.getPlayer().getUpgradeLevel(groundWeapon.upgradeType());
     int airWeaponUpgrades = unit.getPlayer().getUpgradeLevel(airWeapon.upgradeType());
-    return of(unit, groundWeaponUpgrades, airWeaponUpgrades);
-  }
-
-  public Agent of(Unit unit, Game game) {
-    return of(unit).setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
+    Agent agent = of(unit, groundWeaponUpgrades, airWeaponUpgrades);
+    if (game != null) {
+      agent.setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
+    }
+    return agent;
   }
 
   private UnitSize size(UnitSizeType sizeType) {

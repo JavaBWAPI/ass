@@ -15,7 +15,7 @@ public class EvaluatorBenchmark {
   public static class MyState {
 
     Evaluator evaluator = new Evaluator();
-    BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory();
+    BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
     private List<Agent> agentsA = new ArrayList<>();
     private List<Agent> agentsB = new ArrayList<>();
 

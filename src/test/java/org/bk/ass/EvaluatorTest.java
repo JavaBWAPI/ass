@@ -30,7 +30,7 @@ class EvaluatorTest {
 
   private Parameters parameters = new Parameters();
   private Evaluator evaluator = new Evaluator(parameters);
-  private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory();
+  private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
 
   @BeforeAll
   static void setup() throws Exception {

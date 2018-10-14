@@ -60,6 +60,16 @@ public class BWAPI4JAgentFactory {
     stopFrames.put(UnitType.Terran_Valkyrie, 40);
   }
 
+  private final BWMap map;
+
+  public BWAPI4JAgentFactory(BWMap map) {
+    this.map = map;
+  }
+
+  public BWAPI4JAgentFactory() {
+    this(null);
+  }
+
   public Agent of(UnitType unitType, int groundWeaponUpgrades, int airWeaponUpgrades) {
     return fromUnitType(unitType, groundWeaponUpgrades, airWeaponUpgrades)
         .setHealth(unitType.maxHitPoints())
@@ -152,11 +162,11 @@ public class BWAPI4JAgentFactory {
             : WeaponType.Gauss_Rifle;
     int groundWeaponUpgrades = unit.getPlayer().getUpgradeLevel(groundWeapon.upgradeType());
     int airWeaponUpgrades = unit.getPlayer().getUpgradeLevel(airWeapon.upgradeType());
-    return of(unit, groundWeaponUpgrades, airWeaponUpgrades);
-  }
-
-  public Agent of(PlayerUnit unit, BWMap map) {
-    return of(unit).setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
+    Agent agent = of(unit, groundWeaponUpgrades, airWeaponUpgrades);
+    if (map != null) {
+      agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
+    }
+    return agent;
   }
 
   private UnitSize size(UnitSizeType sizeType) {
