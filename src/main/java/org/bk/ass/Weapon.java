@@ -6,7 +6,32 @@ public class Weapon {
   int minRangeSquared;
   int maxRangeSquared;
   int damageShifted;
+  int innerSplashRadiusSquared;
+  int medianSplashRadiusSquared;
+  int outerSplashRadiusSquared;
+
   DamageType damageType;
+  ExplosionType explosionType;
+
+  public Weapon setOuterSplashRadius(int outerSplashRadiusSquared) {
+    this.outerSplashRadiusSquared = outerSplashRadiusSquared * outerSplashRadiusSquared;
+    return this;
+  }
+
+  public Weapon setMedianSplashRadius(int medianSplashRadiusSquared) {
+    this.medianSplashRadiusSquared = medianSplashRadiusSquared * medianSplashRadiusSquared;
+    return this;
+  }
+
+  public Weapon setInnerSplashRadius(int innerSplashRadiusSquared) {
+    this.innerSplashRadiusSquared = innerSplashRadiusSquared * innerSplashRadiusSquared;
+    return this;
+  }
+
+  public Weapon setExplosionType(ExplosionType explosionType) {
+    this.explosionType = explosionType;
+    return this;
+  }
 
   public Weapon setMaxRange(int maxRange) {
     this.maxRange = maxRange;

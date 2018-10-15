@@ -28,8 +28,7 @@ import org.openbw.bwapi4j.type.UnitType;
  */
 class EvaluatorTest {
 
-  private Parameters parameters = new Parameters();
-  private Evaluator evaluator = new Evaluator(parameters);
+  private Evaluator evaluator = new Evaluator();
   private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
 
   @BeforeAll
@@ -45,7 +44,6 @@ class EvaluatorTest {
     // THEN
     assertThat(result).isBetween(0.49, 0.51);
   }
-
 
   @Test
   void MMvsMM() {
@@ -214,22 +212,67 @@ class EvaluatorTest {
     assertThat(result).isGreaterThan(0.51);
   }
 
+  @Test
+  void _3ZerglingVsSiegedTankAndMarine() {
+    // GIVEN
+    List<Agent> a =
+        Arrays.asList(
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0));
+    List<Agent> b =
+        Arrays.asList(
+            factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0),
+            factory.of(UnitType.Terran_Marine, 0, 0));
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isLessThan(0.5);
+  }
+
+  @Test
+  void _6ZerglingVsSiegedTankAndMarine() {
+    // GIVEN
+    List<Agent> a =
+        Arrays.asList(
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0),
+            factory.of(UnitType.Zerg_Zergling, 0, 0));
+    List<Agent> b =
+        Arrays.asList(
+            factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0),
+            factory.of(UnitType.Terran_Marine, 0, 0));
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isGreaterThan(0.5);
+  }
+
   // Try to tune the parameter based on the test
   public static void main(String[] args) throws Exception {
     BWDataProvider.injectValues();
 
     Genotype<DoubleGene> genotype =
-        Genotype.of(DoubleChromosome.of(0.0001, 3.0, 3), DoubleChromosome.of(0, 1000, 3));
+        Genotype.of(DoubleChromosome.of(0.0001, 3.0, 4), DoubleChromosome.of(0, 1000, 3));
 
     Function<Genotype<DoubleGene>, Integer> eval =
         gt -> {
           EvaluatorTest test = new EvaluatorTest();
-          test.parameters.setFrom(
-              gt.stream()
-                  .flatMap(Chromosome::stream)
-                  .mapToDouble(DoubleGene::doubleValue)
-                  .map(EvaluatorTest::round)
-                  .toArray());
+          test.evaluator =
+              new Evaluator(
+                  new Parameters(
+                      gt.stream()
+                          .flatMap(Chromosome::stream)
+                          .mapToDouble(DoubleGene::doubleValue)
+                          .map(EvaluatorTest::round)
+                          .toArray()));
           return hits(test);
         };
 
@@ -237,7 +280,7 @@ class EvaluatorTest {
     EvolutionResult<DoubleGene, Integer> result =
         engine
             .stream()
-            .limit(Limits.<Integer>bySteadyFitness(20000).and(Limits.byFitnessThreshold(8)))
+            .limit(Limits.<Integer>bySteadyFitness(200000).and(Limits.byFitnessThreshold(10)))
             .parallel()
             .collect(EvolutionResult.toBestEvolutionResult());
     System.out.println("Best result " + result.getBestFitness());

@@ -42,6 +42,29 @@ public class Util {
     return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
   }
 
+  public static void dealSplashDamage(
+      Weapon weapon, Agent mainTarget, UnorderedList<Agent> enemies) {
+    for (int i = 0; i < enemies.size(); i++) {
+      Agent enemy = enemies.get(i);
+      if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
+        continue;
+      }
+
+      int distanceSquared = distanceSquared(enemy, mainTarget);
+      if (distanceSquared <= weapon.outerSplashRadiusSquared) {
+        if (distanceSquared <= weapon.medianSplashRadiusSquared) {
+          if (distanceSquared <= weapon.innerSplashRadiusSquared) {
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted);
+          } else {
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted / 2);
+          }
+        } else {
+          applyDamage(enemy, weapon.damageType, weapon.damageShifted / 4);
+        }
+      }
+    }
+  }
+
   public static void dealDamage(Agent agent, Weapon wpn, Agent target) {
     dealDamage(target, wpn.damageShifted, wpn.damageType, agent.elevationLevel);
   }
@@ -57,21 +80,25 @@ public class Util {
     }
     remainingDamage = remainingDamage * 255 / 256;
 
-    int shields = target.shieldsShifted - remainingDamage + target.shieldUpgrades;
+    applyDamage(target, damageType, remainingDamage);
+  }
+
+  private static void applyDamage(Agent target, DamageType damageType, int damage) {
+    int shields = target.shieldsShifted - damage + target.shieldUpgrades;
     if (shields > 0) {
       target.shieldsShifted = shields;
       return;
     } else if (shields < 0) {
-      remainingDamage = -shields;
+      damage = -shields;
       target.shieldsShifted = 0;
     }
 
-    if (remainingDamage == 0) {
+    if (damage == 0) {
       return;
     }
-    remainingDamage = reduceDamageByTargetAndDamageType(target, damageType, remainingDamage);
+    damage = reduceDamageByTargetAndDamageType(target, damageType, damage);
 
-    target.healthShifted -= max(128, remainingDamage);
+    target.healthShifted -= max(128, damage);
   }
 
   public static int reduceDamageByTargetAndDamageType(

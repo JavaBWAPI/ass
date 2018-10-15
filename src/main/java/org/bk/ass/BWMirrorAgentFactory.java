@@ -101,18 +101,10 @@ public class BWMirrorAgentFactory {
             .setMaxHealth(unitType.maxHitPoints())
             .setMaxCooldown(max(groundWeapon.damageCooldown(), airWeapon.damageCooldown()))
             .setAirWeapon(
-                new Weapon()
-                    .setMaxRange(airWeapon.maxRange() + rangeExtension)
-                    .setMinRange(airWeapon.minRange())
-                    .setDamage(damageOf(airWeapon, maxAirHits, airWeaponUpgrades) * hitsFactor)
-                    .setDamageType(damageType(airWeapon.damageType())))
+                weapon(airWeaponUpgrades, rangeExtension, hitsFactor, airWeapon, maxAirHits))
             .setGroundWeapon(
-                new Weapon()
-                    .setMaxRange(groundWeapon.maxRange() + rangeExtension)
-                    .setMinRange(groundWeapon.minRange())
-                    .setDamage(
-                        damageOf(groundWeapon, maxGroundHits, groundWeaponUpgrades) * hitsFactor)
-                    .setDamageType(damageType(groundWeapon.damageType())))
+                weapon(
+                    groundWeaponUpgrades, rangeExtension, hitsFactor, groundWeapon, maxGroundHits))
             .setMaxShields(unitType.maxShields())
             .setOrganic(unitType.isOrganic())
             .setRegeneratesHealth(
@@ -128,11 +120,32 @@ public class BWMirrorAgentFactory {
             .setArmor(unitType.armor())
             .setKiter(KITERS.contains(unitType))
             .setMaxEnergy(unitType.maxEnergy())
-            .setDetected(true);
+            .setDetected(true)
+            .setBurrowedAttacker(unitType == UnitType.Zerg_Lurker);
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
     }
     return agent;
+  }
+
+  private Weapon weapon(
+      int weaponUpgrades, int rangeExtension, int hitsFactor, WeaponType weapon, int maxHits) {
+    return new Weapon()
+        .setMaxRange(weapon.maxRange() + rangeExtension)
+        .setMinRange(weapon.minRange())
+        .setDamage(damageOf(weapon, maxHits, weaponUpgrades) * hitsFactor)
+        .setDamageType(damageType(weapon.damageType()))
+        .setExplosionType(explosionType(weapon.explosionType()))
+        .setInnerSplashRadius(weapon.innerSplashRadius())
+        .setMedianSplashRadius(weapon.medianSplashRadius())
+        .setOuterSplashRadius(weapon.outerSplashRadius());
+  }
+
+  private ExplosionType explosionType(bwapi.ExplosionType explosionType) {
+    if (explosionType == bwapi.ExplosionType.Radial_Splash) {
+      return ExplosionType.RADIAL_SPLASH;
+    }
+    return ExplosionType.IRRELEVANT;
   }
 
   public Agent of(Unit unit, int groundWeaponUpgrades, int airWeaponUpgrades) {
@@ -140,7 +153,7 @@ public class BWMirrorAgentFactory {
     if (unit.getType().isSpellcaster()) {
       energy = unit.getEnergy();
     }
-    return fromUnitType(unit.getType(), 0, 0)
+    return fromUnitType(unit.getType(), groundWeaponUpgrades, airWeaponUpgrades)
         .setHealth(unit.getHitPoints())
         .setShields(unit.getShields())
         .setEnergy(energy)
@@ -149,7 +162,8 @@ public class BWMirrorAgentFactory {
         // Should be "adjusted" for own cloaked units
         .setDetected(unit.isDetected())
         // By default set unit as user object
-        .setUserObject(unit);
+        .setUserObject(unit)
+        .setBurrowed(unit.isBurrowed());
   }
 
   public Agent of(Unit unit) {

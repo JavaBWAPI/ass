@@ -48,6 +48,8 @@ public class Agent {
   boolean isFlyer;
   boolean isOrganic;
   boolean isKiter;
+  boolean burrowed;
+  boolean burrowedAttacker;
   // Visible to the other force
   boolean detected;
 
@@ -57,7 +59,7 @@ public class Agent {
   private Weapon groundWeapon;
 
   // Allow replacement of units on death (for example bunker -> marines)
-  Consumer<Collection<Agent>> onDeathReplacer = $ -> {
+  Consumer<Collection<Agent>> onDeathReplacer = ignored -> {
   };
 
   public Agent(String name) {
@@ -71,6 +73,16 @@ public class Agent {
 
   public Object getUserObject() {
     return userObject;
+  }
+
+  public Agent setBurrowedAttacker(boolean burrowedAttacker) {
+    this.burrowedAttacker = burrowedAttacker;
+    return this;
+  }
+
+  public Agent setBurrowed(boolean burrowed) {
+    this.burrowed = burrowed;
+    return this;
   }
 
   public Agent setCanStim(boolean canStim) {

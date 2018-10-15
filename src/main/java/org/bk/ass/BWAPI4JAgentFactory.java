@@ -12,6 +12,7 @@ import org.openbw.bwapi4j.type.Race;
 import org.openbw.bwapi4j.type.UnitSizeType;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openbw.bwapi4j.type.WeaponType;
+import org.openbw.bwapi4j.unit.Burrowable;
 import org.openbw.bwapi4j.unit.PlayerUnit;
 import org.openbw.bwapi4j.unit.SpellCaster;
 
@@ -98,18 +99,10 @@ public class BWAPI4JAgentFactory {
             .setMaxHealth(unitType.maxHitPoints())
             .setMaxCooldown(max(groundWeapon.damageCooldown(), airWeapon.damageCooldown()))
             .setAirWeapon(
-                new Weapon()
-                    .setMaxRange(airWeapon.maxRange() + rangeExtension)
-                    .setMinRange(airWeapon.minRange())
-                    .setDamage(damageOf(airWeapon, maxAirHits, airWeaponUpgrades) * hitsFactor)
-                    .setDamageType(damageType(airWeapon.damageType())))
+                weapon(airWeaponUpgrades, rangeExtension, hitsFactor, airWeapon, maxAirHits))
             .setGroundWeapon(
-                new Weapon()
-                    .setMaxRange(groundWeapon.maxRange() + rangeExtension)
-                    .setMinRange(groundWeapon.minRange())
-                    .setDamage(
-                        damageOf(groundWeapon, maxGroundHits, groundWeaponUpgrades) * hitsFactor)
-                    .setDamageType(damageType(groundWeapon.damageType())))
+                weapon(
+                    groundWeaponUpgrades, rangeExtension, hitsFactor, groundWeapon, maxGroundHits))
             .setMaxShields(unitType.maxShields())
             .setOrganic(unitType.isOrganic())
             .setRegeneratesHealth(
@@ -125,11 +118,32 @@ public class BWAPI4JAgentFactory {
             .setArmor(unitType.armor())
             .setKiter(KITERS.contains(unitType))
             .setMaxEnergy(unitType.maxEnergy())
-            .setDetected(true);
+            .setDetected(true)
+            .setBurrowedAttacker(unitType == UnitType.Zerg_Lurker);
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
     }
     return agent;
+  }
+
+  private Weapon weapon(
+      int weaponUpgrades, int rangeExtension, int hitsFactor, WeaponType weapon, int maxHits) {
+    return new Weapon()
+        .setMaxRange(weapon.maxRange() + rangeExtension)
+        .setMinRange(weapon.minRange())
+        .setDamage(damageOf(weapon, maxHits, weaponUpgrades) * hitsFactor)
+        .setDamageType(damageType(weapon.damageType()))
+        .setExplosionType(explosionType(weapon.explosionType()))
+        .setInnerSplashRadius(weapon.innerSplashRadius())
+        .setMedianSplashRadius(weapon.medianSplashRadius())
+        .setOuterSplashRadius(weapon.medianSplashRadius());
+  }
+
+  private ExplosionType explosionType(org.openbw.bwapi4j.type.ExplosionType explosionType) {
+    if (explosionType == org.openbw.bwapi4j.type.ExplosionType.Radial_Splash) {
+      return ExplosionType.RADIAL_SPLASH;
+    }
+    return ExplosionType.IRRELEVANT;
   }
 
   public Agent of(PlayerUnit unit, int groundWeaponUpgrades, int airWeaponUpgrades) {
@@ -148,7 +162,8 @@ public class BWAPI4JAgentFactory {
         // Should be "adjusted" for own cloaked units
         .setDetected(unit.isDetected())
         // By default set unit as user object
-        .setUserObject(unit);
+        .setUserObject(unit)
+        .setBurrowed(unit instanceof Burrowable && ((Burrowable) unit).isBurrowed());
   }
 
   public Agent of(PlayerUnit unit) {
