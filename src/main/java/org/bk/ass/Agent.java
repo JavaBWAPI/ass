@@ -10,7 +10,7 @@ public class Agent {
   int shieldUpgrades;
   Object userObject;
 
-  int elevationLevel;
+  int elevationLevel = -1;
   int x;
   int y;
   int speedSquared;

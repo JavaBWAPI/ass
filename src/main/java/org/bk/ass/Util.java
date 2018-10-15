@@ -51,8 +51,8 @@ public class Util {
     int remainingDamage = damageShifted;
 
     // http://www.starcraftai.com/wiki/Chance_to_Hit
-    if (attackerElevationLevel >= 0
-        && (attackerElevationLevel < target.elevationLevel || (target.elevationLevel & 1) == 1)) {
+    if ((attackerElevationLevel >= 0 && attackerElevationLevel < target.elevationLevel)
+        || (target.elevationLevel & 1) == 1) {
       remainingDamage = remainingDamage * 136 / 256;
     }
     remainingDamage = remainingDamage * 255 / 256;

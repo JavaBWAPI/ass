@@ -163,7 +163,7 @@ public class BWAPI4JAgentFactory {
     int groundWeaponUpgrades = unit.getPlayer().getUpgradeLevel(groundWeapon.upgradeType());
     int airWeaponUpgrades = unit.getPlayer().getUpgradeLevel(airWeapon.upgradeType());
     Agent agent = of(unit, groundWeaponUpgrades, airWeaponUpgrades);
-    if (map != null) {
+    if (map != null && !unit.isFlying()) {
       agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
     }
     return agent;

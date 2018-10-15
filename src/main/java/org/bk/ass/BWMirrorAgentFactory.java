@@ -164,7 +164,7 @@ public class BWMirrorAgentFactory {
     int groundWeaponUpgrades = unit.getPlayer().getUpgradeLevel(groundWeapon.upgradeType());
     int airWeaponUpgrades = unit.getPlayer().getUpgradeLevel(airWeapon.upgradeType());
     Agent agent = of(unit, groundWeaponUpgrades, airWeaponUpgrades);
-    if (game != null) {
+    if (game != null && !unit.isFlying()) {
       agent.setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
     }
     return agent;
