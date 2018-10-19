@@ -135,14 +135,20 @@ public class BWMirrorAgentFactory {
         .setMinRange(weapon.minRange())
         .setDamage(damageOf(weapon, maxHits, weaponUpgrades) * hitsFactor)
         .setDamageType(damageType(weapon.damageType()))
-        .setExplosionType(explosionType(weapon.explosionType()))
+        .setSplashType(explosionType(weapon))
         .setInnerSplashRadius(weapon.innerSplashRadius())
         .setMedianSplashRadius(weapon.medianSplashRadius())
         .setOuterSplashRadius(weapon.outerSplashRadius());
   }
 
-  private ExplosionType explosionType(bwapi.ExplosionType explosionType) {
-    if (explosionType == bwapi.ExplosionType.Radial_Splash) {
+  private ExplosionType explosionType(WeaponType weaponType) {
+    if (weaponType == WeaponType.Subterranean_Spines) {
+      return ExplosionType.LINE_SPLASH;
+    }
+    bwapi.ExplosionType explosionType = weaponType.explosionType();
+    if (explosionType == bwapi.ExplosionType.Radial_Splash
+        || explosionType == bwapi.ExplosionType.Enemy_Splash
+        || explosionType == bwapi.ExplosionType.Nuclear_Missile) {
       return ExplosionType.RADIAL_SPLASH;
     }
     return ExplosionType.IRRELEVANT;

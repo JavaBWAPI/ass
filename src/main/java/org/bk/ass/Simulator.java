@@ -18,12 +18,14 @@ public class Simulator {
     suiciderSimulator = new SuiciderSimulator();
   }
 
-  public void addAgentA(Agent agent) {
+  public Simulator addAgentA(Agent agent) {
     playerA.add(agent);
+    return this;
   }
 
-  public void addAgentB(Agent agent) {
+  public Simulator addAgentB(Agent agent) {
     playerB.add(agent);
+    return this;
   }
 
   public Collection<Agent> getAgentsA() {

@@ -73,7 +73,7 @@ public class AttackerSimulator {
         agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
       }
       dealDamage(agent, selectedWeapon, selectedEnemy);
-      if (selectedWeapon.explosionType != ExplosionType.IRRELEVANT) {
+      if (selectedWeapon.splashType != ExplosionType.IRRELEVANT) {
         dealSplashDamage(selectedWeapon, selectedEnemy, enemies);
       }
       agent.cooldown = agent.maxCooldown;

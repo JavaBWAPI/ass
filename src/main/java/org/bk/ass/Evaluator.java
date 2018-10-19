@@ -25,7 +25,7 @@ public class Evaluator {
 
   /**
    * @return A result in the [0..1] range: 0 if agents of A are obliterated, 1 if agents of B are
-   * obliterated.
+   *     obliterated.
    */
   public double evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
     List<Agent> finalAgentsA = new ArrayList<>();
@@ -112,8 +112,12 @@ public class Evaluator {
                           double rangeFactor = 1.0 + weapon.maxRange * parameters.rangeScale;
                           double speedFactor = 1.0 + a.speed * parameters.speedScale;
                           double radialSplashFactor =
-                              weapon.explosionType == ExplosionType.RADIAL_SPLASH
+                              weapon.splashType == ExplosionType.RADIAL_SPLASH
                                   ? parameters.radialSplashFactor
+                                  : 1.0;
+                          double lineSplashFactor =
+                              weapon.splashType == ExplosionType.LINE_SPLASH
+                                  ? parameters.lineSplashFactor
                                   : 1.0;
                           return (int)
                               (Util.reduceDamageByTargetAndDamageType(
@@ -121,6 +125,7 @@ public class Evaluator {
                                   * rangeFactor
                                   * speedFactor
                                   * radialSplashFactor
+                                  * lineSplashFactor
                                   / a.maxCooldown);
                         })
                     .sum())
@@ -133,6 +138,7 @@ public class Evaluator {
     public final double speedScale;
     public final double rangeScale;
     public final double radialSplashFactor;
+    public final double lineSplashFactor;
     public final int heal;
     public final int healthRegen;
     public final int shieldRegen;
@@ -142,13 +148,14 @@ public class Evaluator {
       speedScale = source[1];
       rangeScale = source[2];
       radialSplashFactor = source[3];
-      heal = (int) source[4];
-      healthRegen = (int) source[5];
-      shieldRegen = (int) source[6];
+      lineSplashFactor = source[4];
+      heal = (int) source[5];
+      healthRegen = (int) source[6];
+      shieldRegen = (int) source[7];
     }
 
     public Parameters() {
-      this(new double[]{1.99425, 0.0155, 0.001125, 2.4, 126.375625, 267.651375, 443.103125});
+      this(new double[]{0.5925, 0.05775, 0.004625, 1.852, 1.8285, 628.997125, 425.218, 862.944375});
     }
   }
 }

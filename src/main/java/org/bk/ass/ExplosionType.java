@@ -1,5 +1,5 @@
 package org.bk.ass;
 
 public enum ExplosionType {
-  RADIAL_SPLASH, IRRELEVANT;
+  RADIAL_SPLASH, LINE_SPLASH, IRRELEVANT;
 }

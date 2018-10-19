@@ -133,14 +133,20 @@ public class BWAPI4JAgentFactory {
         .setMinRange(weapon.minRange())
         .setDamage(damageOf(weapon, maxHits, weaponUpgrades) * hitsFactor)
         .setDamageType(damageType(weapon.damageType()))
-        .setExplosionType(explosionType(weapon.explosionType()))
+        .setSplashType(explosionType(weapon))
         .setInnerSplashRadius(weapon.innerSplashRadius())
         .setMedianSplashRadius(weapon.medianSplashRadius())
         .setOuterSplashRadius(weapon.medianSplashRadius());
   }
 
-  private ExplosionType explosionType(org.openbw.bwapi4j.type.ExplosionType explosionType) {
-    if (explosionType == org.openbw.bwapi4j.type.ExplosionType.Radial_Splash) {
+  private ExplosionType explosionType(WeaponType weaponType) {
+    if (weaponType == WeaponType.Subterranean_Spines) {
+      return ExplosionType.LINE_SPLASH;
+    }
+    org.openbw.bwapi4j.type.ExplosionType explosionType = weaponType.explosionType();
+    if (explosionType == org.openbw.bwapi4j.type.ExplosionType.Radial_Splash
+        || explosionType == org.openbw.bwapi4j.type.ExplosionType.Enemy_Splash
+        || explosionType == org.openbw.bwapi4j.type.ExplosionType.Nuclear_Missile) {
       return ExplosionType.RADIAL_SPLASH;
     }
     return ExplosionType.IRRELEVANT;
