@@ -160,7 +160,7 @@ class EvaluatorTest {
   }
 
   @Test
-  void _2LurkersVs10Marines() {
+  void _2LurkersVs14Marines() {
     // GIVEN
     List<Agent> a =
         Arrays.asList(
@@ -178,13 +178,17 @@ class EvaluatorTest {
             factory.of(UnitType.Terran_Marine, 0, 0),
             factory.of(UnitType.Terran_Marine, 0, 0),
             factory.of(UnitType.Terran_Marine, 0, 0),
+            factory.of(UnitType.Terran_Marine, 0, 0),
+            factory.of(UnitType.Terran_Marine, 0, 0),
+            factory.of(UnitType.Terran_Marine, 0, 0),
+            factory.of(UnitType.Terran_Marine, 0, 0),
             factory.of(UnitType.Terran_Marine, 0, 0));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isLessThan(0.4);
+    assertThat(result).isLessThan(0.3);
   }
 
   @Test

@@ -2,7 +2,8 @@ package org.bk.ass;
 
 import static java.lang.Math.sqrt;
 import static org.bk.ass.Util.dealDamage;
-import static org.bk.ass.Util.dealSplashDamage;
+import static org.bk.ass.Util.dealLineSplashDamage;
+import static org.bk.ass.Util.dealRadialSplashDamage;
 import static org.bk.ass.Util.distanceSquared;
 import static org.bk.ass.Util.moveAwayFrom;
 import static org.bk.ass.Util.moveToward;
@@ -73,8 +74,10 @@ public class AttackerSimulator {
         agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
       }
       dealDamage(agent, selectedWeapon, selectedEnemy);
-      if (selectedWeapon.splashType != ExplosionType.IRRELEVANT) {
-        dealSplashDamage(selectedWeapon, selectedEnemy, enemies);
+      if (selectedWeapon.splashType == ExplosionType.RADIAL_SPLASH) {
+        dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
+      } else if (selectedWeapon.splashType == ExplosionType.LINE_SPLASH) {
+        dealLineSplashDamage(agent, selectedWeapon, selectedEnemy, enemies);
       }
       agent.cooldown = agent.maxCooldown;
       if (agent.remainingStimFrames > 0) {

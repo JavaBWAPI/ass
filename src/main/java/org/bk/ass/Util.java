@@ -42,7 +42,7 @@ public class Util {
     return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
   }
 
-  public static void dealSplashDamage(
+  public static void dealRadialSplashDamage(
       Weapon weapon, Agent mainTarget, UnorderedList<Agent> enemies) {
     for (int i = 0; i < enemies.size(); i++) {
       Agent enemy = enemies.get(i);
@@ -60,6 +60,33 @@ public class Util {
           }
         } else {
           applyDamage(enemy, weapon.damageType, weapon.damageShifted / 4);
+        }
+      }
+    }
+  }
+
+  public static void dealLineSplashDamage(
+      Agent source, Weapon weapon, Agent mainTarget, UnorderedList<Agent> enemies) {
+    int dx = mainTarget.x - source.x;
+    int dy = mainTarget.y - source.y;
+    // Same spot, chose "random" direction
+    if (dx == 0 && dy == 0) {
+      dx = 1;
+    }
+    int dxDistSq = dx * dx + dy * dy;
+    for (int i = 0; i < enemies.size(); i++) {
+      Agent enemy = enemies.get(i);
+      if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
+        continue;
+      }
+      int enemyDistSq = distanceSquared(enemy, source);
+      if (enemyDistSq <= weapon.maxRangeSquared) {
+        int dot = (enemy.x - source.x) * dx + (enemy.y - source.y) * dy;
+        int projdx = source.x + dot * dx / dxDistSq - enemy.x;
+        int projdy = source.y + dot * dy / dxDistSq - enemy.y;
+        int projDistSq = projdx * projdx + projdy * projdy;
+        if (projDistSq <= weapon.innerSplashRadiusSquared) {
+          applyDamage(enemy, weapon.damageType, weapon.damageShifted);
         }
       }
     }

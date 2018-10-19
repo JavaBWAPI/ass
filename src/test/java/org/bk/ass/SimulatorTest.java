@@ -234,6 +234,43 @@ class SimulatorTest {
     assertThat(simulator.getAgentsB()).isNotEmpty();
   }
 
+  @Test
+  void _2LurkersVs10Marines() {
+    // GIVEN
+    simulator
+        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true))
+        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+
+    for (int i = 0; i < 10; i++) {
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setX(10 * i).setY(20));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void _2LurkersVs12Marines() {
+    // GIVEN
+    simulator
+        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true))
+        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+
+    for (int i = 0; i < 12; i++) {
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setX(10 * i).setY(20));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
 
   @Test
   void _7MutaVs1BunkerAndSCV() {
@@ -349,5 +386,4 @@ class SimulatorTest {
     assertThat(simulator.getAgentsA()).isEmpty();
     assertThat(simulator.getAgentsB()).isNotEmpty();
   }
-
 }
