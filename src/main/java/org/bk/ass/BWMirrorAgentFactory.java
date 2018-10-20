@@ -5,6 +5,7 @@ import static java.util.Arrays.asList;
 
 import bwapi.Game;
 import bwapi.Race;
+import bwapi.TechType;
 import bwapi.Unit;
 import bwapi.UnitSizeType;
 import bwapi.UnitType;
@@ -186,6 +187,10 @@ public class BWMirrorAgentFactory {
     Agent agent = of(unit, groundWeaponUpgrades, airWeaponUpgrades);
     if (game != null && !unit.isFlying()) {
       agent.setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
+    }
+    if (unit.getType() == UnitType.Terran_Marine || unit.getType() == UnitType.Terran_Firebat) {
+      agent.setCanStim(unit.getPlayer().hasResearched(TechType.Stim_Packs));
+      agent.setRemainingStimFrames(unit.getStimTimer());
     }
     return agent;
   }

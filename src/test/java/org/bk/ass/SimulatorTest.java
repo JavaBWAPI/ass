@@ -192,6 +192,21 @@ class SimulatorTest {
   }
 
   @Test
+  void fireBatVs2Lings() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Firebat, 0, 0).setX(20));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
   void GoonCloseToSiegedTank() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0));

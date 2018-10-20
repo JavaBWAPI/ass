@@ -9,10 +9,13 @@ import java.util.EnumSet;
 import java.util.function.Consumer;
 import org.openbw.bwapi4j.BWMap;
 import org.openbw.bwapi4j.type.Race;
+import org.openbw.bwapi4j.type.TechType;
 import org.openbw.bwapi4j.type.UnitSizeType;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openbw.bwapi4j.type.WeaponType;
 import org.openbw.bwapi4j.unit.Burrowable;
+import org.openbw.bwapi4j.unit.Firebat;
+import org.openbw.bwapi4j.unit.Marine;
 import org.openbw.bwapi4j.unit.PlayerUnit;
 import org.openbw.bwapi4j.unit.SpellCaster;
 
@@ -186,6 +189,14 @@ public class BWAPI4JAgentFactory {
     Agent agent = of(unit, groundWeaponUpgrades, airWeaponUpgrades);
     if (map != null && !unit.isFlying()) {
       agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
+    }
+    if (unit.getType() == UnitType.Terran_Marine || unit.getType() == UnitType.Terran_Firebat) {
+      agent.setCanStim(unit.getPlayer().hasResearched(TechType.Stim_Packs));
+      if (unit instanceof Marine) {
+        agent.setRemainingStimFrames(((Marine) unit).getStimTimer());
+      } else {
+        agent.setRemainingStimFrames(((Firebat) unit).getStimTimer());
+      }
     }
     return agent;
   }
