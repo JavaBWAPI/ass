@@ -11,17 +11,16 @@ public class SuiciderSimulator {
     for (int i = 0; i < enemies.size(); i++) {
       Agent enemy = enemies.get(i);
       Weapon wpn = agent.weaponVs(enemy);
-      if (enemy.healthShifted < 1 || wpn.damageShifted == 0 || !enemy.detected) {
-        continue;
-      }
-      int distance = distanceSquared(agent, enemy);
-      if (distance < selectedDistanceSquared) {
-        selectedDistanceSquared = distance;
-        selectedEnemy = enemy;
+      if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
+        int distance = distanceSquared(agent, enemy);
+        if (distance < selectedDistanceSquared) {
+          selectedDistanceSquared = distance;
+          selectedEnemy = enemy;
 
-        // If we can hit it this frame, we're done searching
-        if (selectedDistanceSquared <= agent.speedSquared) {
-          break;
+          // If we can hit it this frame, we're done searching
+          if (selectedDistanceSquared <= agent.speedSquared) {
+            break;
+          }
         }
       }
     }

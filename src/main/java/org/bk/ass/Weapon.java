@@ -6,6 +6,7 @@ public class Weapon {
   int minRangeSquared;
   int maxRangeSquared;
   int damageShifted;
+  int innerSplashRadius;
   int innerSplashRadiusSquared;
   int medianSplashRadiusSquared;
   int outerSplashRadiusSquared;
@@ -24,6 +25,7 @@ public class Weapon {
   }
 
   public Weapon setInnerSplashRadius(int innerSplashRadiusSquared) {
+    this.innerSplashRadius = innerSplashRadiusSquared;
     this.innerSplashRadiusSquared = innerSplashRadiusSquared * innerSplashRadiusSquared;
     return this;
   }

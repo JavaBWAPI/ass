@@ -128,6 +128,70 @@ class SimulatorTest {
   }
 
   @Test
+  void lurkerVsTwoOpposingMarinesSingleFrame() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(-30));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(30));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .extracting("health")
+        .contains(20, 40);
+  }
+
+  @Test
+  void lurkerVsTwoMarinesSingleFrame() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(20));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(40));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .extracting("health")
+        .containsOnly(20);
+  }
+
+  @Test
+  void lurkerVsOneMarineAndOneInSplashRangeSingleFrame() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(20));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(200));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .extracting("health")
+        .containsOnly(20);
+  }
+
+  @Test
+  void lurkerVsOneMarineAndOneOutOfSplashRangeSingleFrame() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(20));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(192 + 20 + 1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .extracting("health")
+        .containsOnly(40, 20);
+  }
+
+  @Test
   void GoonCloseToSiegedTank() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0));

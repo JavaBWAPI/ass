@@ -41,10 +41,7 @@ public class Simulator {
   }
 
   public int simulate(int frames) {
-    while (frames-- != 0) {
-      if (playerA.isEmpty() || playerB.isEmpty()) {
-        break;
-      }
+    while (frames-- != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
       if (!step()) {
         break;
       }

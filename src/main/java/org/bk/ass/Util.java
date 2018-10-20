@@ -74,19 +74,25 @@ public class Util {
       dx = 1;
     }
     int dxDistSq = dx * dx + dy * dy;
+    int rangeWithSplashSquared =
+        weapon.maxRangeSquared
+            + 2 * weapon.maxRange * weapon.innerSplashRadius
+            + weapon.innerSplashRadiusSquared;
     for (int i = 0; i < enemies.size(); i++) {
       Agent enemy = enemies.get(i);
       if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
         continue;
       }
       int enemyDistSq = distanceSquared(enemy, source);
-      if (enemyDistSq <= weapon.maxRangeSquared) {
+      if (enemyDistSq <= rangeWithSplashSquared) {
         int dot = (enemy.x - source.x) * dx + (enemy.y - source.y) * dy;
-        int projdx = source.x + dot * dx / dxDistSq - enemy.x;
-        int projdy = source.y + dot * dy / dxDistSq - enemy.y;
-        int projDistSq = projdx * projdx + projdy * projdy;
-        if (projDistSq <= weapon.innerSplashRadiusSquared) {
-          applyDamage(enemy, weapon.damageType, weapon.damageShifted);
+        if (dot >= 0) {
+          int projdx = source.x + dot * dx / dxDistSq - enemy.x;
+          int projdy = source.y + dot * dy / dxDistSq - enemy.y;
+          int projDistSq = projdx * projdx + projdy * projdy;
+          if (projDistSq <= weapon.innerSplashRadiusSquared) {
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted);
+          }
         }
       }
     }
