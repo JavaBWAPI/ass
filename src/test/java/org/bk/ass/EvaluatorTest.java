@@ -39,20 +39,20 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> agentsA =
         Arrays.asList(
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Medic, 0, 0),
-            factory.of(UnitType.Terran_Medic, 0, 0));
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Medic),
+            factory.of(UnitType.Terran_Medic));
     List<Agent> agentsB =
         Arrays.asList(
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Medic, 0, 0),
-            factory.of(UnitType.Terran_Medic, 0, 0));
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Medic),
+            factory.of(UnitType.Terran_Medic));
 
     // WHEN
     double result = evaluator.evaluate(agentsA, agentsB);
@@ -66,18 +66,18 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> agentsA = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
-      agentsA.add(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+      agentsA.add(factory.of(UnitType.Zerg_Mutalisk));
     }
     List<Agent> agentsB = new ArrayList<>();
     for (int i = 0; i < 8; i++) {
-      agentsB.add(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+      agentsB.add(factory.of(UnitType.Zerg_Hydralisk));
     }
 
     // WHEN
     double result = evaluator.evaluate(agentsA, agentsB);
 
     // THEN
-    assertThat(result).isLessThan(0.48);
+    assertThat(result).isGreaterThan(0.6);
   }
 
   @Test
@@ -85,11 +85,10 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> agentsA = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
-      agentsA.add(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+      agentsA.add(factory.of(UnitType.Zerg_Hydralisk));
     }
     List<Agent> agentsB =
-        Collections.singletonList(
-            factory.of(UnitType.Protoss_Dark_Templar, 0, 0).setDetected(false));
+        Collections.singletonList(factory.of(UnitType.Protoss_Dark_Templar).setDetected(false));
 
     // WHEN
     double result = evaluator.evaluate(agentsA, agentsB);
@@ -103,30 +102,30 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> a =
         Arrays.asList(
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk));
 
     List<Agent> b =
         Arrays.asList(
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0));
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -139,18 +138,16 @@ class EvaluatorTest {
   void _2LurkersVs6Marines() {
     // GIVEN
     List<Agent> a =
-        Arrays.asList(
-            factory.of(UnitType.Zerg_Lurker, 0, 0),
-            factory.of(UnitType.Zerg_Lurker, 0, 0));
+        Arrays.asList(factory.of(UnitType.Zerg_Lurker), factory.of(UnitType.Zerg_Lurker));
 
     List<Agent> b =
         Arrays.asList(
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0));
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -163,26 +160,24 @@ class EvaluatorTest {
   void _2LurkersVs14Marines() {
     // GIVEN
     List<Agent> a =
-        Arrays.asList(
-            factory.of(UnitType.Zerg_Lurker, 0, 0),
-            factory.of(UnitType.Zerg_Lurker, 0, 0));
+        Arrays.asList(factory.of(UnitType.Zerg_Lurker), factory.of(UnitType.Zerg_Lurker));
 
     List<Agent> b =
         Arrays.asList(
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0));
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Terran_Marine));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -196,13 +191,13 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> a =
         Arrays.asList(
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0));
-    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_Bunker, 0, 0));
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_Bunker));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -216,12 +211,12 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> a =
         Arrays.asList(
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0),
-            factory.of(UnitType.Zerg_Mutalisk, 0, 0));
-    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_Bunker, 0, 0));
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_Bunker));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -233,8 +228,8 @@ class EvaluatorTest {
   @Test
   void _1MutaVs1SCV() {
     // GIVEN
-    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
-    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_SCV, 0, 0));
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Mutalisk));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_SCV));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -246,9 +241,8 @@ class EvaluatorTest {
   @Test
   void GoonVsTank() {
     // GIVEN
-    List<Agent> a = Collections.singletonList(factory.of(UnitType.Protoss_Dragoon, 0, 0));
-    List<Agent> b =
-        Collections.singletonList(factory.of(UnitType.Terran_Siege_Tank_Tank_Mode, 0, 0));
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Protoss_Dragoon));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Terran_Siege_Tank_Tank_Mode));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -262,13 +256,12 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> a =
         Arrays.asList(
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0));
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling));
     List<Agent> b =
         Arrays.asList(
-            factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0));
+            factory.of(UnitType.Terran_Siege_Tank_Siege_Mode), factory.of(UnitType.Terran_Marine));
 
     // WHEN
     double result = evaluator.evaluate(a, b);
@@ -282,16 +275,15 @@ class EvaluatorTest {
     // GIVEN
     List<Agent> a =
         Arrays.asList(
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0),
-            factory.of(UnitType.Zerg_Zergling, 0, 0));
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling));
     List<Agent> b =
         Arrays.asList(
-            factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0),
-            factory.of(UnitType.Terran_Marine, 0, 0));
+            factory.of(UnitType.Terran_Siege_Tank_Siege_Mode), factory.of(UnitType.Terran_Marine));
 
     // WHEN
     double result = evaluator.evaluate(a, b);

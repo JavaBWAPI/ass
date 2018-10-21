@@ -20,13 +20,13 @@ class SimulatorTest {
   @Test
   void stimmedVsUnstimmed() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setCanStim(true));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setCanStim(true));
-    simulator.addAgentB(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine).setCanStim(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine).setCanStim(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
 
     // WHEN
     simulator.simulate(-1);
@@ -39,15 +39,15 @@ class SimulatorTest {
   @Test
   void MMVsSunkens() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony));
 
     // WHEN
     simulator.simulate(-1);
@@ -60,18 +60,18 @@ class SimulatorTest {
   @Test
   void MMvsMM() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Medic, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Medic, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Medic, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
 
     // WHEN
     simulator.simulate(-1);
@@ -84,11 +84,11 @@ class SimulatorTest {
   @Test
   void vultureVs4Zergling() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Vulture, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
 
     // WHEN
     simulator.simulate(-1);
@@ -100,9 +100,9 @@ class SimulatorTest {
   @Test
   void twoMarinesVsOneToTheDeath() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
 
     // WHEN
     simulator.simulate(-1);
@@ -115,8 +115,8 @@ class SimulatorTest {
   @Test
   void marineVsValkyrieSingleFrame() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Valkyrie, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Valkyrie));
 
     // WHEN
     simulator.simulate(1);
@@ -130,73 +130,65 @@ class SimulatorTest {
   @Test
   void lurkerVsTwoOpposingMarinesSingleFrame() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(-30));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(30));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(-30));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(30));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     // WHEN
     simulator.simulate(1);
 
     // THEN
-    assertThat(simulator.getAgentsA())
-        .extracting("health")
-        .contains(20, 40);
+    assertThat(simulator.getAgentsA()).extracting("health").contains(20, 40);
   }
 
   @Test
   void lurkerVsTwoMarinesSingleFrame() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(20));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(40));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(20));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(40));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     // WHEN
     simulator.simulate(1);
 
     // THEN
-    assertThat(simulator.getAgentsA())
-        .extracting("health")
-        .containsOnly(20);
+    assertThat(simulator.getAgentsA()).extracting("health").containsOnly(20);
   }
 
   @Test
   void lurkerVsOneMarineAndOneInSplashRangeSingleFrame() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(20));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(200));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(20));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(200));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     // WHEN
     simulator.simulate(1);
 
     // THEN
-    assertThat(simulator.getAgentsA())
-        .extracting("health")
-        .containsOnly(20);
+    assertThat(simulator.getAgentsA()).extracting("health").containsOnly(20);
   }
 
   @Test
   void lurkerVsOneMarineAndOneOutOfSplashRangeSingleFrame() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(20));
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0).setX(192 + 20 + 1));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(20));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(192 + 20 + 1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     // WHEN
     simulator.simulate(1);
 
     // THEN
-    assertThat(simulator.getAgentsA())
-        .extracting("health")
-        .containsOnly(40, 20);
+    assertThat(simulator.getAgentsA()).extracting("health").containsOnly(40, 20);
   }
 
   @Test
   void fireBatVs2Lings() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Firebat, 0, 0).setX(20));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Firebat).setX(20));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
 
     // WHEN
     simulator.simulate(-1);
@@ -209,8 +201,8 @@ class SimulatorTest {
   @Test
   void GoonCloseToSiegedTank() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon));
+    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
 
     // WHEN
     simulator.simulate(-1);
@@ -221,10 +213,25 @@ class SimulatorTest {
   }
 
   @Test
+  void mutaVs3GhostsSingleFrame() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(20));
+    simulator.addAgentB(factory.of(UnitType.Terran_Ghost));
+    simulator.addAgentB(factory.of(UnitType.Terran_Ghost));
+    simulator.addAgentB(factory.of(UnitType.Terran_Ghost));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).extracting("health").containsOnly(45 - 9, 45 - 3, 45 - 1);
+  }
+
+  @Test
   void GoonAwayFromSiegedTank() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0).setX(1000));
-    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(1000));
+    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
 
     // WHEN
     simulator.simulate(-1);
@@ -237,11 +244,11 @@ class SimulatorTest {
   @Test
   void _3ZerglingAwayFromSiegedTankAndMarine() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(1000));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(1000).setY(20));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(1000).setY(-20));
-    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(1000));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(1000).setY(20));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(1000).setY(-20));
+    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
 
     // WHEN
     simulator.simulate(-1);
@@ -254,14 +261,14 @@ class SimulatorTest {
   @Test
   void _6ZerglingAwayFromSiegedTankAndMarine() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(-400).setY(60));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(400).setY(-40));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(-400).setY(-40));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(400).setY(20));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(-400).setY(0));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling, 0, 0).setX(400).setY(-20));
-    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(-400).setY(60));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(400).setY(-40));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(-400).setY(-40));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(400).setY(20));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(-400).setY(0));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(400).setY(-20));
+    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
 
     // WHEN
     simulator.simulate(-1);
@@ -274,8 +281,8 @@ class SimulatorTest {
   @Test
   void GoonVsTank() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Tank_Mode, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon));
+    simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Tank_Mode));
 
     // WHEN
     simulator.simulate(-1);
@@ -288,8 +295,8 @@ class SimulatorTest {
   @Test
   void MarineVsLurker() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker));
 
     // WHEN
     simulator.simulate(-1);
@@ -302,8 +309,8 @@ class SimulatorTest {
   @Test
   void MarineVsBurrowedLurker() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Marine, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     // WHEN
     simulator.simulate(-1);
@@ -317,11 +324,11 @@ class SimulatorTest {
   void _2LurkersVs10Marines() {
     // GIVEN
     simulator
-        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true))
-        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true))
+        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     for (int i = 0; i < 10; i++) {
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setX(10 * i).setY(20));
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
     }
 
     // WHEN
@@ -336,11 +343,11 @@ class SimulatorTest {
   void _2LurkersVs12Marines() {
     // GIVEN
     simulator
-        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true))
-        .addAgentA(factory.of(UnitType.Zerg_Lurker, 0, 0).setBurrowed(true));
+        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true))
+        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
 
     for (int i = 0; i < 12; i++) {
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0).setX(10 * i).setY(20));
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
     }
 
     // WHEN
@@ -355,10 +362,10 @@ class SimulatorTest {
   void _7MutaVs1BunkerAndSCV() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
-    simulator.addAgentB(factory.of(UnitType.Terran_Bunker, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_SCV, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Bunker));
+    simulator.addAgentB(factory.of(UnitType.Terran_SCV));
 
     // WHEN
     simulator.simulate(-1);
@@ -372,9 +379,9 @@ class SimulatorTest {
   void _5MutaVs1BunkerAndSCV() {
     // GIVEN
     for (int i = 0; i < 5; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
-    simulator.addAgentB(factory.of(UnitType.Terran_Bunker, 0, 0));
+    simulator.addAgentB(factory.of(UnitType.Terran_Bunker));
 
     // WHEN
     simulator.simulate(-1);
@@ -385,28 +392,82 @@ class SimulatorTest {
   }
 
   @Test
-  void _7MutasVs8Hydras() {
+  void _7MutasVs9Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
-    for (int i = 0; i < 8; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+    for (int i = 0; i < 9; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk));
     }
 
     // WHEN
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(1);
-    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(4);
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(3);
+    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(1);
+  }
+
+  @Test
+  void _13DragoonsVs10Hydras() {
+    // GIVEN
+    for (int i = 0; i < 13; i++) {
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon));
+    }
+    for (int i = 0; i < 10; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false).setX(200));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(2);
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void _13DragoonsVs10UpgradedHydras() {
+    // GIVEN
+    for (int i = 0; i < 13; i++) {
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon));
+    }
+    for (int i = 0; i < 10; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true).setX(200));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(3);
+  }
+
+  @Test
+  void _13MarinesVs10Hydras() {
+    // GIVEN
+    for (int i = 0; i < 13; i++) {
+      simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    }
+    for (int i = 0; i < 10; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false).setX(200));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(3);
   }
 
   @Test
   void MutaVsVulture() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
-    simulator.addAgentB(factory.of(UnitType.Terran_Vulture, 0, 0));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+    simulator.addAgentB(factory.of(UnitType.Terran_Vulture));
 
     // WHEN
     simulator.simulate(200);
@@ -420,8 +481,8 @@ class SimulatorTest {
   void LargeArmiesTest() {
     // GIVEN
     for (int i = 0; i < 1000; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine));
     }
 
     // WHEN
@@ -436,9 +497,9 @@ class SimulatorTest {
   void _10HydrasVsDT() {
     // GIVEN
     for (int i = 0; i < 10; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Hydralisk));
     }
-    simulator.addAgentB(factory.of(UnitType.Protoss_Dark_Templar, 0, 0).setDetected(false));
+    simulator.addAgentB(factory.of(UnitType.Protoss_Dark_Templar).setDetected(false));
 
     // WHEN
     simulator.simulate(-1);
@@ -452,10 +513,10 @@ class SimulatorTest {
   void _7MutasVs14Marines() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
     for (int i = 0; i < 14; i++) {
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine, 0, 0));
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine));
     }
 
     // WHEN

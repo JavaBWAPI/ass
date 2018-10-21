@@ -14,7 +14,7 @@ public class Agent {
   int x;
   int y;
   int speedSquared;
-  double speed;
+  float speed;
 
   // Velocity (pixel per frame) for this frame to apply
   int vx;
@@ -148,8 +148,8 @@ public class Agent {
     return this;
   }
 
-  public Agent setSpeed(double speed) {
-    this.speedSquared = (int) Math.round(speed * speed);
+  public Agent setSpeed(float speed) {
+    this.speedSquared = Math.round(speed * speed);
     this.speed = speed;
     return this;
   }

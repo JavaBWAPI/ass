@@ -1,6 +1,7 @@
 package org.bk.ass;
 
 import static java.lang.Math.sqrt;
+import static org.bk.ass.Util.dealBounceDamage;
 import static org.bk.ass.Util.dealDamage;
 import static org.bk.ass.Util.dealLineSplashDamage;
 import static org.bk.ass.Util.dealRadialSplashDamage;
@@ -26,9 +27,9 @@ public class AttackerSimulator {
       Agent enemy = enemies.get(i);
       Weapon wpn = agent.weaponVs(enemy);
       if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
-        int distance = distanceSquared(agent, enemy);
-        if (distance >= wpn.minRangeSquared && distance < selectedDistanceSquared) {
-          selectedDistanceSquared = distance;
+        int distanceSquared = distanceSquared(agent, enemy);
+        if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
+          selectedDistanceSquared = distanceSquared;
           selectedEnemy = enemy;
           selectedWeapon = wpn;
 
@@ -40,26 +41,12 @@ public class AttackerSimulator {
       }
     }
 
-    if (!agent.burrowed) {
-      if (selectedEnemy == null) {
-        return simFlee(agent, enemies);
-      }
+    if (selectedEnemy == null) {
+      return !agent.burrowed && simFlee(agent, enemies);
+    }
 
-      boolean shouldKite =
-          agent.isKiter
-              && agent.cooldown > 0
-              && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared
-              && selectedEnemy.speed < agent.speed;
-      if (shouldKite) {
-        double distance = sqrt(selectedDistanceSquared);
-        if (distance + agent.speed < selectedWeapon.maxRange) {
-          moveAwayFrom(agent, selectedEnemy, selectedDistanceSquared);
-        }
-      } else {
-        moveToward(agent, selectedEnemy, selectedDistanceSquared);
-      }
-    } else if (selectedEnemy == null) {
-      return false;
+    if (!agent.burrowed) {
+      simCombatMove(agent, selectedEnemy, selectedDistanceSquared, selectedWeapon);
     }
 
     if (agent.burrowedAttacker != agent.burrowed) {
@@ -67,25 +54,55 @@ public class AttackerSimulator {
     }
 
     if (agent.cooldown == 0 && selectedDistanceSquared <= selectedWeapon.maxRangeSquared) {
-      if (agent.canStim
-          && agent.remainingStimFrames == 0
-          && agent.healthShifted >= agent.maxHealthShifted / 2) {
-        agent.remainingStimFrames = STIM_TIMER;
-        agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
-      }
-      dealDamage(agent, selectedWeapon, selectedEnemy);
-      if (selectedWeapon.splashType == ExplosionType.RADIAL_SPLASH) {
-        dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
-      } else if (selectedWeapon.splashType == ExplosionType.LINE_SPLASH) {
-        dealLineSplashDamage(agent, selectedWeapon, selectedEnemy, enemies);
-      }
-      agent.cooldown = agent.maxCooldown;
-      if (agent.remainingStimFrames > 0) {
-        agent.cooldown /= 2;
-      }
+      simAttack(agent, enemies, selectedEnemy, selectedWeapon);
     }
 
     return true;
+  }
+
+  private void simAttack(
+      Agent agent, UnorderedList<Agent> enemies, Agent selectedEnemy, Weapon selectedWeapon) {
+    if (agent.canStim
+        && agent.remainingStimFrames == 0
+        && agent.healthShifted >= agent.maxHealthShifted / 2) {
+      agent.remainingStimFrames = STIM_TIMER;
+      agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
+    }
+    dealDamage(agent, selectedWeapon, selectedEnemy);
+    switch (selectedWeapon.splashType) {
+      case BOUNCE:
+        dealBounceDamage(selectedWeapon, selectedEnemy, enemies);
+        break;
+      case RADIAL_SPLASH:
+        dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
+        break;
+      case LINE_SPLASH:
+        dealLineSplashDamage(agent, selectedWeapon, selectedEnemy, enemies);
+        break;
+      default:
+        // No splash
+    }
+    agent.cooldown = agent.maxCooldown;
+    if (agent.remainingStimFrames > 0) {
+      agent.cooldown /= 2;
+    }
+  }
+
+  private void simCombatMove(
+      Agent agent, Agent selectedEnemy, int selectedDistanceSquared, Weapon selectedWeapon) {
+    boolean shouldKite =
+        agent.isKiter
+            && agent.cooldown > 0
+            && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared
+            && selectedEnemy.speed < agent.speed;
+    if (shouldKite) {
+      double distance = sqrt(selectedDistanceSquared);
+      if (distance + agent.speed < selectedWeapon.maxRange) {
+        moveAwayFrom(agent, selectedEnemy, selectedDistanceSquared);
+      }
+    } else {
+      moveToward(agent, selectedEnemy, selectedDistanceSquared);
+    }
   }
 
   private boolean simFlee(Agent agent, UnorderedList<Agent> enemies) {

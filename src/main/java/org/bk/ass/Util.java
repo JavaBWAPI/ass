@@ -1,5 +1,6 @@
 package org.bk.ass;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.sin;
@@ -20,7 +21,7 @@ public class Util {
       agent.x = target.x;
       agent.y = target.y;
     } else {
-      double distance = sqrt(distanceSquared);
+      float distance = (float) sqrt(distanceSquared);
       agent.vx = (int) ((target.x - agent.x) * agent.speed / distance);
       agent.vy = (int) ((target.y - agent.y) * agent.speed / distance);
     }
@@ -32,7 +33,7 @@ public class Util {
       agent.vx = (int) (cos(a) * agent.speed);
       agent.vy = (int) (sin(a) * agent.speed);
     } else {
-      double distance = sqrt(distanceSquared);
+      float distance = (float) sqrt(distanceSquared);
       agent.vx = (int) ((agent.x - target.x) * agent.speed / distance);
       agent.vy = (int) ((agent.y - target.y) * agent.speed / distance);
     }
@@ -94,6 +95,25 @@ public class Util {
             applyDamage(enemy, weapon.damageType, weapon.damageShifted);
           }
         }
+      }
+    }
+  }
+
+  public static void dealBounceDamage(
+      Weapon weapon, Agent lastTarget, UnorderedList<Agent> enemies) {
+    int remainingBounces = 2;
+    int damage = weapon.damageShifted / 3;
+    for (int i = 0; i < enemies.size() && remainingBounces > 0; i++) {
+      Agent enemy = enemies.get(i);
+      if (enemy == lastTarget) {
+        continue;
+      }
+
+      if (abs(enemy.x - lastTarget.x) <= 96 && abs(enemy.y - lastTarget.y) <= 96) {
+        lastTarget = enemy;
+        applyDamage(enemy, weapon.damageType, damage);
+        damage /= 3;
+        remainingBounces--;
       }
     }
   }

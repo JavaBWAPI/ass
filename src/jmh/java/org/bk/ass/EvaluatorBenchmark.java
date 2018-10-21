@@ -22,10 +22,10 @@ public class EvaluatorBenchmark {
     @Setup
     public void setup() {
       for (int i = 0; i < 7; i++) {
-        agentsA.add(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+        agentsA.add(factory.of(UnitType.Zerg_Mutalisk));
       }
       for (int i = 0; i < 8; i++) {
-        agentsB.add(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+        agentsB.add(factory.of(UnitType.Zerg_Hydralisk));
       }
     }
   }

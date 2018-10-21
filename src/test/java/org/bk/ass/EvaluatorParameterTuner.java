@@ -27,7 +27,7 @@ public class EvaluatorParameterTuner {
     BWDataProvider.injectValues();
 
     Genotype<DoubleGene> genotype =
-        Genotype.of(DoubleChromosome.of(0.0001, 3.0, 5), DoubleChromosome.of(0, 1000, 3));
+        Genotype.of(DoubleChromosome.of(0.0001, 3.0, 6), DoubleChromosome.of(0, 1000, 3));
 
     Function<Genotype<DoubleGene>, Integer> eval =
         gt -> {

@@ -21,10 +21,10 @@ public class SimulatorBenchmark {
       simulator = new Simulator();
 
       for (int i = 0; i < 7; i++) {
-        simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk, 0, 0));
+        simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
       }
       for (int i = 0; i < 8; i++) {
-        simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0));
+        simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk));
       }
     }
   }

@@ -12,7 +12,7 @@ public class Weapon {
   int outerSplashRadiusSquared;
 
   DamageType damageType;
-  ExplosionType splashType;
+  SplashType splashType;
 
   public Weapon setOuterSplashRadius(int outerSplashRadiusSquared) {
     this.outerSplashRadiusSquared = outerSplashRadiusSquared * outerSplashRadiusSquared;
@@ -30,7 +30,7 @@ public class Weapon {
     return this;
   }
 
-  public Weapon setSplashType(ExplosionType splashType) {
+  public Weapon setSplashType(SplashType splashType) {
     this.splashType = splashType;
     return this;
   }

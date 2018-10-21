@@ -11,7 +11,6 @@ import java.util.List;
  * ignored).
  */
 public class Evaluator {
-
   private static final double EPS = 1E-10;
   private final Parameters parameters;
 
@@ -112,12 +111,16 @@ public class Evaluator {
                           double rangeFactor = 1.0 + weapon.maxRange * parameters.rangeScale;
                           double speedFactor = 1.0 + a.speed * parameters.speedScale;
                           double radialSplashFactor =
-                              weapon.splashType == ExplosionType.RADIAL_SPLASH
+                              weapon.splashType == SplashType.RADIAL_SPLASH
                                   ? parameters.radialSplashFactor
                                   : 1.0;
                           double lineSplashFactor =
-                              weapon.splashType == ExplosionType.LINE_SPLASH
+                              weapon.splashType == SplashType.LINE_SPLASH
                                   ? parameters.lineSplashFactor
+                                  : 1.0;
+                          double bounceSplashFactor =
+                              weapon.splashType == SplashType.BOUNCE
+                                  ? parameters.radialSplashFactor
                                   : 1.0;
                           return (int)
                               (Util.reduceDamageByTargetAndDamageType(
@@ -126,6 +129,7 @@ public class Evaluator {
                                   * speedFactor
                                   * radialSplashFactor
                                   * lineSplashFactor
+                                  * bounceSplashFactor
                                   / a.maxCooldown);
                         })
                     .sum())
@@ -139,6 +143,7 @@ public class Evaluator {
     public final double rangeScale;
     public final double radialSplashFactor;
     public final double lineSplashFactor;
+    public final double bounceSplashFactor;
     public final int heal;
     public final int healthRegen;
     public final int shieldRegen;
@@ -149,13 +154,17 @@ public class Evaluator {
       rangeScale = source[2];
       radialSplashFactor = source[3];
       lineSplashFactor = source[4];
-      heal = (int) source[5];
-      healthRegen = (int) source[6];
-      shieldRegen = (int) source[7];
+      bounceSplashFactor = source[5];
+      heal = (int) source[6];
+      healthRegen = (int) source[7];
+      shieldRegen = (int) source[8];
     }
 
     public Parameters() {
-      this(new double[]{0.5925, 0.05775, 0.004625, 1.852, 1.8285, 628.997125, 425.218, 862.944375});
+      this(
+          new double[]{
+              1.32625, 0.3495, 0.03175, 1.271125, 2.06375, 2.1765, 745.459625, 785.36025, 960.912875
+          });
     }
   }
 }
