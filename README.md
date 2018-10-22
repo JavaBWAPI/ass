@@ -15,7 +15,7 @@ work but is not thoroughly tested.
 To get it, either download and build it yourself or grab the
 [Appveyor Build](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts).
 
-`Agent` is a the `Unit` abstraction used. It can be either created directly, or 
+`Agent` is the `Unit` abstraction being used. It can be either created directly, or 
 the `BWAPI4JAgentFactory` (resp. `BWMirrorAgentFactory`) can be used to create an `Agent` for an existing `Unit`.
 Creating `Agents` by using just a `UnitType` is also possible.
 
