@@ -44,6 +44,8 @@ Simulates:
 * Kiting
 * Elevation affecting damage
 * Cloaked units
+* Splash (Radial, Line and "Bounce" aka Tanks, Lurkers and Mutas)
+* Stim, Armor, Weapon, Range and Speed upgrades
 
 ## Limitations
 * No collision
