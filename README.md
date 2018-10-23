@@ -7,6 +7,10 @@ Part of the problem is the question "who will win?"
 
 ASS tries to answer that question by allowing a simulation of possible outcome.
 
+## Documentation
+
+[Javadoc](http://www.dennis-waldherr.de/ass/)
+
 ## Usage
 While the simulator is API independent, [BWAPI4J](https://github.com/OpenBW/BWAPI4J)
 is working out of the box. [BWMirror](https://github.com/vjurenka/BWMirror) should also
