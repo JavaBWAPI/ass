@@ -44,3 +44,7 @@ tasks.withType<Test> {
         exceptionFormat = TestExceptionFormat.FULL
     }
 }
+
+jmh {
+    resultFormat = "JSON"
+}

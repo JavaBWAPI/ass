@@ -2,12 +2,15 @@ package org.bk.ass;
 
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
-import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
+@Measurement(iterations = 5, time = 5)
+@Fork(3)
 public class SimulatorBenchmark {
 
   @State(Scope.Thread)
@@ -37,7 +40,7 @@ public class SimulatorBenchmark {
     }
   }
 
-  @Benchmark
+  //  @Benchmark
   public int _7MutasVs8Hydras(MyState state) {
     return state.simulator.simulate(-1);
   }

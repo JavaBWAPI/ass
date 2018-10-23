@@ -7,6 +7,7 @@ import static java.lang.Math.min;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -19,13 +20,14 @@ import java.util.stream.Stream;
 /**
  * Helper class to make area and range queries for "positions". While using an instance all
  * positions and ids *must not* change. That usually means a new instance will have to be created
- * for each frame it is going to be used. <br> It should generally be created once at the start of a
- * frame to be used for all queries. <br> Example for usages: <br>
+ * for each frame it is going to be used. <br>
+ * It should generally be created once at the start of a frame to be used for all queries. <br>
+ * Example for usages: <br>
  *
  * <ul>
- * <li>Initialize with workers only, to find the closest worker for some position.
- * <li>Initialize with enemy attackers to find the closest threat or all threats within a
- * range/area.
+ *   <li>Initialize with workers only, to find the closest worker for some position.
+ *   <li>Initialize with enemy attackers to find the closest threat or all threats within a
+ *       range/area.
  * </ul>
  *
  * @param <U> The "unit" type, basically anything that has an id and a position
@@ -33,6 +35,7 @@ import java.util.stream.Stream;
 public class UnitFinder<U> extends AbstractCollection<U> {
 
   private final TreeMap<PositionAndId, U> map = new TreeMap<>();
+  private final Function<U, PositionAndId> positionAndIdExtractor;
   private final DistanceProvider distanceProvider;
   private static final DistanceProvider EUCLIDEAN_DISTANCE =
       (ax, ay, bx, by) -> (int) Math.sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay));
@@ -41,9 +44,7 @@ public class UnitFinder<U> extends AbstractCollection<U> {
    */
   public static final DistanceProvider EUCLIDEAN_DISTANCE_SQUARED =
       (ax, ay, bx, by) -> (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
-  /**
-   * Use this to query using the distance approximation used in OpenBW
-   */
+  /** Use this to query using the distance approximation used in OpenBW */
   public static final DistanceProvider BW_DISTANCE_APPROXIMATION =
       (ax, ay, bx, by) -> {
         int min = Math.abs(ax - bx);
@@ -71,6 +72,10 @@ public class UnitFinder<U> extends AbstractCollection<U> {
     this(units, positionAndIdExtractor, EUCLIDEAN_DISTANCE);
   }
 
+  public UnitFinder(Function<U, PositionAndId> positionAndIdExtractor) {
+    this(Collections.emptyList(), positionAndIdExtractor);
+  }
+
   /**
    * @param units the units to search in
    * @param positionAndIdExtractor helper to extract {@link PositionAndId} from a unit
@@ -81,14 +86,28 @@ public class UnitFinder<U> extends AbstractCollection<U> {
       Collection<U> units,
       Function<U, PositionAndId> positionAndIdExtractor,
       DistanceProvider distanceProvider) {
+    this.positionAndIdExtractor = positionAndIdExtractor;
     this.distanceProvider = distanceProvider;
-    units.forEach(
-        u -> {
-          U previousValue = map.put(positionAndIdExtractor.apply(u), u);
-          if (previousValue != null) {
-            throw new IllegalStateException("Multiple units with same id and position found!");
-          }
-        });
+    addAll(units);
+  }
+
+  @Override
+  public boolean add(U u) {
+    U previousValue = map.put(positionAndIdExtractor.apply(u), u);
+    if (previousValue != null) {
+      throw new IllegalStateException("Multiple units with same id and position found!");
+    }
+    return true;
+  }
+
+  @Override
+  public boolean remove(Object o) {
+    return map.remove(positionAndIdExtractor.apply((U) o)) != null;
+  }
+
+  @Override
+  public void clear() {
+    map.clear();
   }
 
   /**
