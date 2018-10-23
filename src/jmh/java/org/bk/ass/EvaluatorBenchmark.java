@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Scope;
@@ -41,7 +42,7 @@ public class EvaluatorBenchmark {
     }
   }
 
-  //  @Benchmark
+  @Benchmark
   public double _7MutasVs8Hydras(MyState state) {
     return state.evaluator.evaluate(state.agentsA, state.agentsB);
   }
