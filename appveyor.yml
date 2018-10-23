@@ -1,0 +1,6 @@
+version: 1.0.{build}
+image: Ubuntu1804
+build_script:
+- sh: ./gradlew --stacktrace build
+artifacts:
+- path: build/libs/ass-1.0-SNAPSHOT.jar
