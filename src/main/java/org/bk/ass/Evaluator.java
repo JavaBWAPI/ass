@@ -123,7 +123,7 @@ public class Evaluator {
                                   ? parameters.radialSplashFactor
                                   : 1.0;
                           return (int)
-                              (Util.reduceDamageByTargetAndDamageType(
+                              (AgentUtil.reduceDamageByTargetAndDamageType(
                                   b, weapon.damageType, weapon.damageShifted)
                                   * rangeFactor
                                   * speedFactor

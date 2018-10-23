@@ -8,11 +8,11 @@ import static java.lang.Math.sqrt;
 
 import java.util.SplittableRandom;
 
-public class Util {
+public class AgentUtil {
 
   private static final SplittableRandom rnd = new SplittableRandom();
 
-  private Util() {
+  private AgentUtil() {
     // Utility class
   }
 

@@ -1,7 +1,7 @@
 package org.bk.ass;
 
-import static org.bk.ass.Util.distanceSquared;
-import static org.bk.ass.Util.moveToward;
+import static org.bk.ass.AgentUtil.distanceSquared;
+import static org.bk.ass.AgentUtil.moveToward;
 
 public class HealerSimulator {
 

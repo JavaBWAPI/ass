@@ -1,7 +1,7 @@
 package org.bk.ass;
 
-import static org.bk.ass.Util.dealDamage;
-import static org.bk.ass.Util.distanceSquared;
+import static org.bk.ass.AgentUtil.dealDamage;
+import static org.bk.ass.AgentUtil.distanceSquared;
 
 public class SuiciderSimulator {
 
