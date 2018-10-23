@@ -86,4 +86,26 @@ class UnitFinderTest {
     // THEN
     assertThat(result).hasSize(5);
   }
+
+  @Test
+  public void shouldFindAllInRadiusOfUnit() {
+    // GIVEN
+    PositionAndId unit = new PositionAndId(-1, 0, 0);
+    UnitFinder<PositionAndId> finder =
+        new UnitFinder<>(
+            Arrays.asList(
+                unit,
+                new PositionAndId(-1, 0, 10),
+                new PositionAndId(-1, 10, 0),
+                new PositionAndId(-1, 10, 10),
+                new PositionAndId(-1, -10, 0),
+                new PositionAndId(-1, 0, -10)),
+            Function.identity());
+
+    // WHEN
+    Collection<PositionAndId> result = finder.inRadius(unit, 10);
+
+    // THEN
+    assertThat(result).hasSize(5);
+  }
 }

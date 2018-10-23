@@ -80,7 +80,7 @@ public class UnitFinder<U> extends AbstractCollection<U> {
    * @param units the units to search in
    * @param positionAndIdExtractor helper to extract {@link PositionAndId} from a unit
    * @param distanceProvider used to determine the distance between two points
-   * @see {@link #EUCLIDEAN_DISTANCE_SQUARED} and {@link #BW_DISTANCE_APPROXIMATION}
+   * @see #EUCLIDEAN_DISTANCE_SQUARED and #BW_DISTANCE_APPROXIMATION
    */
   public UnitFinder(
       Collection<U> units,
@@ -141,6 +141,17 @@ public class UnitFinder<U> extends AbstractCollection<U> {
               }
             });
     return result;
+  }
+
+  /**
+   * Convenience method for inRadius(unit.x, unit.y, radius).
+   *
+   * @see #inRadius(int, int, int)
+   */
+  public Collection<U> inRadius(U unit, int radius) {
+    return positionAndIdExtractor
+        .andThen(positionAndId -> inRadius(positionAndId.x, positionAndId.y, radius))
+        .apply(unit);
   }
 
   /**
