@@ -127,7 +127,7 @@ public class UnitFinder<U> extends AbstractCollection<U> {
   }
 
   /**
-   * Returns all units with a radius <= the given radius (as determined by the given {@link
+   * Returns all units with a radius &lt;= the given radius (as determined by the given {@link
    * DistanceProvider}).
    */
   public Collection<U> inRadius(int x, int y, int radius) {

@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Used to get a rough guess for combat outcome. Doesn't provide as much detail as the {@link
- * Simulator}. Estimates [0-0.5) => not so good for force A. Estimates (0.5-1] => not bad for force
+ * Simulator}. Estimates [0-0.5) =&gt; not so good for force A. Estimates (0.5-1] =&gt; not bad for force
  * A. Avoid using it to estimate an active entanglement (as positioning might be completely
  * ignored).
  */
