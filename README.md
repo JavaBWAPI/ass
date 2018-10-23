@@ -7,9 +7,21 @@ Part of the problem is the question "who will win?"
 
 ASS tries to answer that question by allowing a simulation of possible outcome.
 
-## Documentation
+## References
+
+[Appveyor Build Artifact](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts)
 
 [Javadoc](http://www.dennis-waldherr.de/ass/)
+
+[BWAPI4J](https://github.com/OpenBW/BWAPI4J)
+
+[BWMirror](https://github.com/vjurenka/BWMirror)
+
+###### Credits
+
+* [Fco. Javier Sacido](https://github.com/Jabbo16) for his JFAP port
+* [Hannes Bredberg](https://github.com/N00byEdge) for the original FAP  
+
 
 ## Usage
 While the simulator is API independent, [BWAPI4J](https://github.com/OpenBW/BWAPI4J)
@@ -72,8 +84,3 @@ Attackers:
 * Find any unit that can be attacked this frame and attack
 * Otherwise find closest targetable unit and close in
 * Otherwise flee from any unit that could attack us
-
-## Credits
-* [Fco. Javier Sacido](https://github.com/Jabbo16) for his JFAP port
-* [Hannes Bredberg](https://github.com/N00byEdge) for the original FAP  
-
