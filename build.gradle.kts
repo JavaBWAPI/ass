@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 plugins {
     java
     id("me.champeau.gradle.jmh") version "0.4.7"
+    id("org.sonarqube") version "2.6"
 }
 
 group = "org.bk"

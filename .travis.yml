@@ -3,4 +3,4 @@ addons:
   sonarcloud:
     organization: "bytekeeper-github"
   - script:
-    - ./gradlew clean check sonar:sonar
+    - ./gradlew clean check sonarqube
