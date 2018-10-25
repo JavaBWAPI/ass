@@ -416,7 +416,7 @@ class SimulatorTest {
       simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon));
     }
     for (int i = 0; i < 10; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false).setX(200));
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false).setX(200));
     }
 
     // WHEN
@@ -434,7 +434,7 @@ class SimulatorTest {
       simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon));
     }
     for (int i = 0; i < 10; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true).setX(200));
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200));
     }
 
     // WHEN
@@ -452,7 +452,7 @@ class SimulatorTest {
       simulator.addAgentA(factory.of(UnitType.Terran_Marine));
     }
     for (int i = 0; i < 10; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false).setX(200));
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(200));
     }
 
     // WHEN

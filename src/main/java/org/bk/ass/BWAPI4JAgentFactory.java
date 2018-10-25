@@ -77,7 +77,7 @@ public class BWAPI4JAgentFactory {
   }
 
   public Agent of(UnitType unitType) {
-    return of(unitType, 0, 0, 0, 0, false);
+    return of(unitType, 0, 0, 0, 0, false, false);
   }
 
   public Agent of(
@@ -86,14 +86,16 @@ public class BWAPI4JAgentFactory {
       int airWeaponUpgrades,
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
-      boolean speedUpgrade) {
+      boolean speedUpgrade,
+      boolean energyUpgrade) {
     return fromUnitType(
         unitType,
         groundWeaponUpgrades,
         airWeaponUpgrades,
         groundWeaponRangeUpgrade,
         airWeaponRangeUpgrade,
-        speedUpgrade)
+        speedUpgrade,
+        energyUpgrade)
         .setHealth(unitType.maxHitPoints())
         .setShields(unitType.maxShields())
         .setEnergy(unitType.maxEnergy());
@@ -105,7 +107,8 @@ public class BWAPI4JAgentFactory {
       int airWeaponUpgrades,
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
-      boolean speedUpgrade) {
+      boolean speedUpgrade,
+      boolean energyUpgrade) {
     int rangeExtension = 0;
     int hitsFactor = 1;
     WeaponType airWeapon = unitType.airWeapon();
@@ -164,7 +167,7 @@ public class BWAPI4JAgentFactory {
             .setSize(size(unitType.size()))
             .setArmor(unitType.armor())
             .setKiter(KITERS.contains(unitType))
-            .setMaxEnergy(unitType.maxEnergy())
+            .setMaxEnergy(unitType.maxEnergy() + (energyUpgrade ? 50 : 0))
             .setDetected(true)
             .setBurrowedAttacker(unitType == UnitType.Zerg_Lurker)
             .setSpeed(speed);
@@ -193,7 +196,8 @@ public class BWAPI4JAgentFactory {
       int airWeaponUpgrades,
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
-      boolean speedUpgrade) {
+      boolean speedUpgrade,
+      boolean energyUpgrade) {
     int energy = 0;
     if (unit instanceof SpellCaster) {
       energy = ((SpellCaster) unit).getEnergy();
@@ -205,7 +209,8 @@ public class BWAPI4JAgentFactory {
         airWeaponUpgrades,
         groundWeaponRangeUpgrade,
         airWeaponRangeUpgrade,
-        speedUpgrade)
+        speedUpgrade,
+        energyUpgrade)
         .setHealth(unit.getHitPoints())
         .setShields(unit.getShields())
         .setEnergy(energy)
@@ -238,7 +243,8 @@ public class BWAPI4JAgentFactory {
             airWeaponUpgrades,
             groundWeaponRangeUpgrade,
             airWeaponRangeUpgrade,
-            hasSpeedUpgrade(unitType, player));
+            hasSpeedUpgrade(unitType, player),
+            hasEnergyUpgrade(unitType, player));
     if (map != null && !unit.isFlying()) {
       agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
     }
@@ -271,6 +277,30 @@ public class BWAPI4JAgentFactory {
       return 96;
     }
     return 0;
+  }
+
+  private boolean hasEnergyUpgrade(UnitType unitType, Player player) {
+    return unitType == UnitType.Zerg_Queen && player.getUpgradeLevel(UpgradeType.Gamete_Meiosis) > 0
+        || unitType == UnitType.Zerg_Defiler
+        && player.getUpgradeLevel(UpgradeType.Metasynaptic_Node) > 0
+        || unitType == UnitType.Protoss_High_Templar
+        && player.getUpgradeLevel(UpgradeType.Khaydarin_Amulet) > 0
+        || unitType == UnitType.Protoss_Dark_Archon
+        && player.getUpgradeLevel(UpgradeType.Argus_Talisman) > 0
+        || unitType == UnitType.Protoss_Arbiter
+        && player.getUpgradeLevel(UpgradeType.Khaydarin_Core) > 0
+        || unitType == UnitType.Protoss_Corsair
+        && player.getUpgradeLevel(UpgradeType.Argus_Jewel) > 0
+        || unitType == UnitType.Terran_Wraith
+        && player.getUpgradeLevel(UpgradeType.Apollo_Reactor) > 0
+        || unitType == UnitType.Terran_Ghost
+        && player.getUpgradeLevel(UpgradeType.Moebius_Reactor) > 0
+        || unitType == UnitType.Terran_Battlecruiser
+        && player.getUpgradeLevel(UpgradeType.Colossus_Reactor) > 0
+        || unitType == UnitType.Terran_Science_Vessel
+        && player.getUpgradeLevel(UpgradeType.Titan_Reactor) > 0
+        || unitType == UnitType.Terran_Medic
+        && player.getUpgradeLevel(UpgradeType.Caduceus_Reactor) > 0;
   }
 
   private boolean hasSpeedUpgrade(UnitType unitType, Player player) {
