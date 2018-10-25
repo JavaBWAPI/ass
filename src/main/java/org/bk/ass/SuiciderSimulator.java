@@ -5,7 +5,7 @@ import static org.bk.ass.AgentUtil.distanceSquared;
 
 public class SuiciderSimulator {
 
-  public boolean simUnit(Agent agent, UnorderedList<Agent> enemies) {
+  public boolean simUnit(Agent agent, UnorderedCollection<Agent> enemies) {
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = 0; i < enemies.size(); i++) {

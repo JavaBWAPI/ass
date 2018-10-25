@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class UnorderedListTest {
+class UnorderedCollectionTest {
 
-  private UnorderedList<Object> sut = new UnorderedList<>();
+  private UnorderedCollection<Object> sut = new UnorderedCollection<>();
 
   @Test
   public void shouldNotHoldReferencesAfterClearAndRelease() {

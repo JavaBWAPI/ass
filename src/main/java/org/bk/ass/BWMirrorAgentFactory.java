@@ -159,7 +159,6 @@ public class BWMirrorAgentFactory {
                     && unitType != UnitType.Zerg_Egg
                     && unitType != UnitType.Zerg_Lurker_Egg
                     && unitType != UnitType.Zerg_Larva)
-            .setRegeneratesShields(unitType.getRace() == Race.Protoss)
             .setSuicider(SUICIDERS.contains(unitType))
             .setStopFrames(stopFrames.getOrDefault(unitType, 2))
             .setSize(size(unitType.size()))

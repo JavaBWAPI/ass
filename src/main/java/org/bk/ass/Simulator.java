@@ -5,8 +5,8 @@ import java.util.Collections;
 
 public class Simulator {
 
-  private final UnorderedList<Agent> playerA = new UnorderedList<>();
-  private final UnorderedList<Agent> playerB = new UnorderedList<>();
+  private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
+  private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
 
   private final AttackerSimulator attackerSimulator;
   private final HealerSimulator healerSimulator;
@@ -76,7 +76,7 @@ public class Simulator {
     return simRunning;
   }
 
-  private void removeDead(UnorderedList<Agent> agents) {
+  private void removeDead(UnorderedCollection<Agent> agents) {
     int i = 0;
     while (i < agents.size()) {
       if (agents.get(i).healthShifted < 1) {
@@ -88,7 +88,7 @@ public class Simulator {
     }
   }
 
-  private void updateStats(UnorderedList<Agent> agents) {
+  private void updateStats(UnorderedCollection<Agent> agents) {
     for (int i = 0; i < agents.size(); i++) {
       Agent agent = agents.get(i);
 
@@ -110,7 +110,7 @@ public class Simulator {
           agent.healthShifted = agent.maxHealthShifted;
         }
       }
-      if (agent.regeneratesShields && agent.shieldsShifted < agent.maxShieldsShifted) {
+      if (agent.shieldsShifted < agent.maxShieldsShifted) {
         agent.shieldsShifted += 7;
         if (agent.shieldsShifted > agent.maxShieldsShifted) {
           agent.shieldsShifted = agent.maxShieldsShifted;
@@ -123,7 +123,8 @@ public class Simulator {
     }
   }
 
-  private boolean simUnit(Agent agent, UnorderedList<Agent> allies, UnorderedList<Agent> enemies) {
+  private boolean simUnit(Agent agent, UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
     if (agent.isSuicider) {
       return suiciderSimulator.simUnit(agent, enemies);
     }

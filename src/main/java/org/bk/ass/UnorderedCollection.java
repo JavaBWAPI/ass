@@ -3,21 +3,24 @@ package org.bk.ass;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import java.util.AbstractCollection;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class UnorderedList<T> implements Collection<T> {
-
+/**
+ * A collection implementation that does not guarantee the order of elements stays constant of
+ * manipulation. All operations generally use identity and not equality!
+ */
+public class UnorderedCollection<T> extends AbstractCollection<T> {
   T[] items;
   private int size;
 
-  public UnorderedList() {
+  public UnorderedCollection() {
     this(16);
   }
 
-  public UnorderedList(int capacity) {
+  public UnorderedCollection(int capacity) {
     items = (T[]) new Object[capacity];
   }
 
@@ -25,32 +28,13 @@ public class UnorderedList<T> implements Collection<T> {
     Arrays.fill(items, size, items.length, null);
   }
 
+  @Override
   public boolean add(T value) {
     if (size == items.length) {
       resize((int) (size * 7L / 4));
     }
     items[size++] = value;
     return true;
-  }
-
-  @Override
-  public boolean containsAll(Collection<?> c) {
-    return false;
-  }
-
-  @Override
-  public boolean addAll(Collection<? extends T> c) {
-    return false;
-  }
-
-  @Override
-  public boolean removeAll(Collection<?> c) {
-    return false;
-  }
-
-  @Override
-  public boolean retainAll(Collection<?> c) {
-    return false;
   }
 
   @Override
@@ -65,18 +49,18 @@ public class UnorderedList<T> implements Collection<T> {
   }
 
   public T removeAt(int index) {
-    if (index < 0 || index >= size) {
+    if (index >= size) {
       throw new IndexOutOfBoundsException("index " + index + " must be > 0 and < " + size);
     }
-    T last = items[--size];
     T removed = items[index];
+    T last = items[--size];
     items[index] = last;
     return removed;
   }
 
   private void resize(int newCapacity) {
-    int capaToUse = max(8, newCapacity);
-    T[] newItems = (T[]) new Object[capaToUse];
+    int capacityToUse = max(8, newCapacity);
+    T[] newItems = (T[]) new Object[capacityToUse];
     System.arraycopy(items, 0, newItems, 0, min(size, newItems.length));
     items = newItems;
   }
@@ -107,12 +91,12 @@ public class UnorderedList<T> implements Collection<T> {
   }
 
   @Override
-  public <T1> T1[] toArray(T1[] a) {
-    return (T1[]) items;
+  public <R> R[] toArray(R[] a) {
+    return (R[]) items;
   }
 
   public T get(int index) {
-    if (index < 0 || index >= size) {
+    if (index >= size) {
       throw new IndexOutOfBoundsException("index " + index + " must be > 0 and < " + size);
     }
     return items[index];
@@ -129,7 +113,6 @@ public class UnorderedList<T> implements Collection<T> {
   }
 
   private class UnorderedListIterator implements Iterator<T> {
-
     private int index;
 
     @Override

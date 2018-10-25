@@ -8,7 +8,7 @@ public class HealerSimulator {
   // Retrieved from OpenBW
   public static final int MEDICS_HEAL_RANGE = 30;
 
-  public boolean simUnit(Agent agent, UnorderedList<Agent> allies) {
+  public boolean simUnit(Agent agent, UnorderedCollection<Agent> allies) {
     if (agent.energyShifted < 256) {
       return true;
     }
@@ -16,19 +16,20 @@ public class HealerSimulator {
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = 0; i < allies.size(); i++) {
       Agent ally = allies.get(i);
-      if (!ally.isOrganic || ally.healthShifted >= ally.maxHealthShifted || agent.healedThisFrame
-          || ally == agent) {
-        continue;
-      }
+      if (ally.isOrganic
+          && ally.healthShifted < ally.maxHealthShifted
+          && !agent.healedThisFrame
+          && ally != agent) {
 
-      int distance = distanceSquared(agent, ally);
-      if (distance < selectedDistanceSquared) {
-        selectedDistanceSquared = distance;
-        selectedAlly = ally;
+        int distance = distanceSquared(agent, ally);
+        if (distance < selectedDistanceSquared) {
+          selectedDistanceSquared = distance;
+          selectedAlly = ally;
 
-        // If we can heal it this frame, we're done searching
-        if (selectedDistanceSquared <= MEDICS_HEAL_RANGE) {
-          break;
+          // If we can heal it this frame, we're done searching
+          if (selectedDistanceSquared <= MEDICS_HEAL_RANGE) {
+            break;
+          }
         }
       }
     }

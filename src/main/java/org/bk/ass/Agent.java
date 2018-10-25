@@ -39,8 +39,6 @@ public class Agent {
 
   // Is Zerg and not an Egg/Larva
   boolean regeneratesHealth;
-  // Is Protoss
-  boolean regeneratesShields;
 
   // Dies on attack
   boolean isSuicider;
@@ -199,11 +197,6 @@ public class Agent {
 
   public Agent setRegeneratesHealth(boolean regeneratesHealth) {
     this.regeneratesHealth = regeneratesHealth;
-    return this;
-  }
-
-  public Agent setRegeneratesShields(boolean regeneratesShields) {
-    this.regeneratesShields = regeneratesShields;
     return this;
   }
 

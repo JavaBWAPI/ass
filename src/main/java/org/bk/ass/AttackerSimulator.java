@@ -15,7 +15,7 @@ public class AttackerSimulator {
   public static final int STIM_TIMER = 37;
   public static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
 
-  public boolean simUnit(Agent agent, UnorderedList<Agent> enemies) {
+  public boolean simUnit(Agent agent, UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
@@ -61,7 +61,7 @@ public class AttackerSimulator {
   }
 
   private void simAttack(
-      Agent agent, UnorderedList<Agent> enemies, Agent selectedEnemy, Weapon selectedWeapon) {
+      Agent agent, UnorderedCollection<Agent> enemies, Agent selectedEnemy, Weapon selectedWeapon) {
     if (agent.canStim
         && agent.remainingStimFrames == 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
@@ -105,7 +105,7 @@ public class AttackerSimulator {
     }
   }
 
-  private boolean simFlee(Agent agent, UnorderedList<Agent> enemies) {
+  private boolean simFlee(Agent agent, UnorderedCollection<Agent> enemies) {
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = 0; i < enemies.size(); i++) {

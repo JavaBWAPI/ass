@@ -44,7 +44,7 @@ public class AgentUtil {
   }
 
   public static void dealRadialSplashDamage(
-      Weapon weapon, Agent mainTarget, UnorderedList<Agent> enemies) {
+      Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
     for (int i = 0; i < enemies.size(); i++) {
       Agent enemy = enemies.get(i);
       if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
@@ -67,7 +67,7 @@ public class AgentUtil {
   }
 
   public static void dealLineSplashDamage(
-      Agent source, Weapon weapon, Agent mainTarget, UnorderedList<Agent> enemies) {
+      Agent source, Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
     int dx = mainTarget.x - source.x;
     int dy = mainTarget.y - source.y;
     // Same spot, chose "random" direction
@@ -100,7 +100,7 @@ public class AgentUtil {
   }
 
   public static void dealBounceDamage(
-      Weapon weapon, Agent lastTarget, UnorderedList<Agent> enemies) {
+      Weapon weapon, Agent lastTarget, UnorderedCollection<Agent> enemies) {
     int remainingBounces = 2;
     int damage = weapon.damageShifted / 3;
     for (int i = 0; i < enemies.size() && remainingBounces > 0; i++) {
