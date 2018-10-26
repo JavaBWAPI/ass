@@ -1,5 +1,7 @@
 package org.bk.ass;
 
+import static java.lang.Math.max;
+
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -24,6 +26,8 @@ public class Agent {
   int maxHealthShifted;
   boolean healedThisFrame;
 
+  int hpConstructionRate;
+
   int shieldsShifted;
   int maxShieldsShifted;
 
@@ -45,7 +49,9 @@ public class Agent {
   boolean isHealer;
   boolean isFlyer;
   boolean isOrganic;
+  boolean isMechanic;
   boolean isKiter;
+  boolean isRepairer;
   boolean burrowed;
   boolean burrowedAttacker;
   // Visible to the other force
@@ -205,6 +211,16 @@ public class Agent {
     return this;
   }
 
+  public Agent setRepairer(boolean repairer) {
+    isRepairer = repairer;
+    return this;
+  }
+
+  public Agent setMechanic(boolean mechanic) {
+    this.isMechanic = mechanic;
+    return this;
+  }
+
   public Agent setHealer(boolean healer) {
     isHealer = healer;
     return this;
@@ -250,5 +266,14 @@ public class Agent {
       return airWeapon;
     }
     return groundWeapon;
+  }
+
+  /**
+   * Has to be called *after* max health has been set
+   */
+  public Agent setHpConstructionRate(int buildTime) {
+    this.hpConstructionRate =
+        max(1, (maxHealthShifted - maxHealthShifted / 10 + buildTime - 1) / buildTime);
+    return this;
   }
 }

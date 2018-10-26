@@ -377,7 +377,26 @@ class SimulatorTest {
   }
 
   @Test
-  void _5MutaVs1BunkerAndSCV() {
+  void _7MutaVs1BunkerAnd4SCVs() {
+    // GIVEN
+    for (int i = 0; i < 7; i++) {
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+    }
+    simulator.addAgentB(factory.of(UnitType.Terran_Bunker));
+    for (int i = 0; i < 4; i++) {
+      simulator.addAgentB(factory.of(UnitType.Terran_SCV));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void _5MutaVs1Bunker() {
     // GIVEN
     for (int i = 0; i < 5; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));

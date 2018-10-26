@@ -170,7 +170,11 @@ public class BWMirrorAgentFactory {
             .setMaxEnergy(unitType.maxEnergy() + (energyUpgrade ? 50 : 0))
             .setDetected(true)
             .setBurrowedAttacker(unitType == UnitType.Zerg_Lurker)
-            .setSpeed(speed);
+            .setSpeed(speed)
+            .setHpConstructionRate(unitType.buildTime())
+            .setRepairer(unitType == UnitType.Terran_SCV)
+            .setMechanic(unitType.isMechanical());
+
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
     }

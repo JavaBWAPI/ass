@@ -53,6 +53,7 @@ The basic idea is:
 ## Features
 Simulates:
 * Medics
+* SCV repair
 * Suiciding units (scourge, scarabs, ...)
 * Ground attackers
 * Air attackers
@@ -79,6 +80,11 @@ Medics:
 Suiciders:
 * Find any unit that can be attacked this frame and dive in
 * Otherwise find closest targetable unit and close in
+
+Repairers (SCVs):
+* Find any unit that can be repaired this frame and repair it
+* Find closest unit that can be repaired and move toward it
+* If no unit can be repaired, attack
 
 Attackers:
 * Find any unit that can be attacked this frame and attack

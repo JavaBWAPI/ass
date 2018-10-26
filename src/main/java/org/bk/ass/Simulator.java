@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class Simulator {
-
   static final int TILES = 8192;
   private static final byte[] EMPTY_GROUND = new byte[TILES * TILES];
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
@@ -12,6 +11,7 @@ public class Simulator {
 
   private final AttackerSimulator attackerSimulator;
   private final HealerSimulator healerSimulator;
+  private final RepairerSimulator repairerSimulator;
   private final SuiciderSimulator suiciderSimulator;
 
   private final byte[] collision = new byte[TILES * TILES];
@@ -21,6 +21,7 @@ public class Simulator {
     this.ground = ground;
     attackerSimulator = new AttackerSimulator();
     healerSimulator = new HealerSimulator();
+    repairerSimulator = new RepairerSimulator();
     suiciderSimulator = new SuiciderSimulator();
   }
 
@@ -170,6 +171,10 @@ public class Simulator {
     }
     if (agent.isHealer) {
       return healerSimulator.simUnit(agent, allies);
+    }
+    if (agent.isRepairer && repairerSimulator.simUnit(agent, allies)) {
+      return true;
+      // Othrewise FIGHT, you puny SCV!
     }
     return attackerSimulator.simUnit(agent, enemies);
   }
