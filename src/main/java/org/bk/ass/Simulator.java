@@ -5,6 +5,8 @@ import java.util.Collections;
 
 public class Simulator {
 
+  static final int TILES = 8192;
+  private static final byte[] EMPTY_GROUND = new byte[TILES * TILES];
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
 
@@ -12,19 +14,33 @@ public class Simulator {
   private final HealerSimulator healerSimulator;
   private final SuiciderSimulator suiciderSimulator;
 
-  public Simulator() {
+  private final byte[] collision = new byte[TILES * TILES];
+  private final byte[] ground;
+
+  public Simulator(byte[] ground) {
+    this.ground = ground;
     attackerSimulator = new AttackerSimulator();
     healerSimulator = new HealerSimulator();
     suiciderSimulator = new SuiciderSimulator();
   }
 
+  public Simulator() {
+    this(EMPTY_GROUND);
+  }
+
   public Simulator addAgentA(Agent agent) {
     playerA.add(agent);
+    if (!agent.isFlyer) {
+      collision[colindex(agent.x, agent.y)]++;
+    }
     return this;
   }
 
   public Simulator addAgentB(Agent agent) {
     playerB.add(agent);
+    if (!agent.isFlyer) {
+      collision[colindex(agent.x, agent.y)]++;
+    }
     return this;
   }
 
@@ -54,6 +70,7 @@ public class Simulator {
   public void reset() {
     playerA.clear();
     playerB.clear();
+    System.arraycopy(ground, 0, collision, 0, TILES * TILES);
   }
 
   /**
@@ -81,6 +98,7 @@ public class Simulator {
     while (i < agents.size()) {
       if (agents.get(i).healthShifted < 1) {
         Agent agent = agents.removeAt(i);
+        collision[colindex(agent.x, agent.y)]--;
         agent.onDeathReplacer.accept(agents);
       } else {
         i++;
@@ -92,8 +110,7 @@ public class Simulator {
     for (int i = 0; i < agents.size(); i++) {
       Agent agent = agents.get(i);
 
-      agent.x += agent.vx;
-      agent.y += agent.vy;
+      updatePosition(agent);
       agent.vx = 0;
       agent.vy = 0;
       agent.healedThisFrame = false;
@@ -123,8 +140,31 @@ public class Simulator {
     }
   }
 
-  private boolean simUnit(Agent agent, UnorderedCollection<Agent> allies,
-      UnorderedCollection<Agent> enemies) {
+  private void updatePosition(Agent agent) {
+    int tx = agent.x + agent.vx;
+    int ty = agent.y + agent.vy;
+    if (tx < 0 || ty < 0 || tx >= 8192 || ty >= 8192) {
+      return;
+    }
+
+    if (!agent.isFlyer && (agent.x / 16 != tx / 16 || agent.y / 16 != ty / 16)) {
+      if (collision[colindex(tx, ty)] > 1) {
+        return;
+      }
+      collision[colindex(agent.x, agent.y)]--;
+      collision[colindex(tx, ty)]++;
+    }
+
+    agent.x = tx;
+    agent.y = ty;
+  }
+
+  private int colindex(int tx, int ty) {
+    return ty / 16 * TILES + tx / 16;
+  }
+
+  private boolean simUnit(
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.isSuicider) {
       return suiciderSimulator.simUnit(agent, enemies);
     }
