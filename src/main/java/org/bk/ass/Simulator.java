@@ -1,11 +1,14 @@
 package org.bk.ass;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 public class Simulator {
-  static final int TILES = 8192;
-  private static final byte[] EMPTY_GROUND = new byte[TILES * TILES];
+
+  private static final int MAX_MAP_DIMENSION = 8192;
+  private static final int TILE_SIZE = 16;
+  private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
 
@@ -14,19 +17,13 @@ public class Simulator {
   private final RepairerSimulator repairerSimulator;
   private final SuiciderSimulator suiciderSimulator;
 
-  private final byte[] collision = new byte[TILES * TILES];
-  private final byte[] ground;
+  private final byte[] collision = new byte[COLLISION_MAP_DIMENSION * COLLISION_MAP_DIMENSION];
 
-  public Simulator(byte[] ground) {
-    this.ground = ground;
+  public Simulator() {
     attackerSimulator = new AttackerSimulator();
     healerSimulator = new HealerSimulator();
     repairerSimulator = new RepairerSimulator();
     suiciderSimulator = new SuiciderSimulator();
-  }
-
-  public Simulator() {
-    this(EMPTY_GROUND);
   }
 
   public Simulator addAgentA(Agent agent) {
@@ -69,9 +66,17 @@ public class Simulator {
   }
 
   public void reset() {
+    resetUnits();
+    resetCollisionMap();
+  }
+
+  public void resetUnits() {
     playerA.clear();
     playerB.clear();
-    System.arraycopy(ground, 0, collision, 0, TILES * TILES);
+  }
+
+  public void resetCollisionMap() {
+    Arrays.fill(collision, (byte) 0);
   }
 
   /**
@@ -144,12 +149,13 @@ public class Simulator {
   private void updatePosition(Agent agent) {
     int tx = agent.x + agent.vx;
     int ty = agent.y + agent.vy;
-    if (tx < 0 || ty < 0 || tx >= 8192 || ty >= 8192) {
+    if (tx < 0 || ty < 0 || tx >= MAX_MAP_DIMENSION || ty >= MAX_MAP_DIMENSION) {
       return;
     }
 
-    if (!agent.isFlyer && (agent.x / 16 != tx / 16 || agent.y / 16 != ty / 16)) {
-      if (collision[colindex(tx, ty)] > 1) {
+    if (!agent.isFlyer
+        && (agent.x / TILE_SIZE != tx / TILE_SIZE || agent.y / TILE_SIZE != ty / TILE_SIZE)) {
+      if (collision[colindex(tx, ty)] > TILE_SIZE / 8 - 1) {
         return;
       }
       collision[colindex(agent.x, agent.y)]--;
@@ -161,7 +167,7 @@ public class Simulator {
   }
 
   private int colindex(int tx, int ty) {
-    return ty / 16 * TILES + tx / 16;
+    return ty / TILE_SIZE * COLLISION_MAP_DIMENSION + tx / TILE_SIZE;
   }
 
   private boolean simUnit(

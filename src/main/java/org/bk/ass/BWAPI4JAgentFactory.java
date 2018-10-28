@@ -2,7 +2,6 @@ package org.bk.ass;
 
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
-import static org.bk.ass.Simulator.TILES;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -75,23 +74,6 @@ public class BWAPI4JAgentFactory {
 
   public BWAPI4JAgentFactory() {
     this(null);
-  }
-
-  public byte[] ground() {
-    byte[] ground = new byte[TILES * TILES];
-    for (int y = 0; y < map.mapHeight() * 2; y++) {
-      for (int x = 0; x < map.mapWidth() * 2; x++) {
-        ground[y * TILES + x * TILES] =
-            (byte)
-                (map.isWalkable(x * 2, y * 2)
-                    && map.isWalkable(x * 2 + 1, y * 2)
-                    && map.isWalkable(x * 2, y * 2 + 1)
-                    && map.isWalkable(x * 2 + 1, y * 2 + 1)
-                    ? 0
-                    : 2);
-      }
-    }
-    return ground;
   }
 
   public Agent of(UnitType unitType) {
