@@ -1,5 +1,7 @@
 package org.bk.ass;
 
+import static java.lang.Math.max;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -94,11 +96,15 @@ public class Evaluator {
     private int airDamageNormal;
     private int airConcussiveDamage;
     private int airExplosiveDamage;
-    private int airHits;
+    private int airConcussiveHits;
+    private int airExplosiveHits;
+    private int airNormalHits;
     private int groundDamageNormal;
     private int groundConcussiveDamage;
     private int groundExplosiveDamage;
-    private int groundHits;
+    private int groundConcussiveHits;
+    private int groundExplosiveHits;
+    private int groundNormalHits;
 
     DamageBoard(Collection<Agent> attackers) {
       for (Agent agent : attackers) {
@@ -109,27 +115,31 @@ public class Evaluator {
 
     private void sumGroundDamage(Agent agent) {
       Weapon weapon = agent.groundWeapon;
-      groundHits += weapon.hits;
       double damageToApply = calculateDamage(agent, weapon);
       if (weapon.damageType == DamageType.CONCUSSIVE) {
+        groundConcussiveHits += weapon.hits;
         groundConcussiveDamage += damageToApply;
       } else if (weapon.damageType == DamageType.EXPLOSIVE) {
+        groundExplosiveHits += weapon.hits;
         groundExplosiveDamage += damageToApply;
       } else {
+        groundNormalHits += weapon.hits;
         groundDamageNormal += damageToApply;
       }
     }
 
     private void sumAirDamage(Agent agent) {
       Weapon weapon = agent.groundWeapon;
-      airHits += weapon.hits;
       double damageToApply = calculateDamage(agent, weapon);
       if (agent.airWeapon.damageType == DamageType.CONCUSSIVE) {
         airConcussiveDamage += damageToApply;
+        airConcussiveHits += weapon.hits;
       } else if (agent.airWeapon.damageType == DamageType.EXPLOSIVE) {
         airExplosiveDamage += damageToApply;
+        airExplosiveHits += weapon.hits;
       } else {
         airDamageNormal += damageToApply;
+        airNormalHits += weapon.hits;
       }
     }
 
@@ -159,26 +169,54 @@ public class Evaluator {
           continue;
         }
         if (target.isFlyer) {
-          int damage =
-              AgentUtil.reduceDamageByTargetSizeAndDamageType(
-                  target, DamageType.CONCUSSIVE, airConcussiveDamage);
-          damage +=
-              AgentUtil.reduceDamageByTargetSizeAndDamageType(
-                  target, DamageType.EXPLOSIVE, airExplosiveDamage);
-          damage += airDamageNormal;
-          damageSum += Math.max(128 * airHits, damage - airHits * target.armorShifted);
+          damageSum +=
+              damageTakenBy(
+                  target,
+                  airConcussiveDamage,
+                  airConcussiveHits,
+                  airExplosiveDamage,
+                  airExplosiveHits,
+                  airDamageNormal,
+                  airNormalHits);
         } else {
-          int damage =
-              AgentUtil.reduceDamageByTargetSizeAndDamageType(
-                  target, DamageType.CONCUSSIVE, groundConcussiveDamage);
-          damage +=
-              AgentUtil.reduceDamageByTargetSizeAndDamageType(
-                  target, DamageType.EXPLOSIVE, groundExplosiveDamage);
-          damage += groundDamageNormal;
-          damageSum += Math.max(128 * airHits, damage - groundHits * target.armorShifted);
+          damageSum +=
+              damageTakenBy(
+                  target,
+                  groundConcussiveDamage,
+                  groundConcussiveHits,
+                  groundExplosiveDamage,
+                  groundExplosiveHits,
+                  groundDamageNormal,
+                  groundNormalHits);
         }
       }
       return damageSum;
+    }
+
+    private int damageTakenBy(
+        Agent target,
+        int concussiveDamage,
+        int concussiveHits,
+        int explosiveDamage,
+        int explosiveHits,
+        int normalDamage,
+        int normalHits) {
+      int damage =
+          max(
+              AgentUtil.reduceDamageByTargetSizeAndDamageType(
+                  target,
+                  DamageType.CONCUSSIVE,
+                  concussiveDamage - concussiveHits * target.armorShifted),
+              concussiveHits * 128);
+      damage +=
+          max(
+              AgentUtil.reduceDamageByTargetSizeAndDamageType(
+                  target,
+                  DamageType.EXPLOSIVE,
+                  explosiveDamage - explosiveHits * target.armorShifted),
+              explosiveHits * 128);
+      damage += max(normalDamage - normalHits * target.armorShifted, normalHits * 128);
+      return damage;
     }
   }
 

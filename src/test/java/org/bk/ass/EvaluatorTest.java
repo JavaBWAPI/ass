@@ -16,7 +16,6 @@ import org.openbw.bwapi4j.type.UnitType;
  * tests in that department are also required to calibrate the {@link Evaluator}
  */
 class EvaluatorTest {
-
   Evaluator evaluator = new Evaluator();
   private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
 
