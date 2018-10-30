@@ -55,12 +55,12 @@ public class AgentUtil {
       if (distanceSquared <= weapon.outerSplashRadiusSquared) {
         if (distanceSquared <= weapon.medianSplashRadiusSquared) {
           if (distanceSquared <= weapon.innerSplashRadiusSquared) {
-            applyDamage(enemy, weapon.damageType, weapon.damageShifted);
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted, weapon.hits);
           } else {
-            applyDamage(enemy, weapon.damageType, weapon.damageShifted / 2);
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
           }
         } else {
-          applyDamage(enemy, weapon.damageType, weapon.damageShifted / 4);
+          applyDamage(enemy, weapon.damageType, weapon.damageShifted / 4, weapon.hits);
         }
       }
     }
@@ -92,7 +92,7 @@ public class AgentUtil {
           int projdy = source.y + dot * dy / dxDistSq - enemy.y;
           int projDistSq = projdx * projdx + projdy * projdy;
           if (projDistSq <= weapon.innerSplashRadiusSquared) {
-            applyDamage(enemy, weapon.damageType, weapon.damageShifted);
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted, weapon.hits);
           }
         }
       }
@@ -111,7 +111,7 @@ public class AgentUtil {
 
       if (abs(enemy.x - lastTarget.x) <= 96 && abs(enemy.y - lastTarget.y) <= 96) {
         lastTarget = enemy;
-        applyDamage(enemy, weapon.damageType, damage);
+        applyDamage(enemy, weapon.damageType, damage, weapon.hits);
         damage /= 3;
         remainingBounces--;
       }
@@ -119,11 +119,15 @@ public class AgentUtil {
   }
 
   public static void dealDamage(Agent agent, Weapon wpn, Agent target) {
-    dealDamage(target, wpn.damageShifted, wpn.damageType, agent.elevationLevel);
+    dealDamage(target, wpn.damageShifted, wpn.hits, wpn.damageType, agent.elevationLevel);
   }
 
   public static void dealDamage(
-      Agent target, int damageShifted, DamageType damageType, int attackerElevationLevel) {
+      Agent target,
+      int damageShifted,
+      int hits,
+      DamageType damageType,
+      int attackerElevationLevel) {
     int remainingDamage = damageShifted;
 
     // http://www.starcraftai.com/wiki/Chance_to_Hit
@@ -133,10 +137,10 @@ public class AgentUtil {
     }
     remainingDamage = remainingDamage * 255 / 256;
 
-    applyDamage(target, damageType, remainingDamage);
+    applyDamage(target, damageType, remainingDamage, hits);
   }
 
-  private static void applyDamage(Agent target, DamageType damageType, int damage) {
+  private static void applyDamage(Agent target, DamageType damageType, int damage, int hits) {
     int shields = target.shieldsShifted - damage + target.shieldUpgrades;
     if (shields > 0) {
       target.shieldsShifted = shields;
@@ -149,15 +153,15 @@ public class AgentUtil {
     if (damage == 0) {
       return;
     }
-    damage = reduceDamageByTargetAndDamageType(target, damageType, damage);
+    damage =
+        reduceDamageByTargetSizeAndDamageType(
+            target, damageType, damage - target.armorShifted * hits);
 
     target.healthShifted -= max(128, damage);
   }
 
-  public static int reduceDamageByTargetAndDamageType(
+  public static int reduceDamageByTargetSizeAndDamageType(
       Agent target, DamageType damageType, int damageShifted) {
-    damageShifted -= target.armorShifted;
-
     if (damageType == DamageType.CONCUSSIVE) {
       if (target.size == UnitSize.MEDIUM) {
         damageShifted /= 2;

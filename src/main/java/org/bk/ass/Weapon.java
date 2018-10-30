@@ -1,11 +1,12 @@
 package org.bk.ass;
 
 public class Weapon {
-
   int maxRange;
   int minRangeSquared;
   int maxRangeSquared;
+  // Complete damage including all hits
   int damageShifted;
+  int hits;
   int innerSplashRadius;
   int innerSplashRadiusSquared;
   int medianSplashRadiusSquared;
@@ -48,6 +49,14 @@ public class Weapon {
 
   public Weapon setDamage(int damage) {
     this.damageShifted = damage << 8;
+    return this;
+  }
+
+  /**
+   * Number of hits this weapon will apply
+   */
+  public Weapon setHits(int hits) {
+    this.hits = hits;
     return this;
   }
 

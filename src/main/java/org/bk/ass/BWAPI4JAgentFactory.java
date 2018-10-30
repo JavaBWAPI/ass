@@ -190,7 +190,8 @@ public class BWAPI4JAgentFactory {
         .setSplashType(splashType(weapon))
         .setInnerSplashRadius(weapon.innerSplashRadius())
         .setMedianSplashRadius(weapon.medianSplashRadius())
-        .setOuterSplashRadius(weapon.medianSplashRadius());
+        .setOuterSplashRadius(weapon.medianSplashRadius())
+        .setHits(maxHits);
   }
 
   public Agent of(

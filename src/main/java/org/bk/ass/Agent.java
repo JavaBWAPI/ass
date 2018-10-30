@@ -59,8 +59,8 @@ public class Agent {
 
   UnitSize size;
 
-  private Weapon airWeapon;
-  private Weapon groundWeapon;
+  Weapon airWeapon;
+  Weapon groundWeapon;
 
   // Allow replacement of units on death (for example bunker -> marines)
   Consumer<Collection<Agent>> onDeathReplacer = ignored -> {
