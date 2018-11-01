@@ -2,6 +2,7 @@ package org.bk.ass;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 class UnorderedCollectionTest {
@@ -44,6 +45,17 @@ class UnorderedCollectionTest {
 
     // THEN
     assertThat(sut).containsExactly("test");
+  }
+
+  @Test
+  public void shouldAddAllElements() {
+    // GIVEN
+
+    // WHEN
+    sut.addAll(Arrays.asList("a", "b", "c"));
+
+    // THEN
+    assertThat(sut).containsExactly("a", "b", "c");
   }
 
   @Test

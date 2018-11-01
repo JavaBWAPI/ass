@@ -23,7 +23,7 @@ dependencies {
 
     testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.1")
-    testCompile("org.assertj:assertj-core:3.9.0")
+    testCompile("org.assertj:assertj-core:3.11.1")
     testCompile("io.jenetics:jenetics:4.2.1")
 }
 

@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 
 import java.util.AbstractCollection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -24,6 +25,11 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
     items = (T[]) new Object[capacity];
   }
 
+  public UnorderedCollection(Collection<T> source) {
+    this((int) (source.size() * 7L / 4));
+    addAll(source);
+  }
+
   public void clearReferences() {
     Arrays.fill(items, size, items.length, null);
   }
@@ -34,6 +40,21 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
       resize((int) (size * 7L / 4));
     }
     items[size++] = value;
+    return true;
+  }
+
+  @Override
+  public boolean addAll(Collection<? extends T> elementsToAdd) {
+    if (elementsToAdd.isEmpty()) {
+      return false;
+    }
+    int targetSize = elementsToAdd.size() + size;
+    if (targetSize >= items.length) {
+      resize(targetSize * 7 / 4);
+    }
+    for (T e : elementsToAdd) {
+      items[size++] = e;
+    }
     return true;
   }
 
@@ -50,7 +71,7 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
 
   public T removeAt(int index) {
     if (index >= size) {
-      throw new IndexOutOfBoundsException("index " + index + " must be > 0 and < " + size);
+      throw new IndexOutOfBoundsException("index " + index + " must be >= 0 and < " + size);
     }
     T removed = items[index];
     T last = items[--size];
