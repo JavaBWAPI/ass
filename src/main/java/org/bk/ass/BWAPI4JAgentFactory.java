@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import java.util.function.Consumer;
 import org.openbw.bwapi4j.BWMap;
 import org.openbw.bwapi4j.Player;
+import org.openbw.bwapi4j.type.ExplosionType;
 import org.openbw.bwapi4j.type.Race;
 import org.openbw.bwapi4j.type.TechType;
 import org.openbw.bwapi4j.type.UnitSizeType;
@@ -173,7 +174,9 @@ public class BWAPI4JAgentFactory {
             .setSpeed(speed)
             .setHpConstructionRate(unitType.buildTime())
             .setRepairer(unitType == UnitType.Terran_SCV)
-            .setMechanic(unitType.isMechanical());
+            .setMechanic(unitType.isMechanical())
+            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
     }
@@ -334,8 +337,10 @@ public class BWAPI4JAgentFactory {
       return SplashType.BOUNCE;
     }
     org.openbw.bwapi4j.type.ExplosionType explosionType = weaponType.explosionType();
+    if (explosionType == ExplosionType.Enemy_Splash) {
+      return SplashType.RADIAL_ENEMY_SPLASH;
+    }
     if (explosionType == org.openbw.bwapi4j.type.ExplosionType.Radial_Splash
-        || explosionType == org.openbw.bwapi4j.type.ExplosionType.Enemy_Splash
         || explosionType == org.openbw.bwapi4j.type.ExplosionType.Nuclear_Missile) {
       return SplashType.RADIAL_SPLASH;
     }

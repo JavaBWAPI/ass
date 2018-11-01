@@ -15,7 +15,8 @@ public class AttackerSimulator {
   public static final int STIM_TIMER = 37;
   public static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
 
-  public boolean simUnit(Agent agent, UnorderedCollection<Agent> enemies) {
+  public boolean simUnit(Agent agent, UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
@@ -54,14 +55,15 @@ public class AttackerSimulator {
     }
 
     if (agent.cooldown == 0 && selectedDistanceSquared <= selectedWeapon.maxRangeSquared) {
-      simAttack(agent, enemies, selectedEnemy, selectedWeapon);
+      simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
     }
 
     return true;
   }
 
   private void simAttack(
-      Agent agent, UnorderedCollection<Agent> enemies, Agent selectedEnemy, Weapon selectedWeapon) {
+      Agent agent, UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies, Agent selectedEnemy, Weapon selectedWeapon) {
     if (agent.canStim
         && agent.remainingStimFrames == 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
@@ -74,6 +76,9 @@ public class AttackerSimulator {
         dealBounceDamage(selectedWeapon, selectedEnemy, enemies);
         break;
       case RADIAL_SPLASH:
+        dealRadialSplashDamage(selectedWeapon, selectedEnemy, allies, enemies);
+        break;
+      case RADIAL_ENEMY_SPLASH:
         dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
         break;
       case LINE_SPLASH:

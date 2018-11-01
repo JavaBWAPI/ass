@@ -180,8 +180,8 @@ public class Simulator {
     }
     if (agent.isRepairer && repairerSimulator.simUnit(agent, allies)) {
       return true;
-      // Othrewise FIGHT, you puny SCV!
+      // Otherwise FIGHT, you puny SCV!
     }
-    return attackerSimulator.simUnit(agent, enemies);
+    return attackerSimulator.simUnit(agent, allies, enemies);
   }
 }

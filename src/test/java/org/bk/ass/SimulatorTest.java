@@ -54,7 +54,7 @@ class SimulatorTest {
 
     // THEN
     assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(5);
-    assertThat(simulator.getAgentsB()).isEmpty();
+    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(1);
   }
 
   @Test
@@ -550,5 +550,34 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isEmpty();
     assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void tankSplashShouldAffectOwnUnits() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(100));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(100));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(1);
+  }
+
+  @Test
+  void archonSplashShouldNotAffectOwnUnits() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Protoss_Archon));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Zealot).setX(48));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(48));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).element(1)
+        .hasFieldOrPropertyWithValue("shieldsShifted", 14087);
   }
 }

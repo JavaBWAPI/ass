@@ -3,6 +3,7 @@ package org.bk.ass;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 
+import bwapi.ExplosionType;
 import bwapi.Game;
 import bwapi.Player;
 import bwapi.Race;
@@ -173,7 +174,8 @@ public class BWMirrorAgentFactory {
             .setSpeed(speed)
             .setHpConstructionRate(unitType.buildTime())
             .setRepairer(unitType == UnitType.Terran_SCV)
-            .setMechanic(unitType.isMechanical());
+            .setMechanic(unitType.isMechanical())
+            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathReplacer(bunkerReplacer);
@@ -330,8 +332,10 @@ public class BWMirrorAgentFactory {
       return SplashType.BOUNCE;
     }
     bwapi.ExplosionType explosionType = weaponType.explosionType();
+    if (explosionType == ExplosionType.Enemy_Splash) {
+      return SplashType.RADIAL_ENEMY_SPLASH;
+    }
     if (explosionType == bwapi.ExplosionType.Radial_Splash
-        || explosionType == bwapi.ExplosionType.Enemy_Splash
         || explosionType == bwapi.ExplosionType.Nuclear_Missile) {
       return SplashType.RADIAL_SPLASH;
     }

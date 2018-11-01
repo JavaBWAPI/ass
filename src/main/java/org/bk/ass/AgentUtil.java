@@ -43,26 +43,53 @@ public class AgentUtil {
     return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
   }
 
+  /**
+   * Deal splash damage to enemies and allies
+   */
+  public static void dealRadialSplashDamage(
+      Weapon weapon,
+      Agent mainTarget,
+      UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
+    for (int i = 0; i < allies.size(); i++) {
+      Agent ally = allies.get(i);
+      applySplashDamage(weapon, mainTarget, ally);
+    }
+    for (int i = 0; i < enemies.size(); i++) {
+      Agent enemy = enemies.get(i);
+      applySplashDamage(weapon, mainTarget, enemy);
+    }
+  }
+
+  private static void applySplashDamage(Weapon weapon, Agent mainTarget, Agent splashTarget) {
+    if (splashTarget == mainTarget
+        || splashTarget.burrowed
+        || splashTarget.isFlyer != mainTarget.isFlyer) {
+      return;
+    }
+
+    int distanceSquared = distanceSquared(splashTarget, mainTarget);
+    if (distanceSquared <= weapon.outerSplashRadiusSquared) {
+      if (distanceSquared <= weapon.medianSplashRadiusSquared) {
+        if (distanceSquared <= weapon.innerSplashRadiusSquared) {
+          applyDamage(splashTarget, weapon.damageType, weapon.damageShifted, weapon.hits);
+        } else {
+          applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
+        }
+      } else {
+        applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 4, weapon.hits);
+      }
+    }
+  }
+
+  /**
+   * Deal splash damage to enemies only
+   */
   public static void dealRadialSplashDamage(
       Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
     for (int i = 0; i < enemies.size(); i++) {
       Agent enemy = enemies.get(i);
-      if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
-        continue;
-      }
-
-      int distanceSquared = distanceSquared(enemy, mainTarget);
-      if (distanceSquared <= weapon.outerSplashRadiusSquared) {
-        if (distanceSquared <= weapon.medianSplashRadiusSquared) {
-          if (distanceSquared <= weapon.innerSplashRadiusSquared) {
-            applyDamage(enemy, weapon.damageType, weapon.damageShifted, weapon.hits);
-          } else {
-            applyDamage(enemy, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
-          }
-        } else {
-          applyDamage(enemy, weapon.damageType, weapon.damageShifted / 4, weapon.hits);
-        }
-      }
+      applySplashDamage(weapon, mainTarget, enemy);
     }
   }
 
@@ -119,25 +146,18 @@ public class AgentUtil {
   }
 
   public static void dealDamage(Agent agent, Weapon wpn, Agent target) {
-    dealDamage(target, wpn.damageShifted, wpn.hits, wpn.damageType, agent.elevationLevel);
-  }
+    int remainingDamage = wpn.damageShifted;
 
-  public static void dealDamage(
-      Agent target,
-      int damageShifted,
-      int hits,
-      DamageType damageType,
-      int attackerElevationLevel) {
-    int remainingDamage = damageShifted;
-
-    // http://www.starcraftai.com/wiki/Chance_to_Hit
-    if ((attackerElevationLevel >= 0 && attackerElevationLevel < target.elevationLevel)
-        || (target.elevationLevel & 1) == 1) {
-      remainingDamage = remainingDamage * 136 / 256;
+    if (!agent.isMelee) {
+      // http://www.starcraftai.com/wiki/Chance_to_Hit
+      if ((agent.elevationLevel >= 0 && agent.elevationLevel < target.elevationLevel)
+          || (target.elevationLevel & 1) == 1) {
+        remainingDamage = remainingDamage * 136 / 256;
+      }
+      remainingDamage = remainingDamage * 255 / 256;
     }
-    remainingDamage = remainingDamage * 255 / 256;
 
-    applyDamage(target, damageType, remainingDamage, hits);
+    applyDamage(target, wpn.damageType, remainingDamage, wpn.hits);
   }
 
   private static void applyDamage(Agent target, DamageType damageType, int damage, int hits) {

@@ -59,6 +59,7 @@ public class Agent {
 
   UnitSize size;
 
+  boolean isMelee;
   Weapon airWeapon;
   Weapon groundWeapon;
 
@@ -77,6 +78,11 @@ public class Agent {
 
   public Object getUserObject() {
     return userObject;
+  }
+
+  public Agent setMelee(boolean melee) {
+    isMelee = melee;
+    return this;
   }
 
   public Agent setBurrowedAttacker(boolean burrowedAttacker) {

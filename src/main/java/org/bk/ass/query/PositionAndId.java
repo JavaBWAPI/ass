@@ -6,7 +6,6 @@ import java.util.Objects;
  * Wraps position and a unique identifier to discriminate entities from each other.
  */
 public class PositionAndId implements Comparable<PositionAndId> {
-
   private final int id;
   final int x;
   final int y;
