@@ -18,11 +18,13 @@ import org.bk.ass.query.UnitFinder;
  * DBScan which processes the DB in chunks. Element clusters are generally stable: After an
  * iteration the cluster of an element is usually the same as before. An exception is if a cluster
  * is split into multiple clusters. In that case, only a part of the elements are retained in the
- * previous cluster. <br> Make sure to call {@link #scan(int)} to actually perform clustering.
- * Calling {@link #updateDB(UnitFinder, int)} or {@link #updateDB(Collection, Function)} will reset
- * the clustering process. Make sure to always cluster all elements or to check if the clustering is
- * done with {@link #isComplete()}.<br> The clustering is ongoing, each call to {@link #scan(int)}
- * will continue or restart the clustering.
+ * previous cluster. <br>
+ * Make sure to call {@link #scan(int)} to actually perform clustering. Calling {@link
+ * #updateDB(UnitFinder, int)} or {@link #updateDB(Collection, Function)} will reset the clustering
+ * process. Make sure to always cluster all elements or to check if the clustering is done with
+ * {@link #isComplete()}.<br>
+ * The clustering is ongoing, each call to {@link #scan(int)} will continue or restart the
+ * clustering.
  */
 public class StableDBScanner<U> {
 
@@ -41,6 +43,10 @@ public class StableDBScanner<U> {
     this(unitFinder, minPoints, u -> unitFinder.inRadius(u, radius));
   }
 
+  public StableDBScanner(int minPoints) {
+    this(new ArrayList<>(), minPoints, unused -> Collections.emptyList());
+  }
+
   public StableDBScanner(
       Collection<U> db, int minPoints, Function<U, Collection<U>> inRadiusFinder) {
     this.db = db;
@@ -56,14 +62,15 @@ public class StableDBScanner<U> {
     return new HashSet<>(elementToCluster.values());
   }
 
-  public void updateDB(Collection<U> db, Function<U, Collection<U>> inRadiusFinder) {
+  public StableDBScanner<U> updateDB(Collection<U> db, Function<U, Collection<U>> inRadiusFinder) {
     this.inRadiusFinder = inRadiusFinder;
     this.db.clear();
     this.db.addAll(db);
+    return this;
   }
 
-  public void updateDB(UnitFinder<U> unitFinder, int radius) {
-    updateDB(unitFinder, u -> unitFinder.inRadius(u, radius));
+  public StableDBScanner<U> updateDB(UnitFinder<U> unitFinder, int radius) {
+    return updateDB(unitFinder, u -> unitFinder.inRadius(u, radius));
   }
 
   /**
@@ -77,7 +84,7 @@ public class StableDBScanner<U> {
    * Scans the current DB and assigns elements to clusters.
    *
    * @param maxMarkedElements maximum number of elements to add to a cluster in this run, -1 to
-   * assign all elements
+   *     assign all elements
    */
   public StableDBScanner<U> scan(int maxMarkedElements) {
     if (isComplete()) {
@@ -158,7 +165,8 @@ public class StableDBScanner<U> {
               other.cluster = null;
             }
           }
-          it.cluster.elements = Collections.singleton(it);
+          it.cluster.elements = new ArrayList<>();
+          it.cluster.elements.add(it);
         }
       }
     }
