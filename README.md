@@ -90,3 +90,10 @@ Attackers:
 * Find any unit that can be attacked this frame and attack
 * Otherwise find closest targetable unit and close in
 * Otherwise flee from any unit that could attack us
+
+## Additional APIs
+* Altered DBScan clustering algorithm
+  * Stable clustering: Unless a cluster is split up, units will end up in the same cluster as in previous runs
+  * Iterative: Instead of assigning all units to clusters at once, do it iteratively. Once done, 
+  it the clustering restarts and the previous result can be accessed.
+* UnitFinder: A simple utility class to make queries for units within a radius/square at some position. 
