@@ -10,9 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SplittableRandom;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 class StableDBScannerTest {
@@ -157,25 +154,5 @@ class StableDBScannerTest {
 
     // THEN
     assertThat(sut.getClusters()).isNotEmpty().doesNotContainNull();
-  }
-
-  @Test
-  void blub() {
-    SplittableRandom rnd = new SplittableRandom(815);
-    List<Integer> db = IntStream.range(0, 200).boxed().collect(Collectors.toList());
-    Map<Integer, List<Integer>> radius = new HashMap<>();
-    for (int i = 0; i < 200; i++) {
-      List<Integer> inRadius =
-          IntStream.range(0, rnd.nextInt(7))
-              .mapToObj(unused -> rnd.nextInt(200))
-              .collect(Collectors.toList());
-      inRadius.add(i);
-      radius.put(i, inRadius);
-    }
-
-    StableDBScanner<Integer> scanner = new StableDBScanner<>(db, 3, radius::get);
-    while (true) {
-      scanner.scan(-1).getClusters();
-    }
   }
 }
