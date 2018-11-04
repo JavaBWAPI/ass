@@ -4,12 +4,17 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SplittableRandom;
+import java.util.function.Function;
+import org.bk.ass.query.PositionAndId;
+import org.bk.ass.query.UnitFinder;
 import org.junit.jupiter.api.Test;
 
 class StableDBScannerTest {
@@ -154,5 +159,27 @@ class StableDBScannerTest {
 
     // THEN
     assertThat(sut.getClusters()).isNotEmpty().doesNotContainNull();
+  }
+
+  @Test
+  void noElementsInMultipleClusters() {
+    // GIVEN
+    SplittableRandom rnd = new SplittableRandom(815);
+    List<PositionAndId> db = new ArrayList<>();
+    for (int i = 0; i < 10000; i++) {
+      db.add(new PositionAndId(i, rnd.nextInt(0, 5000), rnd.nextInt(0, 5000)));
+    }
+    UnitFinder<PositionAndId> finder = new UnitFinder<>(db, Function.identity());
+
+    StableDBScanner<PositionAndId> sut =
+        new StableDBScanner<>(db, 3, positionAndId -> finder.inRadius(positionAndId, 200));
+
+    // WHEN
+    Collection<Cluster<PositionAndId>> clusters = sut.scan(-1).getClusters();
+
+    // THEN
+    for (PositionAndId positionAndId : db) {
+      assertThat(clusters.stream().filter(it -> it.elements.contains(positionAndId))).hasSize(1);
+    }
   }
 }
