@@ -11,7 +11,7 @@ ASS tries to answer that question by allowing a simulation of possible outcome.
 
 [Appveyor Build Artifact](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts)
 
-[Javadoc](http://www.dennis-waldherr.de/ass/)
+[Javadoc](http://docs.bytekeeper.org/)
 
 [BWAPI4J](https://github.com/OpenBW/BWAPI4J)
 
