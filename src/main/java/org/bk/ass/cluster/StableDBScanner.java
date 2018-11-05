@@ -3,8 +3,8 @@ package org.bk.ass.cluster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,7 +24,9 @@ import org.bk.ass.query.UnitFinder;
  * process. Make sure to always cluster all elements or to check if the clustering is done with
  * {@link #isComplete()}.<br>
  * The clustering is ongoing, each call to {@link #scan(int)} will continue or restart the
- * clustering.
+ * clustering.<br>
+ * When updating the DB be aware that elements are compared with <code>==</code> and not <code>
+ * equals</code>.
  */
 public class StableDBScanner<U> {
 
@@ -35,7 +37,7 @@ public class StableDBScanner<U> {
   private final UnorderedCollection<WrappedElement<U>> remainingDbEntries =
       new UnorderedCollection<>();
   private final UnorderedCollection<WrappedElement<U>> horizon = new UnorderedCollection<>();
-  private Map<U, WrappedElement<U>> elementToWrapper = new HashMap<>();
+  private Map<U, WrappedElement<U>> elementToWrapper = Collections.emptyMap();
   private Map<U, Cluster<U>> elementToCluster = Collections.emptyMap();
   private ClusterSurrogate<U> currentCluster;
 
@@ -100,6 +102,7 @@ public class StableDBScanner<U> {
         if (q.marked) {
           continue;
         }
+        q.cluster.elements.remove(q);
         setCluster(q, currentCluster);
         List<WrappedElement<U>> qn = elementsWithinRadius(q);
         if (qn.size() >= minPoints) {
@@ -165,7 +168,7 @@ public class StableDBScanner<U> {
               other.cluster = null;
             }
           }
-          it.cluster.elements = new ArrayList<>();
+          it.cluster.elements.clear();
           it.cluster.elements.add(it);
         }
       }
@@ -173,13 +176,18 @@ public class StableDBScanner<U> {
   }
 
   private void reset() {
-    for (WrappedElement<U> wrappedElement : elementToWrapper.values()) {
-      wrappedElement.marked = false;
-    }
+    Map<U, WrappedElement<U>> newElementToWrapper = new IdentityHashMap<>();
     for (U element : db) {
-      remainingDbEntries.add(elementToWrapper.computeIfAbsent(element, WrappedElement::new));
+      WrappedElement<U> wrappedElement = elementToWrapper.get(element);
+      if (wrappedElement == null) {
+        wrappedElement = new WrappedElement<>(element);
+      } else {
+        wrappedElement.marked = false;
+      }
+      remainingDbEntries.add(wrappedElement);
+      newElementToWrapper.put(element, wrappedElement);
     }
-    elementToWrapper.keySet().retainAll(db);
+    elementToWrapper = newElementToWrapper;
   }
 
   private List<WrappedElement<U>> elementsWithinRadius(WrappedElement<U> q) {
@@ -199,13 +207,13 @@ public class StableDBScanner<U> {
 
   private static class ClusterSurrogate<U> {
 
-    Collection<WrappedElement<U>> elements = new ArrayList<>();
-    Cluster<U> cluster = new Cluster<>();
+    final Collection<WrappedElement<U>> elements = new ArrayList<>();
+    final Cluster<U> cluster = new Cluster<>();
   }
 
   private static class WrappedElement<U> {
 
-    U element;
+    final U element;
     ClusterSurrogate<U> cluster;
     boolean marked;
 
