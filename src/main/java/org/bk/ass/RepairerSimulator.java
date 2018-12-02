@@ -11,22 +11,34 @@ public class RepairerSimulator {
   public boolean simUnit(Agent agent, UnorderedCollection<Agent> allies) {
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
-    for (int i = 0; i < allies.size(); i++) {
-      Agent ally = allies.get(i);
-      if (ally.isMechanic && ally.healthShifted < ally.maxHealthShifted && ally != agent) {
 
-        int distance = distanceSquared(agent, ally);
-        if (distance < selectedDistanceSquared) {
-          selectedDistanceSquared = distance;
-          selectedAlly = ally;
+    if (agent.lastAlly != null && agent.healthShifted < agent.maxHealthShifted) {
+      int dstSq = distanceSquared(agent, agent.lastAlly);
+      if (dstSq <= SCV_REPAIR_RANGE_SQUARED) {
+        selectedAlly = agent.lastAlly;
+        selectedDistanceSquared = dstSq;
+      }
+    }
 
-          // If we can repair it this frame, we're done searching
-          if (selectedDistanceSquared <= SCV_REPAIR_RANGE_SQUARED) {
-            break;
+    if (selectedAlly == null) {
+      for (int i = 0; i < allies.size(); i++) {
+        Agent ally = allies.get(i);
+        if (ally.isMechanic && ally.healthShifted < ally.maxHealthShifted && ally != agent) {
+
+          int distance = distanceSquared(agent, ally);
+          if (distance < selectedDistanceSquared) {
+            selectedDistanceSquared = distance;
+            selectedAlly = ally;
+
+            // If we can repair it this frame, we're done searching
+            if (selectedDistanceSquared <= SCV_REPAIR_RANGE_SQUARED) {
+              break;
+            }
           }
         }
       }
     }
+    agent.lastAlly = selectedAlly;
 
     if (selectedAlly == null) {
       return false;

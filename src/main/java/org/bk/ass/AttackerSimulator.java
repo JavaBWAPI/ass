@@ -15,32 +15,45 @@ public class AttackerSimulator {
   public static final int STIM_TIMER = 37;
   public static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
 
-  public boolean simUnit(Agent agent, UnorderedCollection<Agent> allies,
-      UnorderedCollection<Agent> enemies) {
+  public boolean simUnit(
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
 
     Agent selectedEnemy = null;
-    int selectedDistanceSquared = Integer.MAX_VALUE;
     Weapon selectedWeapon = null;
-    for (int i = 0; i < enemies.size(); i++) {
-      Agent enemy = enemies.get(i);
-      Weapon wpn = agent.weaponVs(enemy);
-      if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
-        int distanceSquared = distanceSquared(agent, enemy);
-        if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
-          selectedDistanceSquared = distanceSquared;
-          selectedEnemy = enemy;
-          selectedWeapon = wpn;
+    int selectedDistanceSquared = Integer.MAX_VALUE;
 
-          // If we can hit it this frame, we're done searching
-          if (selectedDistanceSquared <= wpn.maxRangeSquared) {
-            break;
+    if (agent.lastEnemy != null && agent.lastEnemy.healthShifted >= 0) {
+      int dstSq = distanceSquared(agent, agent.lastEnemy);
+      selectedWeapon = agent.weaponVs(agent.lastEnemy);
+      if (dstSq >= selectedWeapon.minRangeSquared && dstSq <= selectedWeapon.maxRangeSquared) {
+        selectedEnemy = agent.lastEnemy;
+        selectedDistanceSquared = dstSq;
+      }
+    }
+
+    if (selectedEnemy == null) {
+      for (int i = 0; i < enemies.size(); i++) {
+        Agent enemy = enemies.get(i);
+        Weapon wpn = agent.weaponVs(enemy);
+        if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
+          int distanceSquared = distanceSquared(agent, enemy);
+          if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
+            selectedDistanceSquared = distanceSquared;
+            selectedEnemy = enemy;
+            selectedWeapon = wpn;
+
+            // If we can hit it this frame, we're done searching
+            if (selectedDistanceSquared <= wpn.maxRangeSquared) {
+              break;
+            }
           }
         }
       }
     }
+    agent.lastEnemy = selectedEnemy;
 
     if (selectedEnemy == null) {
       return !agent.burrowed && simFlee(agent, enemies);
@@ -62,8 +75,11 @@ public class AttackerSimulator {
   }
 
   private void simAttack(
-      Agent agent, UnorderedCollection<Agent> allies,
-      UnorderedCollection<Agent> enemies, Agent selectedEnemy, Weapon selectedWeapon) {
+      Agent agent,
+      UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies,
+      Agent selectedEnemy,
+      Weapon selectedWeapon) {
     if (agent.canStim
         && agent.remainingStimFrames == 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {

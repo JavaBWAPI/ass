@@ -63,6 +63,9 @@ public class Agent {
   Weapon airWeapon;
   Weapon groundWeapon;
 
+  Agent lastEnemy;
+  Agent lastAlly;
+
   // Allow replacement of units on death (for example bunker -> marines)
   Consumer<Collection<Agent>> onDeathReplacer = ignored -> {
   };

@@ -244,9 +244,9 @@ class SimulatorTest {
   @Test
   void _3ZerglingAwayFromSiegedTankAndMarine() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(1000).setY(20));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(1000));
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(1000).setY(40));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(400).setY(20));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(400));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(400).setY(40));
     simulator.addAgentB(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
     simulator.addAgentB(factory.of(UnitType.Terran_Marine));
 
@@ -430,12 +430,12 @@ class SimulatorTest {
   }
 
   @Test
-  void _13DragoonsVs10Hydras() {
+  void _8DragoonsVs6Hydras() {
     // GIVEN
-    for (int i = 0; i < 13; i++) {
-      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(1000 + i * 8).setY(1000));
+    for (int i = 0; i < 8; i++) {
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(1000 + i * 8).setY(800));
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 6; i++) {
       simulator.addAgentB(
           factory
               .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false)
@@ -447,7 +447,7 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(2);
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(3);
     assertThat(simulator.getAgentsB()).isEmpty();
   }
 
@@ -504,9 +504,9 @@ class SimulatorTest {
   @Test
   void LargeArmiesTest() {
     // GIVEN
-    for (int i = 0; i < 1000; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    for (int i = 0; i < 500; i++) {
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(500 + i * 4).setY(500));
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(500 + i * 8).setY(700));
     }
 
     // WHEN

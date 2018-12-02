@@ -14,25 +14,39 @@ public class HealerSimulator {
     }
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
-    for (int i = 0; i < allies.size(); i++) {
-      Agent ally = allies.get(i);
-      if (ally.isOrganic
-          && ally.healthShifted < ally.maxHealthShifted
-          && !agent.healedThisFrame
-          && ally != agent) {
 
-        int distance = distanceSquared(agent, ally);
-        if (distance < selectedDistanceSquared) {
-          selectedDistanceSquared = distance;
-          selectedAlly = ally;
+    if (agent.lastAlly != null
+        && !agent.lastAlly.healedThisFrame
+        && agent.healthShifted < agent.maxHealthShifted) {
+      int dstSq = distanceSquared(agent, agent.lastAlly);
+      if (dstSq <= MEDICS_HEAL_RANGE_SQUARED) {
+        selectedAlly = agent.lastAlly;
+        selectedDistanceSquared = dstSq;
+      }
+    }
 
-          // If we can heal it this frame, we're done searching
-          if (selectedDistanceSquared <= MEDICS_HEAL_RANGE_SQUARED) {
-            break;
+    if (selectedAlly == null) {
+      for (int i = 0; i < allies.size(); i++) {
+        Agent ally = allies.get(i);
+        if (ally.isOrganic
+            && ally.healthShifted < ally.maxHealthShifted
+            && !agent.healedThisFrame
+            && ally != agent) {
+
+          int distance = distanceSquared(agent, ally);
+          if (distance < selectedDistanceSquared) {
+            selectedDistanceSquared = distance;
+            selectedAlly = ally;
+
+            // If we can heal it this frame, we're done searching
+            if (selectedDistanceSquared <= MEDICS_HEAL_RANGE_SQUARED) {
+              break;
+            }
           }
         }
       }
     }
+    agent.lastAlly = selectedAlly;
 
     if (selectedAlly == null) {
       return false;
