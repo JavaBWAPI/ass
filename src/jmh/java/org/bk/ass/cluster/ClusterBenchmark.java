@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.cluster;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.SplittableRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.bk.ass.cluster.Cluster;
-import org.bk.ass.cluster.StableDBScanner;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;

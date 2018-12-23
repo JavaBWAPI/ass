@@ -92,8 +92,17 @@ Attackers:
 * Otherwise flee from any unit that could attack us
 
 ## Additional APIs
-* Altered DBScan clustering algorithm
-  * Stable clustering: Unless a cluster is split up, units will end up in the same cluster as in previous runs
-  * Iterative: Instead of assigning all units to clusters at once, do it iteratively. Once done, 
+
+### Modified DBScan
+A DBScan based clustering algorithm.
+* Stable clustering: Unless a cluster is split up, units will end up in the same cluster as in previous runs
+* Iterative: Instead of assigning all units to clusters at once, do it iteratively. Once done, 
   it the clustering restarts and the previous result can be accessed.
-* UnitFinder: A simple utility class to make queries for units within a radius/square at some position. 
+
+### UnitFinder
+A simple utility class to make queries for units within a radius/square at some position.
+
+### Jump Path Search
+An implementation of the algorithm described here: https://zerowidth.com/2013/05/05/jump-point-search-explained.html
+
+Generally much faster that a normal A* while still being optimal.
