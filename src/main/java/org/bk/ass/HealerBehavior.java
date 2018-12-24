@@ -3,18 +3,27 @@ package org.bk.ass;
 import static org.bk.ass.AgentUtil.distanceSquared;
 import static org.bk.ass.AgentUtil.moveToward;
 
-public class RepairerSimulator {
+import org.bk.ass.Simulator.Behavior;
+
+public class HealerBehavior implements Behavior {
 
   // Retrieved from OpenBW
-  public static final int SCV_REPAIR_RANGE_SQUARED = 5 * 5;
+  public static final int MEDICS_HEAL_RANGE_SQUARED = 30 * 30;
 
-  public boolean simUnit(Agent agent, UnorderedCollection<Agent> allies) {
+  @Override
+  public boolean simUnit(
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+    if (agent.energyShifted < 256) {
+      return true;
+    }
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
 
-    if (agent.lastAlly != null && agent.healthShifted < agent.maxHealthShifted) {
+    if (agent.lastAlly != null
+        && !agent.lastAlly.healedThisFrame
+        && agent.healthShifted < agent.maxHealthShifted) {
       int dstSq = distanceSquared(agent, agent.lastAlly);
-      if (dstSq <= SCV_REPAIR_RANGE_SQUARED) {
+      if (dstSq <= MEDICS_HEAL_RANGE_SQUARED) {
         selectedAlly = agent.lastAlly;
         selectedDistanceSquared = dstSq;
       }
@@ -23,15 +32,18 @@ public class RepairerSimulator {
     if (selectedAlly == null) {
       for (int i = 0; i < allies.size(); i++) {
         Agent ally = allies.get(i);
-        if (ally.isMechanic && ally.healthShifted < ally.maxHealthShifted && ally != agent) {
+        if (ally.isOrganic
+            && ally.healthShifted < ally.maxHealthShifted
+            && !agent.healedThisFrame
+            && ally != agent) {
 
           int distance = distanceSquared(agent, ally);
           if (distance < selectedDistanceSquared) {
             selectedDistanceSquared = distance;
             selectedAlly = ally;
 
-            // If we can repair it this frame, we're done searching
-            if (selectedDistanceSquared <= SCV_REPAIR_RANGE_SQUARED) {
+            // If we can heal it this frame, we're done searching
+            if (selectedDistanceSquared <= MEDICS_HEAL_RANGE_SQUARED) {
               break;
             }
           }
@@ -45,10 +57,12 @@ public class RepairerSimulator {
     }
 
     moveToward(agent, selectedAlly, selectedDistanceSquared);
-    if (selectedDistanceSquared > SCV_REPAIR_RANGE_SQUARED) {
+    if (selectedDistanceSquared > MEDICS_HEAL_RANGE_SQUARED) {
       return true;
     }
-    selectedAlly.healthShifted += selectedAlly.hpConstructionRate;
+    agent.energyShifted -= 256;
+    selectedAlly.healedThisFrame = true;
+    selectedAlly.healthShifted += 150;
     if (selectedAlly.healthShifted > selectedAlly.maxHealthShifted) {
       selectedAlly.healthShifted = selectedAlly.maxHealthShifted;
     }

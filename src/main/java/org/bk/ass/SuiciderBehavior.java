@@ -3,9 +3,13 @@ package org.bk.ass;
 import static org.bk.ass.AgentUtil.dealDamage;
 import static org.bk.ass.AgentUtil.distanceSquared;
 
-public class SuiciderSimulator {
+import org.bk.ass.Simulator.Behavior;
 
-  public boolean simUnit(Agent agent, UnorderedCollection<Agent> enemies) {
+public class SuiciderBehavior implements Behavior {
+
+  @Override
+  public boolean simUnit(
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = 0; i < enemies.size(); i++) {

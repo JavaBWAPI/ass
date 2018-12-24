@@ -2,6 +2,7 @@ package org.bk.ass;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.bk.ass.Simulator.RoleBasedBehavior;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
@@ -577,7 +578,25 @@ class SimulatorTest {
     simulator.simulate(1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).element(1)
+    assertThat(simulator.getAgentsA())
+        .element(1)
         .hasFieldOrPropertyWithValue("shieldsShifted", 14087);
+  }
+
+  @Test
+  void goonShouldDieWhenRunningAwayFromScout() {
+    // GIVEN
+    simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
+    simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setX(495));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB())
+        .element(0)
+        .hasFieldOrPropertyWithValue("healthShifted", 38400);
   }
 }

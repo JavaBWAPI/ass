@@ -5,25 +5,23 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class Simulator {
-
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
 
-  private final AttackerSimulator attackerSimulator;
-  private final HealerSimulator healerSimulator;
-  private final RepairerSimulator repairerSimulator;
-  private final SuiciderSimulator suiciderSimulator;
-
   private final byte[] collision = new byte[COLLISION_MAP_DIMENSION * COLLISION_MAP_DIMENSION];
+  private final Behavior playerABehavior;
+  private final Behavior playerBBehavior;
 
   public Simulator() {
-    attackerSimulator = new AttackerSimulator();
-    healerSimulator = new HealerSimulator();
-    repairerSimulator = new RepairerSimulator();
-    suiciderSimulator = new SuiciderSimulator();
+    this(new RoleBasedBehavior(), new RoleBasedBehavior());
+  }
+
+  public Simulator(Behavior playerABehavior, Behavior playerBBehavior) {
+    this.playerABehavior = playerABehavior;
+    this.playerBBehavior = playerBBehavior;
   }
 
   public Simulator addAgentA(Agent agent) {
@@ -87,10 +85,10 @@ public class Simulator {
   private boolean step() {
     boolean simRunning = false;
     for (int i = 0; i < playerA.size(); i++) {
-      simRunning |= simUnit(playerA.get(i), playerA, playerB);
+      simRunning |= playerABehavior.simUnit(playerA.get(i), playerA, playerB);
     }
     for (int i = 0; i < playerB.size(); i++) {
-      simRunning |= simUnit(playerB.get(i), playerB, playerA);
+      simRunning |= playerBBehavior.simUnit(playerB.get(i), playerB, playerA);
     }
     removeDead(playerA);
     removeDead(playerB);
@@ -170,18 +168,59 @@ public class Simulator {
     return ty / TILE_SIZE * COLLISION_MAP_DIMENSION + tx / TILE_SIZE;
   }
 
-  private boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    if (agent.isSuicider) {
-      return suiciderSimulator.simUnit(agent, enemies);
+  /**
+   * Dispatches behaviors based on the role in combat.
+   */
+  public static class RoleBasedBehavior implements Behavior {
+
+    private final Behavior attackerSimulator;
+    private final Behavior healerSimulator;
+    private final Behavior repairerSimulator;
+    private final Behavior suiciderSimulator;
+
+    public RoleBasedBehavior(
+        Behavior attackerSimulator,
+        Behavior healerSimulator,
+        Behavior repairerSimulator,
+        Behavior suiciderSimulator) {
+      this.attackerSimulator = attackerSimulator;
+      this.healerSimulator = healerSimulator;
+      this.repairerSimulator = repairerSimulator;
+      this.suiciderSimulator = suiciderSimulator;
     }
-    if (agent.isHealer) {
-      return healerSimulator.simUnit(agent, allies);
+
+    public RoleBasedBehavior() {
+      this(
+          new AttackerBehavior(),
+          new HealerBehavior(),
+          new RepairerBehavior(),
+          new SuiciderBehavior());
     }
-    if (agent.isRepairer && repairerSimulator.simUnit(agent, allies)) {
-      return true;
-      // Otherwise FIGHT, you puny SCV!
+
+    @Override
+    public boolean simUnit(
+        Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+      if (agent.isSuicider) {
+        return suiciderSimulator.simUnit(agent, allies, enemies);
+      }
+      if (agent.isHealer) {
+        return healerSimulator.simUnit(agent, allies, enemies);
+      }
+      if (agent.isRepairer && repairerSimulator.simUnit(agent, allies, enemies)) {
+        return true;
+        // Otherwise FIGHT, you puny SCV!
+      }
+      return attackerSimulator.simUnit(agent, allies, enemies);
     }
-    return attackerSimulator.simUnit(agent, allies, enemies);
+  }
+
+  /**
+   * Implementations define what action to take for an agent in regards to its allies and/or
+   * enemies.
+   */
+  public interface Behavior {
+
+    boolean simUnit(
+        Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies);
   }
 }

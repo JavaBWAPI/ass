@@ -8,13 +8,17 @@ import static org.bk.ass.AgentUtil.dealRadialSplashDamage;
 import static org.bk.ass.AgentUtil.distanceSquared;
 import static org.bk.ass.AgentUtil.moveAwayFrom;
 import static org.bk.ass.AgentUtil.moveToward;
+import static org.bk.ass.RetreatBehavior.simFlee;
 
-public class AttackerSimulator {
+import org.bk.ass.Simulator.Behavior;
+
+public class AttackerBehavior implements Behavior {
 
   // Retrieved from OpenBW
   public static final int STIM_TIMER = 37;
   public static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
 
+  @Override
   public boolean simUnit(
       Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
@@ -124,31 +128,5 @@ public class AttackerSimulator {
     } else {
       moveToward(agent, selectedEnemy, selectedDistanceSquared);
     }
-  }
-
-  private boolean simFlee(Agent agent, UnorderedCollection<Agent> enemies) {
-    Agent selectedEnemy = null;
-    int selectedDistanceSquared = Integer.MAX_VALUE;
-    for (int i = 0; i < enemies.size(); i++) {
-      Agent enemy = enemies.get(i);
-      Weapon wpn = enemy.weaponVs(agent);
-      if (wpn.damageShifted != 0) {
-        int distance = distanceSquared(agent, enemy);
-        if (distance >= wpn.minRangeSquared && distance < selectedDistanceSquared) {
-          selectedDistanceSquared = distance;
-          selectedEnemy = enemy;
-
-          // If we can hit it this frame, we're done searching
-          if (selectedDistanceSquared <= wpn.maxRangeSquared) {
-            break;
-          }
-        }
-      }
-    }
-    if (selectedEnemy == null) {
-      return false;
-    }
-    moveAwayFrom(agent, selectedEnemy, selectedDistanceSquared);
-    return true;
   }
 }
