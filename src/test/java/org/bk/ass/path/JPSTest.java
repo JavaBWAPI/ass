@@ -170,20 +170,23 @@ class JPSTest {
                 && image.getRGB(x, y) == -1;
     JPS sut = new JPS(map);
     SplittableRandom rnd = new SplittableRandom(123456);
-    Position start;
-    do {
-      start = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
-    } while (!map.isWalkable(start.x, start.y));
-    Position end;
-    do {
-      end = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
-    } while (!map.isWalkable(end.x, end.y));
+    Result result = null;
+    for (int i = 0; i < 100; i++) {
+      Position start;
+      do {
+        start = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
+      } while (!map.isWalkable(start.x, start.y));
+      Position end;
+      do {
+        end = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
+      } while (!map.isWalkable(end.x, end.y));
 
-    // WHEN
-    Result result = sut.findPath(start, end);
+      // WHEN
+      result = sut.findPath(start, end);
+      assertThat(result.path).isNotEmpty();
+    }
 
     // THEN
-    assertThat(result.path).isNotEmpty();
     BufferedImage out =
         new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
     Graphics g = out.getGraphics();
