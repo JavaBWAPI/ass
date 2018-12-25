@@ -36,8 +36,6 @@ public class JPS {
     private final PriorityQueue<Node> openSet = new PriorityQueue<>();
     private final Set<Position> closed = new HashSet<>();
     private final Position target;
-    private int nextX;
-    private int nextY;
 
     private PathFinder(Position target) {
       this.target = target;
@@ -62,32 +60,16 @@ public class JPS {
           closed.add(p);
 
           if (best.parent == null) {
-            if (jumpHorizontal(p.x, p.y, -1)) {
-              addToOpenSet(best);
-            }
-            if (jumpHorizontal(p.x, p.y, 1)) {
-              addToOpenSet(best);
-            }
+            addToOpenSet(best, jumpHorizontal(p.x, p.y, -1));
+            addToOpenSet(best, jumpHorizontal(p.x, p.y, 1));
 
-            if (jumpVertical(p.x, p.y, -1)) {
-              addToOpenSet(best);
-            }
-            if (jumpVertical(p.x, p.y, 1)) {
-              addToOpenSet(best);
-            }
+            addToOpenSet(best, jumpVertical(p.x, p.y, -1));
+            addToOpenSet(best, jumpVertical(p.x, p.y, 1));
 
-            if (jumpDiag(p.x, p.y, 1, 1)) {
-              addToOpenSet(best);
-            }
-            if (jumpDiag(p.x, p.y, -1, 1)) {
-              addToOpenSet(best);
-            }
-            if (jumpDiag(p.x, p.y, -1, -1)) {
-              addToOpenSet(best);
-            }
-            if (jumpDiag(p.x, p.y, 1, -1)) {
-              addToOpenSet(best);
-            }
+            addToOpenSet(best, jumpDiag(p.x, p.y, 1, 1));
+            addToOpenSet(best, jumpDiag(p.x, p.y, -1, 1));
+            addToOpenSet(best, jumpDiag(p.x, p.y, -1, -1));
+            addToOpenSet(best, jumpDiag(p.x, p.y, 1, -1));
           } else {
             int dx = p.x - best.parent.position.x;
             int dy = p.y - best.parent.position.y;
@@ -104,40 +86,30 @@ public class JPS {
             }
 
             if (dx != 0 && dy != 0) {
-              if (jumpHorizontal(p.x, p.y, dx)) {
-                addToOpenSet(best);
+              addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
+              addToOpenSet(best, jumpVertical(p.x, p.y, dy));
+              addToOpenSet(best, jumpDiag(p.x, p.y, dx, dy));
+              if (!map.isWalkable(p.x - dx, p.y)) {
+                addToOpenSet(best, jumpDiag(p.x, p.y, -dx, dy));
               }
-              if (jumpVertical(p.x, p.y, dy)) {
-                addToOpenSet(best);
-              }
-              if (jumpDiag(p.x, p.y, dx, dy)) {
-                addToOpenSet(best);
-              }
-              if (!map.isWalkable(p.x - dx, p.y) && jumpDiag(p.x, p.y, -dx, dy)) {
-                addToOpenSet(best);
-              }
-              if (!map.isWalkable(p.x, p.y - dy) && jumpDiag(p.x, p.y, dx, -dy)) {
-                addToOpenSet(best);
+              if (!map.isWalkable(p.x, p.y - dy)) {
+                addToOpenSet(best, jumpDiag(p.x, p.y, dx, -dy));
               }
             } else if (dx != 0) {
-              if (jumpHorizontal(p.x, p.y, dx)) {
-                addToOpenSet(best);
+              addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
+              if (!map.isWalkable(p.x, p.y - 1)) {
+                addToOpenSet(best, jumpDiag(p.x, p.y, dx, -1));
               }
-              if (!map.isWalkable(p.x, p.y - 1) && jumpDiag(p.x, p.y, dx, -1)) {
-                addToOpenSet(best);
-              }
-              if (!map.isWalkable(p.x, p.y + 1) && jumpDiag(p.x, p.y, dx, 1)) {
-                addToOpenSet(best);
+              if (!map.isWalkable(p.x, p.y + 1)) {
+                addToOpenSet(best, jumpDiag(p.x, p.y, dx, 1));
               }
             } else {
-              if (jumpVertical(p.x, p.y, dy)) {
-                addToOpenSet(best);
+              addToOpenSet(best, jumpVertical(p.x, p.y, dy));
+              if (!map.isWalkable(p.x - 1, p.y)) {
+                addToOpenSet(best, jumpDiag(p.x, p.y, -1, dy));
               }
-              if (!map.isWalkable(p.x - 1, p.y) && jumpDiag(p.x, p.y, -1, dy)) {
-                addToOpenSet(best);
-              }
-              if (!map.isWalkable(p.x + 1, p.y) && jumpDiag(p.x, p.y, 1, dy)) {
-                addToOpenSet(best);
+              if (!map.isWalkable(p.x + 1, p.y)) {
+                addToOpenSet(best, jumpDiag(p.x, p.y, 1, dy));
               }
             }
           }
@@ -147,11 +119,13 @@ public class JPS {
       return new Result(Float.POSITIVE_INFINITY, Collections.emptyList());
     }
 
-    private void addToOpenSet(Node parent) {
-      openSet.add(new Node(parent, new Position(nextX, nextY)));
+    private void addToOpenSet(Node parent, Position pos) {
+      if (pos != null) {
+        openSet.add(new Node(parent, pos));
+      }
     }
 
-    private boolean jumpDiag(int px, int py, int dx, int dy) {
+    private Position jumpDiag(int px, int py, int dx, int dy) {
       assert dx != 0;
       assert dy != 0;
       int x = px + dx;
@@ -161,20 +135,18 @@ public class JPS {
         int b = (map.isWalkable(x - dx, y + dy) ? 1 : 0) | (map.isWalkable(x + dx, y - dy) ? 2 : 0);
         if (x == target.x && y == target.y
             || (a & b) != 0
-            || jumpHorizontal(x, y, dx)
-            || jumpVertical(x, y, dy)) {
-          nextX = x;
-          nextY = y;
-          return true;
+            || jumpHorizontal(x, y, dx) != null
+            || jumpVertical(x, y, dy) != null) {
+          return new Position(x, y);
         }
         x += dx;
         y += dy;
         a = ~b;
       }
-      return false;
+      return null;
     }
 
-    private boolean jumpHorizontal(int px, int py, int dx) {
+    private Position jumpHorizontal(int px, int py, int dx) {
       assert dx != 0;
       int x = px + dx;
 
@@ -182,17 +154,15 @@ public class JPS {
       while (map.isWalkable(x, py)) {
         int b = (map.isWalkable(x + dx, py - 1) ? 1 : 0) | (map.isWalkable(x + dx, py + 1) ? 2 : 0);
         if (x == target.x && py == target.y || (a & b) != 0) {
-          nextX = x;
-          nextY = py;
-          return true;
+          return new Position(x, py);
         }
         x += dx;
         a = ~b;
       }
-      return false;
+      return null;
     }
 
-    private boolean jumpVertical(int px, int py, int dy) {
+    private Position jumpVertical(int px, int py, int dy) {
       assert dy != 0;
       int y = py + dy;
 
@@ -200,14 +170,12 @@ public class JPS {
       while (map.isWalkable(px, y)) {
         int b = (map.isWalkable(px - 1, y + dy) ? 1 : 0) | (map.isWalkable(px + 1, y + dy) ? 2 : 0);
         if (px == target.x && y == target.y || (a & b) != 0) {
-          nextX = px;
-          nextY = y;
-          return true;
+          return new Position(px, y);
         }
         y += dy;
         a = ~b;
       }
-      return false;
+      return null;
     }
 
     private class Node implements Comparable<Node> {
