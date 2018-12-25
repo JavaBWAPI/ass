@@ -9,17 +9,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.SplittableRandom;
 import javax.imageio.ImageIO;
-import org.bk.ass.path.JPS.Map;
-import org.bk.ass.path.JPS.Position;
-import org.bk.ass.path.JPS.Result;
 import org.junit.jupiter.api.Test;
 
-class JPSTest {
+class JpsTest {
 
   @Test
   void shouldReturnIdentityIfStartAndEndMatch() {
     // GIVEN
-    JPS sut = new JPS(Map.fromBooleanArray(new boolean[][]{{true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 0));
@@ -31,7 +28,7 @@ class JPSTest {
   @Test
   void shouldFindNotFindPathWhenBlocked() {
     // GIVEN
-    JPS sut = new JPS(Map.fromBooleanArray(new boolean[][]{{true, false, true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true, false, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -43,7 +40,7 @@ class JPSTest {
   @Test
   void shouldFindHorizontalPath() {
     // GIVEN
-    JPS sut = new JPS(Map.fromBooleanArray(new boolean[][]{{true, true, true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -55,7 +52,7 @@ class JPSTest {
   @Test
   void shouldFindVerticalPath() {
     // GIVEN
-    JPS sut = new JPS(Map.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 2));
@@ -67,8 +64,8 @@ class JPSTest {
   @Test
   void shouldFindDiagonalPath() {
     // GIVEN
-    JPS sut =
-        new JPS(
+    Jps sut =
+        new Jps(
             Map.fromBooleanArray(
                 new boolean[][]{{true, true, true}, {true, true, true}, {true, true, true}}));
 
@@ -82,8 +79,8 @@ class JPSTest {
   @Test
   void shouldFindPathWithObstacle() {
     // GIVEN
-    JPS sut =
-        new JPS(
+    Jps sut =
+        new Jps(
             Map.fromBooleanArray(
                 new boolean[][]{{true, true, true}, {true, false, false}, {true, true, true}}));
 
@@ -99,8 +96,8 @@ class JPSTest {
   @Test
   void shouldNotFindPathWhenBlockedButWithCircle() {
     // GIVEN
-    JPS sut =
-        new JPS(
+    Jps sut =
+        new Jps(
             Map.fromBooleanArray(
                 new boolean[][]{
                     {true, true, true, true, true},
@@ -120,8 +117,8 @@ class JPSTest {
   @Test
   void shouldFindPathWhenCircleHasHole() {
     // GIVEN
-    JPS sut =
-        new JPS(
+    Jps sut =
+        new Jps(
             Map.fromBooleanArray(
                 new boolean[][]{
                     {true, true, true, true, true},
@@ -141,14 +138,28 @@ class JPSTest {
   @Test
   void shouldFindPathInLargerExample() {
     // GIVEN
-    JPS sut =
-        new JPS(
-            (x, y) ->
-                y >= 0
+    Jps sut =
+        new Jps(
+            new Map() {
+              @Override
+              public boolean isWalkable(int x, int y) {
+                return y >= 0
                     && y <= 999
                     && (x == 0 && y % 4 == 1
                     || x == 999 && y % 4 == 3
-                    || y % 2 == 0 && x >= 0 && x <= 999));
+                    || y % 2 == 0 && x >= 0 && x <= 999);
+              }
+
+              @Override
+              public int getWidth() {
+                return 1000;
+              }
+
+              @Override
+              public int getHeight() {
+                return 1000;
+              }
+            });
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(999, 999));
@@ -160,18 +171,18 @@ class JPSTest {
   @Test
   void shouldFindPathInDemoMap() throws IOException {
     // GIVEN
-    BufferedImage image = ImageIO.read(JPSTest.class.getResourceAsStream("/dungeon_map.bmp"));
-    Map map =
-        (x, y) ->
-            x >= 0
-                && x < image.getWidth()
-                && y >= 0
-                && y < image.getHeight()
-                && image.getRGB(x, y) == -1;
-    JPS sut = new JPS(map);
+    BufferedImage image = ImageIO.read(JpsTest.class.getResourceAsStream("/dungeon_map.bmp"));
+    boolean[][] data = new boolean[image.getWidth()][image.getHeight()];
+    for (int y = 0; y < image.getHeight(); y++) {
+      for (int x = 0; x < image.getWidth(); x++) {
+        data[y][x] = image.getRGB(x, y) == -1;
+      }
+    }
+    Map map = Map.fromBooleanArray(data);
+    Jps sut = new Jps(map);
     SplittableRandom rnd = new SplittableRandom(123456);
     Result result = null;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1000; i++) {
       Position start;
       do {
         start = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
@@ -183,7 +194,6 @@ class JPSTest {
 
       // WHEN
       result = sut.findPath(start, end);
-      assertThat(result.path).isNotEmpty();
     }
 
     // THEN
