@@ -65,7 +65,6 @@ Simulates:
 * Stim, Armor, Weapon, Range and Speed upgrades
 
 ## Limitations
-* No collision
 * Elevation is deemed "constant" within the simulation
 * Visibility is ignored
 * Spellcasters are doing nothing
@@ -73,6 +72,8 @@ Simulates:
 * Instant movement 
 
 ## Behaviors
+Default behaviors:
+
 Medics:
 * Find any unit that can be healed this frame (in range and damaged)
 * Otherwise find closest unit in need of healing and move toward it
@@ -90,6 +91,8 @@ Attackers:
 * Find any unit that can be attacked this frame and attack
 * Otherwise find closest targetable unit and close in
 * Otherwise flee from any unit that could attack us
+
+You can also use the `RetreatBehavior` to make some or all units run away instead of attacking.
 
 ## Additional APIs
 

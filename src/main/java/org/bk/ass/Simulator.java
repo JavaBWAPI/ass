@@ -4,7 +4,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Used to simulate 2 groups of agents engaging each other. Either use the default constructor which
+ * initialized the default behavior or customize the behaviors. Ie. if you want to simulate one
+ * group running away while the other uses the default behavior: <br>
+ * <code>new Simulator(new {@link RetreatBehavior}(), new {@link RoleBasedBehavior}());</code>
+ */
 public class Simulator {
+
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
@@ -48,10 +55,17 @@ public class Simulator {
     return Collections.unmodifiableCollection(playerB);
   }
 
+  /**
+   * Simulates 4 seconds into the future.
+   */
   public int simulate() {
     return simulate(96);
   }
 
+  /**
+   * Simulate the given number of frames. If negative, simulation will only stop if one party has no
+   * agents left. If units decide to run away, this could be an endless loop - use with care!
+   */
   public int simulate(int frames) {
     while (frames-- != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
       if (!step()) {
@@ -168,9 +182,7 @@ public class Simulator {
     return ty / TILE_SIZE * COLLISION_MAP_DIMENSION + tx / TILE_SIZE;
   }
 
-  /**
-   * Dispatches behaviors based on the role in combat.
-   */
+  /** Dispatches behaviors based on the role in combat. */
   public static class RoleBasedBehavior implements Behavior {
 
     private final Behavior attackerSimulator;
