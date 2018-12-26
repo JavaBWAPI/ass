@@ -1,11 +1,10 @@
 package org.bk.ass.path;
 
 public class Position {
-
   public final int x;
   public final int y;
 
-  Position(int x, int y) {
+  public Position(int x, int y) {
     this.x = x;
     this.y = y;
   }
