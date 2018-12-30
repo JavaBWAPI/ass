@@ -25,8 +25,48 @@ ASS tries to answer that question by allowing a simulation of possible outcome.
 
 ## Usage
 While the simulator is API independent, [BWAPI4J](https://github.com/OpenBW/BWAPI4J)
-is working out of the box. [BWMirror](https://github.com/vjurenka/BWMirror) should also
+is working out of the box. [JBWAPI](https://github.com/JasperGeurtz/JBWAPI/) 
+[BWMirror](https://github.com/vjurenka/BWMirror) should also
 work but is not thoroughly tested. 
+
+### Gradle
+
+Add the maven repo: 
+
+    	allprojects {
+    		repositories {
+    			...
+    			maven { url 'https://jitpack.io' }
+    		}
+    	}
+    	
+And the dependency:    	
+
+      dependencies {
+        implementation 'com.github.Bytekeeper:ass:master-SNAPSHOT'
+      }
+
+
+### Maven
+
+Add the maven repo:
+  
+    <repositories>
+      <repository>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
+      </repository>
+    </repositories>
+
+And the dependency:
+
+    <dependency>
+        <groupId>com.github.Bytekeeper</groupId>
+        <artifactId>ass</artifactId>
+        <version>master-SNAPSHOT</version>
+    </dependency>
+
+### JAR file
 
 To get it, either download and build it yourself or grab the
 [Appveyor Build](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts).

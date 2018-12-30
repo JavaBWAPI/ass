@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
     java
+    id("maven")
     id("me.champeau.gradle.jmh") version "0.4.7"
     id("org.sonarqube") version "2.6"
 }
@@ -16,33 +17,34 @@ java {
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
-    compileOnly(fileTree("lib").include("*.jar"))
+    implementation(fileTree("lib").include("*.jar"))
+    implementation("com.github.JasperGeurtz:JBWAPI:develop-SNAPSHOT")
+    implementation("com.github.OpenBW:BWAPI4J:master-SNAPSHOT")
 
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.1")
-    testCompile("org.assertj:assertj-core:3.11.1")
-    testCompile("io.jenetics:jenetics:4.2.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    testImplementation("org.assertj:assertj-core:3.11.1")
+    testImplementation("io.jenetics:jenetics:4.2.1")
 }
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-configurations.testCompile.extendsFrom(configurations.compileOnly)
+configurations.testImplementation.get().extendsFrom(configurations.implementation.get())
+configurations.jmhCompile.get().extendsFrom(configurations.implementation.get())
 
 tasks {
-    "check" {
+    check {
         dependsOn("jmh")
     }
-}
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
+    test {
+        useJUnitPlatform()
     }
 }
 
