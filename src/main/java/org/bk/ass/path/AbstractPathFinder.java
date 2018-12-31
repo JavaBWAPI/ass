@@ -1,5 +1,9 @@
 package org.bk.ass.path;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,7 +35,7 @@ abstract class AbstractPathFinder {
           n = n.parent;
         }
         Collections.reverse(path);
-        return new Result(best.cost, path);
+        return new Result(best.cost / 10f, path);
       }
       Position p = best.position;
       if (!closed.contains(p)) {
@@ -132,39 +136,32 @@ abstract class AbstractPathFinder {
 
     final Node parent;
     final Position position;
-    final float cost;
-    final float h;
+    final int cost;
+    final int h;
 
     Node(Position start) {
       parent = null;
       position = start;
       cost = 0;
-      h =
-          (float)
-              Math.sqrt(
-                  (position.x - target.x) * (position.x - target.x)
-                      + (position.y - target.y) * (position.y - target.y));
+      h = estCost(position.x - target.x, position.y - target.y);
+    }
+
+    private int estCost(int dx, int dy) {
+      int distX = abs(dx);
+      int distY = abs(dy);
+      return 10 * max(distX, distY) + 4 * min(distX, distY);
     }
 
     Node(Node parent, Position position) {
       this.parent = parent;
       this.position = position;
-      cost =
-          parent.cost
-              + (float)
-              Math.sqrt(
-                  (position.x - parent.position.x) * (position.x - parent.position.x)
-                      + (position.y - parent.position.y) * (position.y - parent.position.y));
-      h =
-          (float)
-              Math.sqrt(
-                  (position.x - target.x) * (position.x - target.x)
-                      + (position.y - target.y) * (position.y - target.y));
+      cost = parent.cost + estCost(position.x - parent.position.x, position.y - parent.position.y);
+      h = estCost(position.x - target.x, position.y - target.y);
     }
 
     @Override
     public int compareTo(Node o) {
-      return Float.compare(cost + h, o.cost + o.h);
+      return Integer.compare(cost + h, o.cost + o.h);
     }
 
     @Override
