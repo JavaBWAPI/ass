@@ -35,7 +35,7 @@ abstract class AbstractPathFinder {
           n = n.parent;
         }
         Collections.reverse(path);
-        return new Result(best.cost / 10f, path);
+        return new Result(best.g / 10f, path);
       }
       Position p = best.position;
       if (!closed.contains(p)) {
@@ -136,14 +136,14 @@ abstract class AbstractPathFinder {
 
     final Node parent;
     final Position position;
-    final int cost;
-    final int h;
+    final int g;
+    final int f;
 
     Node(Position start) {
       parent = null;
       position = start;
-      cost = 0;
-      h = estCost(position.x - target.x, position.y - target.y);
+      g = 0;
+      f = estCost(position.x - target.x, position.y - target.y);;
     }
 
     private int estCost(int dx, int dy) {
@@ -155,18 +155,18 @@ abstract class AbstractPathFinder {
     Node(Node parent, Position position) {
       this.parent = parent;
       this.position = position;
-      cost = parent.cost + estCost(position.x - parent.position.x, position.y - parent.position.y);
-      h = estCost(position.x - target.x, position.y - target.y);
+      g = parent.g + estCost(position.x - parent.position.x, position.y - parent.position.y);
+      f = g + estCost(position.x - target.x, position.y - target.y);
     }
 
     @Override
     public int compareTo(Node o) {
-      return Integer.compare(cost + h, o.cost + o.h);
+      return Integer.compare(f, o.f);
     }
 
     @Override
     public String toString() {
-      return position + " : " + (cost + h);
+      return position + " : " + f;
     }
   }
 }
