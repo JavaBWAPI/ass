@@ -38,27 +38,27 @@ class JpsTest {
   }
 
   @Test
-  void shouldFindHorizontalPath() {
-    // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true, true, true}}));
-
-    // WHEN
-    Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
-
-    // THEN
-    assertThat(result.path).containsExactly(new Position(0, 0), new Position(2, 0));
-  }
-
-  @Test
   void shouldFindVerticalPath() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 2));
 
     // THEN
     assertThat(result.path).containsExactly(new Position(0, 0), new Position(0, 2));
+  }
+
+  @Test
+  void shouldFindHorizontalPath() {
+    // GIVEN
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+
+    // WHEN
+    Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
+
+    // THEN
+    assertThat(result.path).containsExactly(new Position(0, 0), new Position(2, 0));
   }
 
   @Test
@@ -90,7 +90,7 @@ class JpsTest {
     // THEN
     assertThat(result.path)
         .containsExactly(
-            new Position(2, 2), new Position(1, 2), new Position(0, 1), new Position(0, 0));
+            new Position(2, 2), new Position(2, 1), new Position(1, 0), new Position(0, 0));
   }
 
   @Test
@@ -172,7 +172,7 @@ class JpsTest {
   void shouldFindPathInDemoMap() throws IOException {
     // GIVEN
     BufferedImage image = ImageIO.read(JpsTest.class.getResourceAsStream("/dungeon_map.bmp"));
-    boolean[][] data = new boolean[image.getWidth()][image.getHeight()];
+    boolean[][] data = new boolean[image.getHeight()][image.getWidth()];
     for (int y = 0; y < image.getHeight(); y++) {
       for (int x = 0; x < image.getWidth(); x++) {
         data[y][x] = image.getRGB(x, y) == -1;

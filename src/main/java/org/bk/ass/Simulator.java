@@ -1,6 +1,5 @@
 package org.bk.ass;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -8,7 +7,14 @@ import java.util.Collections;
  * Used to simulate 2 groups of agents engaging each other. Either use the default constructor which
  * initialized the default behavior or customize the behaviors. Ie. if you want to simulate one
  * group running away while the other uses the default behavior: <br>
- * <code>new Simulator(new {@link RetreatBehavior}(), new {@link RoleBasedBehavior}());</code>
+ * <code>new Simulator(new {@link RetreatBehavior}(), new {@link RoleBasedBehavior}());</code> <br>
+ * General usage guide: <br>
+ *
+ * <ol>
+ *   <li>Create a new Simulator
+ *   <li>On each frame, call <code>reset()</code> <em>once</em>
+ *   <li>Before each simulation call <code>resetUnits()</code> before adding units
+ * </ol>
  */
 public class Simulator {
 
@@ -88,7 +94,7 @@ public class Simulator {
   }
 
   public void resetCollisionMap() {
-    Arrays.fill(collision, (byte) 0);
+    FastArrayFill.fillArray(collision, (byte) 0);
   }
 
   /**

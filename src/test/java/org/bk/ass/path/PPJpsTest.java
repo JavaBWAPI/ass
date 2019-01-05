@@ -38,27 +38,27 @@ class PPJpsTest {
   }
 
   @Test
-  void shouldFindHorizontalPath() {
-    // GIVEN
-    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true, true, true}}));
-
-    // WHEN
-    Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
-
-    // THEN
-    assertThat(result.path).containsExactly(new Position(0, 0), new Position(2, 0));
-  }
-
-  @Test
   void shouldFindVerticalPath() {
     // GIVEN
-    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 2));
 
     // THEN
     assertThat(result.path).containsExactly(new Position(0, 0), new Position(0, 2));
+  }
+
+  @Test
+  void shouldFindHorizontalPath() {
+    // GIVEN
+    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+
+    // WHEN
+    Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
+
+    // THEN
+    assertThat(result.path).containsExactly(new Position(0, 0), new Position(2, 0));
   }
 
   @Test
@@ -90,7 +90,7 @@ class PPJpsTest {
     // THEN
     assertThat(result.path)
         .containsExactly(
-            new Position(2, 2), new Position(1, 2), new Position(0, 1), new Position(0, 0));
+            new Position(2, 2), new Position(2, 1), new Position(1, 0), new Position(0, 0));
   }
 
   @Test

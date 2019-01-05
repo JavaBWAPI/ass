@@ -4,7 +4,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import java.util.AbstractCollection;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -31,7 +30,7 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
   }
 
   public void clearReferences() {
-    Arrays.fill(items, size, items.length, null);
+    FastArrayFill.fillArray(items, size, items.length, null);
   }
 
   @Override

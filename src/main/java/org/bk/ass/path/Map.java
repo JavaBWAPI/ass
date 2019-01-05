@@ -18,17 +18,17 @@ public interface Map {
     return new Map() {
       @Override
       public boolean isWalkable(int x, int y) {
-        return x >= 0 && x < map[0].length && y >= 0 && y < map.length && map[y][x];
+        return y >= 0 && y < map[0].length && x >= 0 && x < map.length && map[x][y];
       }
 
       @Override
       public int getWidth() {
-        return map[0].length;
+        return map.length;
       }
 
       @Override
       public int getHeight() {
-        return map.length;
+        return map[0].length;
       }
     };
   }

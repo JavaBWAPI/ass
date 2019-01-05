@@ -13,8 +13,8 @@ import java.util.Set;
 
 abstract class AbstractPathFinder {
 
-  private final PriorityQueue<Node> openSet = new PriorityQueue<>();
-  private final Set<Position> closed = new HashSet<>();
+  private final PriorityQueue<Node> openSet = new PriorityQueue<>(100);
+  private final Set<Position> closed = new HashSet<>(400);
   protected final Position target;
   private final Map map;
 
@@ -25,8 +25,8 @@ abstract class AbstractPathFinder {
 
   public Result searchFrom(Position start) {
     openSet.add(new Node(start));
-    while (!openSet.isEmpty()) {
-      Node best = openSet.poll();
+    Node best;
+    while ((best = openSet.poll()) != null) {
       if (best.position.equals(target)) {
         List<Position> path = new ArrayList<>();
         Node n = best;
@@ -143,7 +143,7 @@ abstract class AbstractPathFinder {
       parent = null;
       position = start;
       g = 0;
-      f = estCost(position.x - target.x, position.y - target.y);;
+      f = estCost(position.x - target.x, position.y - target.y);
     }
 
     private int estCost(int dx, int dy) {
