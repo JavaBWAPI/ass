@@ -1,18 +1,12 @@
 package org.bk.ass.cluster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.bk.ass.UnorderedCollection;
 import org.bk.ass.query.UnitFinder;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * DBScan which processes the DB in chunks. Element clusters are generally stable: After an
@@ -128,6 +122,7 @@ public class StableDBScanner<U> {
     if (remainingDbEntries.isEmpty()) {
       noiseToNewClusters();
       updateElementClusters();
+      remainingDbEntries.clearReferences();
     }
     return this;
   }
