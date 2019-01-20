@@ -1,6 +1,7 @@
 package org.bk.ass;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.bk.ass.Simulator.RoleBasedBehavior;
 import org.junit.jupiter.api.BeforeAll;
@@ -598,5 +599,19 @@ class SimulatorTest {
     assertThat(simulator.getAgentsB())
         .element(0)
         .hasFieldOrPropertyWithValue("healthShifted", 38400);
+  }
+
+  @Test
+  void addAgentAAtInvalidPositionShouldThrowException() {
+    assertThrows(
+        PositionOutOfBoundsException.class,
+        () -> simulator.addAgentA(factory.of(UnitType.Protoss_Scout).setX(9000)));
+  }
+
+  @Test
+  void addAgentBAtInvalidPositionShouldThrowException() {
+    assertThrows(
+        PositionOutOfBoundsException.class,
+        () -> simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setY(9000)));
   }
 }

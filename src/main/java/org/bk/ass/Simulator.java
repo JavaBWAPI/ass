@@ -38,6 +38,7 @@ public class Simulator {
   }
 
   public Simulator addAgentA(Agent agent) {
+    checkBounds(agent);
     playerA.add(agent);
     if (!agent.isFlyer) {
       collision[colindex(agent.x, agent.y)]++;
@@ -46,11 +47,19 @@ public class Simulator {
   }
 
   public Simulator addAgentB(Agent agent) {
+    checkBounds(agent);
     playerB.add(agent);
     if (!agent.isFlyer) {
       collision[colindex(agent.x, agent.y)]++;
     }
     return this;
+  }
+
+  private void checkBounds(Agent agent) {
+    if (agent.x < 0 || agent.x >= 8192 || agent.y < 0 || agent.y >= 8192) {
+      throw new PositionOutOfBoundsException(
+          agent + " should be inside the map! This could be caused by an agent being fogged.");
+    }
   }
 
   public Collection<Agent> getAgentsA() {
