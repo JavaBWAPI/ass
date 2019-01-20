@@ -19,10 +19,8 @@ public class JpsBenchmark {
 
   @State(Scope.Thread)
   public static class MyState {
-
     List<Position[]> positions;
     Map map;
-    PPMap PPMap;
     Jps jps;
     PPJps PPJps;
 

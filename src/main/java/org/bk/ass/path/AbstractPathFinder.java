@@ -53,19 +53,8 @@ abstract class AbstractPathFinder {
           addToOpenSet(best, jumpDiag(p.x, p.y, -1, -1));
           addToOpenSet(best, jumpDiag(p.x, p.y, 1, -1));
         } else {
-          int dx = p.x - best.parent.position.x;
-          int dy = p.y - best.parent.position.y;
-
-          if (dx < 0) {
-            dx = -1;
-          } else if (dx > 0) {
-            dx = 1;
-          }
-          if (dy < 0) {
-            dy = -1;
-          } else if (dy > 0) {
-            dy = 1;
-          }
+          int dx = Integer.signum(p.x - best.parent.position.x);
+          int dy = Integer.signum(p.y - best.parent.position.y);
 
           if (dx != 0 && dy != 0) {
             addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
