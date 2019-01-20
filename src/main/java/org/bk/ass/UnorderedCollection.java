@@ -1,12 +1,12 @@
 package org.bk.ass;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * A collection implementation that does not guarantee the order of elements stays constant of
@@ -30,7 +30,7 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
   }
 
   public void clearReferences() {
-    FastArrayFill.fillArray(items, size, items.length, null);
+    if (size < items.length) FastArrayFill.fillArray(items, size, items.length, null);
   }
 
   @Override

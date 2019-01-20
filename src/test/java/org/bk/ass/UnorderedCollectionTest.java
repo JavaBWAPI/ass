@@ -1,9 +1,10 @@
 package org.bk.ass;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UnorderedCollectionTest {
 
@@ -35,6 +36,18 @@ class UnorderedCollectionTest {
     // THEN
     assertThat(sut.items).containsOnlyNulls();
   }
+
+    @Test
+    public void shouldNotClearReferencesIfFull() {
+        // GIVEN
+        for (int i = 0; i < 16; i++) sut.add("a");
+
+        // WHEN
+        sut.clearReferences();
+
+        // THEN
+        assertThat(sut.items).doesNotContainNull();
+    }
 
   @Test
   public void shouldAddElements() {
