@@ -1,9 +1,10 @@
 package org.bk.ass;
 
+import org.bk.ass.Simulator.Behavior;
+import org.bk.ass.collection.UnorderedCollection;
+
 import static org.bk.ass.AgentUtil.distanceSquared;
 import static org.bk.ass.AgentUtil.moveToward;
-
-import org.bk.ass.Simulator.Behavior;
 
 public class HealerBehavior implements Behavior {
 
@@ -12,7 +13,7 @@ public class HealerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.energyShifted < 256) {
       return true;
     }

@@ -1,16 +1,11 @@
 package org.bk.ass;
 
-import static java.lang.Math.sqrt;
-import static org.bk.ass.AgentUtil.dealBounceDamage;
-import static org.bk.ass.AgentUtil.dealDamage;
-import static org.bk.ass.AgentUtil.dealLineSplashDamage;
-import static org.bk.ass.AgentUtil.dealRadialSplashDamage;
-import static org.bk.ass.AgentUtil.distanceSquared;
-import static org.bk.ass.AgentUtil.moveAwayFrom;
-import static org.bk.ass.AgentUtil.moveToward;
-import static org.bk.ass.RetreatBehavior.simFlee;
-
 import org.bk.ass.Simulator.Behavior;
+import org.bk.ass.collection.UnorderedCollection;
+
+import static java.lang.Math.sqrt;
+import static org.bk.ass.AgentUtil.*;
+import static org.bk.ass.RetreatBehavior.simFlee;
 
 public class AttackerBehavior implements Behavior {
 
@@ -20,7 +15,7 @@ public class AttackerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }

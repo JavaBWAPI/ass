@@ -1,6 +1,6 @@
 package org.bk.ass.cluster;
 
-import org.bk.ass.UnorderedCollection;
+import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.query.UnitFinder;
 
 import java.util.*;

@@ -1,15 +1,16 @@
 package org.bk.ass;
 
+import org.bk.ass.Simulator.Behavior;
+import org.bk.ass.collection.UnorderedCollection;
+
 import static org.bk.ass.AgentUtil.distanceSquared;
 import static org.bk.ass.AgentUtil.moveAwayFrom;
-
-import org.bk.ass.Simulator.Behavior;
 
 public class RetreatBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     return simFlee(agent, enemies);
   }
 

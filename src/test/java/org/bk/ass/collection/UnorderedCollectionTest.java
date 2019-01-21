@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.collection;
 
 import org.junit.jupiter.api.Test;
 

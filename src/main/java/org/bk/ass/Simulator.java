@@ -1,5 +1,7 @@
 package org.bk.ass;
 
+import org.bk.ass.collection.UnorderedCollection;
+
 import java.util.Collection;
 import java.util.Collections;
 

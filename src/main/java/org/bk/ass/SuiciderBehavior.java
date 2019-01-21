@@ -1,15 +1,16 @@
 package org.bk.ass;
 
+import org.bk.ass.Simulator.Behavior;
+import org.bk.ass.collection.UnorderedCollection;
+
 import static org.bk.ass.AgentUtil.dealDamage;
 import static org.bk.ass.AgentUtil.distanceSquared;
-
-import org.bk.ass.Simulator.Behavior;
 
 public class SuiciderBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = 0; i < enemies.size(); i++) {

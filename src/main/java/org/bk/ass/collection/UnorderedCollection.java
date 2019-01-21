@@ -1,4 +1,6 @@
-package org.bk.ass;
+package org.bk.ass.collection;
+
+import org.bk.ass.FastArrayFill;
 
 import java.util.AbstractCollection;
 import java.util.Collection;

@@ -1,12 +1,10 @@
 package org.bk.ass;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.cos;
-import static java.lang.Math.max;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
+import org.bk.ass.collection.UnorderedCollection;
 
 import java.util.SplittableRandom;
+
+import static java.lang.Math.*;
 
 public class AgentUtil {
 
