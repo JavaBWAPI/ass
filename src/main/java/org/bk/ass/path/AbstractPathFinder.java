@@ -1,32 +1,25 @@
 package org.bk.ass.path;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import static java.lang.Math.*;
 
 abstract class AbstractPathFinder {
 
-  private final PriorityQueue<Node> openSet = new PriorityQueue<>(100);
+  private final PriorityQueue<Node> openQueue = new PriorityQueue<>(100);
   private final Set<Position> closed = new HashSet<>(400);
-  protected final Position target;
+  final Position target;
   private final Map map;
 
-  protected AbstractPathFinder(Position target, Map map) {
+  AbstractPathFinder(Position target, Map map) {
     this.target = target;
     this.map = map;
   }
 
-  public Result searchFrom(Position start) {
-    openSet.add(new Node(start));
+  Result searchFrom(Position start) {
+    openQueue.add(new Node(start));
     Node best;
-    while ((best = openSet.poll()) != null) {
+    while ((best = openQueue.poll()) != null) {
       if (best.position.equals(target)) {
         List<Position> path = new ArrayList<>();
         Node n = best;
@@ -38,9 +31,8 @@ abstract class AbstractPathFinder {
         return new Result(best.g / 10f, path);
       }
       Position p = best.position;
-      if (!closed.contains(p)) {
-        closed.add(p);
-
+      boolean proceed = closed.add(p);
+      if (proceed) {
         if (best.parent == null) {
           addToOpenSet(best, jumpHorizontal(p.x, p.y, -1));
           addToOpenSet(best, jumpHorizontal(p.x, p.y, 1));
@@ -96,7 +88,7 @@ abstract class AbstractPathFinder {
 
   private void addToOpenSet(Node parent, Position pos) {
     if (pos != null) {
-      openSet.add(new Node(parent, pos));
+      openQueue.add(new Node(parent, pos));
     }
   }
 
