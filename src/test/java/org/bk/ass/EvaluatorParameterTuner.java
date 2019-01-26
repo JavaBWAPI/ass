@@ -1,25 +1,18 @@
 package org.bk.ass;
 
-import static java.util.Objects.requireNonNull;
-
-import io.jenetics.Chromosome;
-import io.jenetics.DoubleChromosome;
-import io.jenetics.DoubleGene;
-import io.jenetics.Genotype;
-import io.jenetics.Mutator;
-import io.jenetics.SinglePointCrossover;
+import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.Limits;
+import org.bk.ass.Evaluator.Parameters;
+import org.openbw.bwapi4j.org.apache.commons.lang3.time.StopWatch;
+import org.openbw.bwapi4j.test.BWDataProvider;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.bk.ass.Evaluator.Parameters;
-import org.openbw.bwapi4j.org.apache.commons.lang3.time.StopWatch;
-import org.openbw.bwapi4j.test.BWDataProvider;
 
 public class EvaluatorParameterTuner {
 
@@ -50,19 +43,17 @@ public class EvaluatorParameterTuner {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     EvolutionResult<DoubleGene, Integer> result =
-        engine
-            .stream()
+            engine.stream()
             .limit(
                 Limits.<Integer>bySteadyFitness(200000)
-                    .and(new FitnessThresholdLimit<>(TEST_METHODS.length - 1)))
+                        .and(Limits.byFitnessThreshold(TEST_METHODS.length - 1)))
             .collect(EvolutionResult.toBestEvolutionResult());
     stopWatch.stop();
     System.out.println("GA time: " + stopWatch);
     System.out.println("Best result " + result.getBestFitness() + "/" + TEST_METHODS.length);
     Genotype<DoubleGene> bestGenotype = result.getBestPhenotype().getGenotype();
     System.out.println(
-        bestGenotype
-            .stream()
+            bestGenotype.stream()
             .flatMap(Chromosome::stream)
             .mapToDouble(DoubleGene::doubleValue)
             .map(EvaluatorParameterTuner::round)
@@ -92,28 +83,5 @@ public class EvaluatorParameterTuner {
       }
     }
     return TEST_METHODS.length;
-  }
-
-  // Fix from https://github.com/jenetics/jenetics/pull/421
-  static final class FitnessThresholdLimit<C extends Comparable<? super C>>
-      implements Predicate<EvolutionResult<?, C>> {
-
-    private final C _threshold;
-    private boolean _proceed = true;
-
-    FitnessThresholdLimit(final C threshold) {
-      _threshold = requireNonNull(threshold);
-    }
-
-    @Override
-    public boolean test(final EvolutionResult<?, C> result) {
-      final boolean proceed =
-          _proceed && result.getOptimize().compare(_threshold, result.getBestFitness()) >= 0;
-      try {
-        return _proceed;
-      } finally {
-        _proceed = proceed;
-      }
-    }
   }
 }

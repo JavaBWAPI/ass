@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
 plugins {
     java
     id("maven")
@@ -28,7 +26,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     testImplementation("org.assertj:assertj-core:3.11.1")
-    testImplementation("io.jenetics:jenetics:4.2.1")
+    testImplementation("io.jenetics:jenetics:4.3.0")
 }
 
 configure<JavaPluginConvention> {
