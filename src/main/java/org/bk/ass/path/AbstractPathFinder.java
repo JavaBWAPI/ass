@@ -1,12 +1,21 @@
 package org.bk.ass.path;
 
-import java.util.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
-import static java.lang.Math.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 abstract class AbstractPathFinder {
 
-  private final PriorityQueue<Node> openQueue = new PriorityQueue<>(100);
+  private final TreeSet<Node> openQueue = new TreeSet<>();
+  private final java.util.Map<Position, Node> nodes = new HashMap<>();
   private final Set<Position> closed = new HashSet<>(400);
   final Position target;
   private final Map map;
@@ -19,7 +28,7 @@ abstract class AbstractPathFinder {
   Result searchFrom(Position start) {
     openQueue.add(new Node(start));
     Node best;
-    while ((best = openQueue.poll()) != null) {
+    while ((best = openQueue.pollFirst()) != null) {
       if (best.position.equals(target)) {
         List<Position> path = new ArrayList<>();
         Node n = best;
@@ -87,8 +96,16 @@ abstract class AbstractPathFinder {
   protected abstract Position jumpHorizontal(int x, int y, int dx);
 
   private void addToOpenSet(Node parent, Position pos) {
-    if (pos != null) {
-      openQueue.add(new Node(parent, pos));
+    if (pos != null && !closed.contains(pos)) {
+      Node node = new Node(parent, pos);
+      Node existing = nodes.get(pos);
+      if (existing == null || existing.f > node.f) {
+        if (existing != null) {
+          openQueue.remove(existing);
+        }
+        openQueue.add(node);
+        nodes.put(pos, node);
+      }
     }
   }
 
