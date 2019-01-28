@@ -1,34 +1,29 @@
 package org.bk.ass.path;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.PriorityQueue;
+
+import static java.lang.Math.*;
 
 abstract class AbstractPathFinder {
-
-  private final TreeSet<Node> openQueue = new TreeSet<>();
-  private final java.util.Map<Position, Node> nodes = new HashMap<>();
-  private final Set<Position> closed = new HashSet<>(400);
+  private final Node CLOSED = new Node();
+  private final PriorityQueue<Node> openQueue = new PriorityQueue<>();
+  private final Node[] nodes;
   final Position target;
   private final Map map;
 
   AbstractPathFinder(Position target, Map map) {
     this.target = target;
     this.map = map;
+    nodes = new Node[map.getHeight() * map.getWidth()];
   }
 
   Result searchFrom(Position start) {
     openQueue.add(new Node(start));
     Node best;
-    while ((best = openQueue.pollFirst()) != null) {
+    while ((best = openQueue.poll()) != null) {
       if (best.position.equals(target)) {
         List<Position> path = new ArrayList<>();
         Node n = best;
@@ -40,8 +35,9 @@ abstract class AbstractPathFinder {
         return new Result(best.g / 10f, path);
       }
       Position p = best.position;
-      boolean proceed = closed.add(p);
-      if (proceed) {
+      int index = idx(p);
+      if (nodes[index] != CLOSED) {
+        nodes[index] = CLOSED;
         if (best.parent == null) {
           addToOpenSet(best, jumpHorizontal(p.x, p.y, -1));
           addToOpenSet(best, jumpHorizontal(p.x, p.y, 1));
@@ -91,20 +87,29 @@ abstract class AbstractPathFinder {
     return new Result(Float.POSITIVE_INFINITY, Collections.emptyList());
   }
 
+  private int idx(Position p) {
+    return idx(p.y, map.getWidth(), p.x);
+  }
+
+  private int idx(int y, int width, int x) {
+    return y * width + x;
+  }
+
   protected abstract Position jumpVertical(int x, int y, int dy);
 
   protected abstract Position jumpHorizontal(int x, int y, int dx);
 
   private void addToOpenSet(Node parent, Position pos) {
-    if (pos != null && !closed.contains(pos)) {
+    int index;
+    if (pos != null && nodes[index = idx(pos)] != CLOSED) {
       Node node = new Node(parent, pos);
-      Node existing = nodes.get(pos);
+      Node existing = nodes[index];
       if (existing == null || existing.f > node.f) {
         if (existing != null) {
           openQueue.remove(existing);
         }
         openQueue.add(node);
-        nodes.put(pos, node);
+        nodes[index] = node;
       }
     }
   }
@@ -136,6 +141,12 @@ abstract class AbstractPathFinder {
     final Position position;
     final int g;
     final int f;
+
+    Node() {
+      parent = null;
+      position = null;
+      g = f = 0;
+    }
 
     Node(Position start) {
       parent = null;
