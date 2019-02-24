@@ -17,7 +17,7 @@ public class RetreatBehavior implements Behavior {
   static boolean simFlee(Agent agent, UnorderedCollection<Agent> enemies) {
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
-    for (int i = 0; i < enemies.size(); i++) {
+    for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       Weapon wpn = enemy.weaponVs(agent);
       if (wpn.damageShifted != 0) {

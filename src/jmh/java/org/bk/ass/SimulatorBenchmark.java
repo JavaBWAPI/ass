@@ -2,13 +2,7 @@ package org.bk.ass;
 
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 
 @Measurement(iterations = 5, time = 5)
 @Fork(3)
@@ -24,10 +18,10 @@ public class SimulatorBenchmark {
     public void setup() {
       simulator = new Simulator();
 
-      for (int i = 0; i < 7; i++) {
+      for (int i = 0; i < 30; i++) {
         simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
       }
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 30; i++) {
         simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk));
       }
     }
@@ -44,5 +38,11 @@ public class SimulatorBenchmark {
   @Benchmark
   public int _7MutasVs8Hydras(MyState state) {
     return state.simulator.simulate(-1);
+  }
+
+  @Benchmark
+  public int clearCollisionMaps(MyState state) {
+    state.simulator.reset();
+    return state.simulator.getAgentsA().size() + state.simulator.getAgentsB().size();
   }
 }

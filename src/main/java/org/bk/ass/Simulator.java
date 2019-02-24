@@ -17,16 +17,20 @@ import java.util.Collections;
  *   <li>On each frame, call <code>reset()</code> <em>once</em>
  *   <li>Before each simulation call <code>resetUnits()</code> before adding units
  * </ol>
+ *
+ * Do <b>not</b> modify {@link Agent}s, after adding them to the simulation.
  */
 public class Simulator {
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
+  public static final int MIN_SIMULATION_RANGE =
+          (TILE_SIZE + TILE_SIZE / 2) * (TILE_SIZE + TILE_SIZE / 2);
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
 
-  private final byte[] collision = new byte[COLLISION_MAP_DIMENSION * COLLISION_MAP_DIMENSION];
+  final byte[] collision = new byte[COLLISION_MAP_DIMENSION * COLLISION_MAP_DIMENSION];
   private final Behavior playerABehavior;
   private final Behavior playerBBehavior;
 
@@ -95,17 +99,20 @@ public class Simulator {
   }
 
   public void reset() {
+    for (int i = playerA.size() - 1; i >= 0; i--) {
+      Agent agent = playerA.get(i);
+      if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
+    }
+    for (int i = playerB.size() - 1; i >= 0; i--) {
+      Agent agent = playerB.get(i);
+      if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
+    }
     resetUnits();
-    resetCollisionMap();
   }
 
-  public void resetUnits() {
+  private void resetUnits() {
     playerA.clear();
     playerB.clear();
-  }
-
-  public void resetCollisionMap() {
-    FastArrayFill.fillArray(collision, (byte) 0);
   }
 
   /**
@@ -115,10 +122,10 @@ public class Simulator {
    */
   private boolean step() {
     boolean simRunning = false;
-    for (int i = 0; i < playerA.size(); i++) {
+    for (int i = playerA.size() - 1; i >= 0; i--) {
       simRunning |= playerABehavior.simUnit(playerA.get(i), playerA, playerB);
     }
-    for (int i = 0; i < playerB.size(); i++) {
+    for (int i = playerB.size() - 1; i >= 0; i--) {
       simRunning |= playerBBehavior.simUnit(playerB.get(i), playerB, playerA);
     }
     removeDead(playerA);
@@ -133,7 +140,7 @@ public class Simulator {
     while (i < agents.size()) {
       if (agents.get(i).healthShifted < 1) {
         Agent agent = agents.removeAt(i);
-        collision[colindex(agent.x, agent.y)]--;
+        if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
         agent.onDeathReplacer.accept(agents);
       } else {
         i++;
@@ -142,8 +149,10 @@ public class Simulator {
   }
 
   private void updateStats(UnorderedCollection<Agent> agents) {
-    for (int i = 0; i < agents.size(); i++) {
+    for (int i = agents.size() - 1; i >= 0; i--) {
       Agent agent = agents.get(i);
+
+      assert agent.healthShifted >= 0;
 
       updatePosition(agent);
       agent.vx = 0;
@@ -182,13 +191,16 @@ public class Simulator {
       return;
     }
 
-    if (!agent.isFlyer
-        && (agent.x / TILE_SIZE != tx / TILE_SIZE || agent.y / TILE_SIZE != ty / TILE_SIZE)) {
-      if (collision[colindex(tx, ty)] > TILE_SIZE / 8 - 1) {
-        return;
+    if (!agent.isFlyer) {
+      int oldCI = colindex(agent.x, agent.y);
+      int newCI = colindex(tx, ty);
+      if (oldCI != newCI) {
+        if (collision[newCI] > TILE_SIZE / 8 - 1) {
+          return;
+        }
+        collision[oldCI]--;
+        collision[newCI]++;
       }
-      collision[colindex(agent.x, agent.y)]--;
-      collision[colindex(tx, ty)]++;
     }
 
     agent.x = tx;

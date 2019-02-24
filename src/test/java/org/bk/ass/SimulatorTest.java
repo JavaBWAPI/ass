@@ -1,13 +1,13 @@
 package org.bk.ass;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.bk.ass.Simulator.RoleBasedBehavior;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SimulatorTest {
 
@@ -346,8 +346,8 @@ class SimulatorTest {
   void _2LurkersVs12Marines() {
     // GIVEN
     simulator
-        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true))
-        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true));
+            .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(130).setY(30))
+            .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(150).setY(50));
 
     for (int i = 0; i < 12; i++) {
       simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
@@ -379,9 +379,9 @@ class SimulatorTest {
   }
 
   @Test
-  void _7MutaVs1BunkerAnd4SCVs() {
+  void _6MutaVs1BunkerAnd4SCVs() {
     // GIVEN
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 6; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
     simulator.addAgentB(factory.of(UnitType.Terran_Bunker));
@@ -414,12 +414,12 @@ class SimulatorTest {
   }
 
   @Test
-  void _7MutasVs9Hydras() {
+  void _7MutasVs8Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 8; i++) {
       simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk));
     }
 
@@ -454,13 +454,14 @@ class SimulatorTest {
   }
 
   @Test
-  void _13DragoonsVs10UpgradedHydras() {
+  void _12DragoonsVs10UpgradedHydras() {
     // GIVEN
-    for (int i = 0; i < 13; i++) {
-      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(400).setY(400));
+    for (int i = 0; i < 12; i++) {
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(400 + i * 8).setY(400));
     }
     for (int i = 0; i < 10; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200));
+      simulator.addAgentB(
+              factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200 + i * 8));
     }
 
     // WHEN
@@ -472,9 +473,9 @@ class SimulatorTest {
   }
 
   @Test
-  void _13MarinesVs10Hydras() {
+  void _12MarinesVs10Hydras() {
     // GIVEN
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 12; i++) {
       simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(200 + i * 8).setY(400));
     }
     for (int i = 0; i < 10; i++) {
@@ -613,5 +614,21 @@ class SimulatorTest {
     assertThrows(
         PositionOutOfBoundsException.class,
         () -> simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setY(9000)));
+  }
+
+  @Test
+  void shouldResetCollisions() {
+    // GIVEN
+    for (int i = 0; i < 1000; i++)
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(i * 8).setY(i * 8));
+    for (int i = 0; i < 1000; i++)
+      simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setX(8191 - i * 8).setY(i * 8));
+    simulator.simulate();
+
+    // WHEN
+    simulator.reset();
+
+    // THEN
+    assertThat(simulator.collision).containsOnly(0);
   }
 }

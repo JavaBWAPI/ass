@@ -16,8 +16,8 @@ public class AgentUtil {
 
   public static void moveToward(Agent agent, Agent target, int distanceSquared) {
     if (distanceSquared <= agent.speedSquared) {
-      agent.x = target.x;
-      agent.y = target.y;
+      agent.vx = target.x - agent.x;
+      agent.vy = target.y - agent.y;
     } else {
       float distance = (float) sqrt(distanceSquared);
       agent.vx = (int) ((target.x - agent.x) * agent.speed / distance);
@@ -49,11 +49,11 @@ public class AgentUtil {
       Agent mainTarget,
       UnorderedCollection<Agent> allies,
       UnorderedCollection<Agent> enemies) {
-    for (int i = 0; i < allies.size(); i++) {
+    for (int i = allies.size() - 1; i >= 0; i--) {
       Agent ally = allies.get(i);
       applySplashDamage(weapon, mainTarget, ally);
     }
-    for (int i = 0; i < enemies.size(); i++) {
+    for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       applySplashDamage(weapon, mainTarget, enemy);
     }
@@ -85,7 +85,7 @@ public class AgentUtil {
    */
   public static void dealRadialSplashDamage(
       Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
-    for (int i = 0; i < enemies.size(); i++) {
+    for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       applySplashDamage(weapon, mainTarget, enemy);
     }
@@ -104,7 +104,7 @@ public class AgentUtil {
         weapon.maxRangeSquared
             + 2 * weapon.maxRange * weapon.innerSplashRadius
             + weapon.innerSplashRadiusSquared;
-    for (int i = 0; i < enemies.size(); i++) {
+    for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
         continue;
@@ -128,7 +128,7 @@ public class AgentUtil {
       Weapon weapon, Agent lastTarget, UnorderedCollection<Agent> enemies) {
     int remainingBounces = 2;
     int damage = weapon.damageShifted / 3;
-    for (int i = 0; i < enemies.size() && remainingBounces > 0; i++) {
+    for (int i = enemies.size() - 1; i >= 0 && remainingBounces > 0; i--) {
       Agent enemy = enemies.get(i);
       if (enemy == lastTarget) {
         continue;

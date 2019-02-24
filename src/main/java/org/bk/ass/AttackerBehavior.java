@@ -34,7 +34,7 @@ public class AttackerBehavior implements Behavior {
     }
 
     if (selectedEnemy == null) {
-      for (int i = 0; i < enemies.size(); i++) {
+      for (int i = enemies.size() - 1; i >= 0; i--) {
         Agent enemy = enemies.get(i);
         Weapon wpn = agent.weaponVs(enemy);
         if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
@@ -66,7 +66,9 @@ public class AttackerBehavior implements Behavior {
       return false;
     }
 
-    if (agent.cooldown == 0 && selectedDistanceSquared <= selectedWeapon.maxRangeSquared) {
+    if (agent.cooldown == 0
+            && selectedDistanceSquared
+            <= Math.max(Simulator.MIN_SIMULATION_RANGE, selectedWeapon.maxRangeSquared)) {
       simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
     }
 
