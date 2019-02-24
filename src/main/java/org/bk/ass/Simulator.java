@@ -101,11 +101,11 @@ public class Simulator {
   public void reset() {
     for (int i = playerA.size() - 1; i >= 0; i--) {
       Agent agent = playerA.get(i);
-      if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
+      collision[colindex(agent.x, agent.y)] = 0;
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
       Agent agent = playerB.get(i);
-      if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
+      collision[colindex(agent.x, agent.y)] = 0;
     }
     resetUnits();
   }
