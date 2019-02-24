@@ -414,12 +414,12 @@ class SimulatorTest {
   }
 
   @Test
-  void _7MutasVs8Hydras() {
+  void _7MutasVs9Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
     }
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 9; i++) {
       simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk));
     }
 
