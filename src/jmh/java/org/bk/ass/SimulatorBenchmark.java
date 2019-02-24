@@ -36,7 +36,7 @@ public class SimulatorBenchmark {
   }
 
   @Benchmark
-  public int _7MutasVs8Hydras(MyState state) {
+  public int _30MutasVs30Hydras(MyState state) {
     return state.simulator.simulate(-1);
   }
 
