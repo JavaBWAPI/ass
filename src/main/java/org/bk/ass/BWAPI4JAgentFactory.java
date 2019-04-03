@@ -1,12 +1,11 @@
 package org.bk.ass;
 
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.function.Consumer;
+import org.bk.ass.info.BWAPI4JUnitInfo;
 import org.openbw.bwapi4j.BWMap;
 import org.openbw.bwapi4j.Player;
 import org.openbw.bwapi4j.type.ExplosionType;
@@ -34,7 +33,6 @@ public class BWAPI4JAgentFactory {
       EnumSet.of(
           UnitType.Terran_Marine, UnitType.Terran_Vulture,
           UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon);
-  private static EnumMap<UnitType, Integer> stopFrames = new EnumMap<>(UnitType.class);
 
   private Consumer<Collection<Agent>> bunkerReplacer =
       agents -> {
@@ -43,29 +41,6 @@ public class BWAPI4JAgentFactory {
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
       };
-
-  static {
-    asList(
-        UnitType.Terran_Goliath,
-        UnitType.Terran_Siege_Tank_Tank_Mode,
-        UnitType.Terran_Siege_Tank_Siege_Mode,
-        UnitType.Protoss_Reaver)
-        .forEach(u -> stopFrames.put(u, 1));
-    asList(UnitType.Terran_Ghost, UnitType.Zerg_Hydralisk).forEach(u -> stopFrames.put(u, 3));
-    asList(UnitType.Protoss_Arbiter, UnitType.Zerg_Zergling).forEach(u -> stopFrames.put(u, 4));
-    asList(UnitType.Protoss_Zealot, UnitType.Protoss_Dragoon).forEach(u -> stopFrames.put(u, 7));
-    asList(
-        UnitType.Terran_Marine,
-        UnitType.Terran_Firebat,
-        UnitType.Protoss_Corsair,
-        UnitType.Terran_Bunker)
-        .forEach(u -> stopFrames.put(u, 8));
-    asList(UnitType.Protoss_Dark_Templar, UnitType.Zerg_Devourer)
-        .forEach(u -> stopFrames.put(u, 9));
-    stopFrames.put(UnitType.Zerg_Ultralisk, 14);
-    stopFrames.put(UnitType.Protoss_Archon, 15);
-    stopFrames.put(UnitType.Terran_Valkyrie, 40);
-  }
 
   private final BWMap map;
 
@@ -164,7 +139,7 @@ public class BWAPI4JAgentFactory {
                     && unitType != UnitType.Zerg_Lurker_Egg
                     && unitType != UnitType.Zerg_Larva)
             .setSuicider(SUICIDERS.contains(unitType))
-            .setStopFrames(stopFrames.getOrDefault(unitType, 2))
+            .setStopFrames(BWAPI4JUnitInfo.stopFrames(unitType))
             .setSize(size(unitType.size()))
             .setArmor(unitType.armor())
             .setKiter(KITERS.contains(unitType))

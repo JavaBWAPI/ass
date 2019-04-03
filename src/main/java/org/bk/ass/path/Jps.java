@@ -41,9 +41,9 @@ public class Jps {
       assert dx != 0;
       int x = px + dx;
 
-      int a = (map.isWalkable(x, py - 1) ? 0 : 1) | (map.isWalkable(x, py + 1) ? 0 : 2);
-      while (map.isWalkable(x, py)) {
-        int b = (map.isWalkable(x + dx, py - 1) ? 1 : 0) | (map.isWalkable(x + dx, py + 1) ? 2 : 0);
+      int a = (map.get(x, py - 1) ? 0 : 1) | (map.get(x, py + 1) ? 0 : 2);
+      while (map.get(x, py)) {
+        int b = (map.get(x + dx, py - 1) ? 1 : 0) | (map.get(x + dx, py + 1) ? 2 : 0);
         if (x == target.x && py == target.y || (a & b) != 0) {
           return new Position(x, py);
         }
@@ -58,9 +58,9 @@ public class Jps {
       assert dy != 0;
       int y = py + dy;
 
-      int a = (map.isWalkable(px - 1, y) ? 0 : 1) | (map.isWalkable(px + 1, y) ? 0 : 2);
-      while (map.isWalkable(px, y)) {
-        int b = (map.isWalkable(px - 1, y + dy) ? 1 : 0) | (map.isWalkable(px + 1, y + dy) ? 2 : 0);
+      int a = (map.get(px - 1, y) ? 0 : 1) | (map.get(px + 1, y) ? 0 : 2);
+      while (map.get(px, y)) {
+        int b = (map.get(px - 1, y + dy) ? 1 : 0) | (map.get(px + 1, y + dy) ? 2 : 0);
         if (px == target.x && y == target.y || (a & b) != 0) {
           return new Position(px, y);
         }

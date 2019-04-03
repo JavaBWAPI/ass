@@ -14,11 +14,10 @@ import bwapi.UnitType;
 import bwapi.UpgradeType;
 import bwapi.WeaponType;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.bk.ass.info.BWMirrorUnitInfo;
 
 /**
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for
@@ -38,7 +37,6 @@ public class BWMirrorAgentFactory {
             asList(
                 UnitType.Terran_Marine, UnitType.Terran_Vulture,
                 UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon));
-    private static Map<UnitType, Integer> stopFrames = new HashMap<>();
 
     private Consumer<Collection<Agent>> bunkerReplacer =
         agents -> {
@@ -47,29 +45,6 @@ public class BWMirrorAgentFactory {
             agents.add(of(UnitType.Terran_Marine));
             agents.add(of(UnitType.Terran_Marine));
         };
-
-    static {
-        asList(
-            UnitType.Terran_Goliath,
-            UnitType.Terran_Siege_Tank_Tank_Mode,
-            UnitType.Terran_Siege_Tank_Siege_Mode,
-            UnitType.Protoss_Reaver)
-            .forEach(u -> stopFrames.put(u, 1));
-        asList(UnitType.Terran_Ghost, UnitType.Zerg_Hydralisk).forEach(u -> stopFrames.put(u, 3));
-        asList(UnitType.Protoss_Arbiter, UnitType.Zerg_Zergling).forEach(u -> stopFrames.put(u, 4));
-        asList(UnitType.Protoss_Zealot, UnitType.Protoss_Dragoon).forEach(u -> stopFrames.put(u, 7));
-        asList(
-            UnitType.Terran_Marine,
-            UnitType.Terran_Firebat,
-            UnitType.Protoss_Corsair,
-            UnitType.Terran_Bunker)
-            .forEach(u -> stopFrames.put(u, 8));
-        asList(UnitType.Protoss_Dark_Templar, UnitType.Zerg_Devourer)
-            .forEach(u -> stopFrames.put(u, 9));
-        stopFrames.put(UnitType.Zerg_Ultralisk, 14);
-        stopFrames.put(UnitType.Protoss_Archon, 15);
-        stopFrames.put(UnitType.Terran_Valkyrie, 40);
-    }
 
     private final Game game;
 
@@ -168,7 +143,7 @@ public class BWMirrorAgentFactory {
                         && unitType != UnitType.Zerg_Lurker_Egg
                         && unitType != UnitType.Zerg_Larva)
                 .setSuicider(SUICIDERS.contains(unitType))
-                .setStopFrames(stopFrames.getOrDefault(unitType, 2))
+                .setStopFrames(BWMirrorUnitInfo.stopFrames(unitType))
                 .setSize(size(unitType.size()))
                 .setArmor(unitType.armor())
                 .setKiter(KITERS.contains(unitType))

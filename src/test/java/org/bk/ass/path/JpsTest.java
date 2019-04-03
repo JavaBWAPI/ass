@@ -1,15 +1,15 @@
 package org.bk.ass.path;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.SplittableRandom;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Test;
 
 class JpsTest {
 
@@ -142,7 +142,7 @@ class JpsTest {
         new Jps(
             new Map() {
               @Override
-              public boolean isWalkable(int x, int y) {
+              public Boolean get(int x, int y) {
                 return y >= 0
                     && y <= 999
                     && (x == 0 && y % 4 == 1
@@ -186,11 +186,11 @@ class JpsTest {
       Position start;
       do {
         start = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
-      } while (!map.isWalkable(start.x, start.y));
+      } while (!map.get(start.x, start.y));
       Position end;
       do {
         end = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
-      } while (!map.isWalkable(end.x, end.y));
+      } while (!map.get(end.x, end.y));
 
       // WHEN
       result = sut.findPath(start, end);

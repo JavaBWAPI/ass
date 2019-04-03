@@ -21,7 +21,6 @@ repositories {
 dependencies {
     implementation(fileTree("lib").include("*.jar"))
     implementation("com.github.JasperGeurtz:JBWAPI:develop-SNAPSHOT")
-    implementation("com.github.OpenBW:BWAPI4J:master-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")

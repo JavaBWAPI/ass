@@ -118,13 +118,13 @@ public class Evaluator {
       double damageToApply = calculateDamage(agent, weapon);
       if (weapon.damageType == DamageType.CONCUSSIVE) {
         groundConcussiveHits += weapon.hits;
-        groundConcussiveDamage += damageToApply;
+          groundConcussiveDamage += (int) damageToApply;
       } else if (weapon.damageType == DamageType.EXPLOSIVE) {
         groundExplosiveHits += weapon.hits;
-        groundExplosiveDamage += damageToApply;
+          groundExplosiveDamage += (int) damageToApply;
       } else {
         groundNormalHits += weapon.hits;
-        groundDamageNormal += damageToApply;
+          groundDamageNormal += (int) damageToApply;
       }
     }
 
@@ -132,13 +132,13 @@ public class Evaluator {
       Weapon weapon = agent.groundWeapon;
       double damageToApply = calculateDamage(agent, weapon);
       if (agent.airWeapon.damageType == DamageType.CONCUSSIVE) {
-        airConcussiveDamage += damageToApply;
+          airConcussiveDamage += (int) damageToApply;
         airConcussiveHits += weapon.hits;
       } else if (agent.airWeapon.damageType == DamageType.EXPLOSIVE) {
-        airExplosiveDamage += damageToApply;
+          airExplosiveDamage += (int) damageToApply;
         airExplosiveHits += weapon.hits;
       } else {
-        airDamageNormal += damageToApply;
+          airDamageNormal += (int) damageToApply;
         airNormalHits += weapon.hits;
       }
     }

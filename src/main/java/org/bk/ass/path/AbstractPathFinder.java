@@ -1,11 +1,13 @@
 package org.bk.ass.path;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
-
-import static java.lang.Math.*;
 
 abstract class AbstractPathFinder {
   private final Node CLOSED = new Node();
@@ -57,26 +59,26 @@ abstract class AbstractPathFinder {
             addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
             addToOpenSet(best, jumpVertical(p.x, p.y, dy));
             addToOpenSet(best, jumpDiag(p.x, p.y, dx, dy));
-            if (!map.isWalkable(p.x - dx, p.y)) {
+              if (!map.get(p.x - dx, p.y)) {
               addToOpenSet(best, jumpDiag(p.x, p.y, -dx, dy));
             }
-            if (!map.isWalkable(p.x, p.y - dy)) {
+              if (!map.get(p.x, p.y - dy)) {
               addToOpenSet(best, jumpDiag(p.x, p.y, dx, -dy));
             }
           } else if (dx != 0) {
             addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
-            if (!map.isWalkable(p.x, p.y - 1)) {
+              if (!map.get(p.x, p.y - 1)) {
               addToOpenSet(best, jumpDiag(p.x, p.y, dx, -1));
             }
-            if (!map.isWalkable(p.x, p.y + 1)) {
+              if (!map.get(p.x, p.y + 1)) {
               addToOpenSet(best, jumpDiag(p.x, p.y, dx, 1));
             }
           } else {
             addToOpenSet(best, jumpVertical(p.x, p.y, dy));
-            if (!map.isWalkable(p.x - 1, p.y)) {
+              if (!map.get(p.x - 1, p.y)) {
               addToOpenSet(best, jumpDiag(p.x, p.y, -1, dy));
             }
-            if (!map.isWalkable(p.x + 1, p.y)) {
+              if (!map.get(p.x + 1, p.y)) {
               addToOpenSet(best, jumpDiag(p.x, p.y, 1, dy));
             }
           }
@@ -119,9 +121,9 @@ abstract class AbstractPathFinder {
     assert dy != 0;
     int x = px + dx;
     int y = py + dy;
-    int a = (map.isWalkable(x - dx, y) ? 0 : 1) | (map.isWalkable(x, y - dy) ? 0 : 2);
-    while (map.isWalkable(x, y)) {
-      int b = (map.isWalkable(x - dx, y + dy) ? 1 : 0) | (map.isWalkable(x + dx, y - dy) ? 2 : 0);
+      int a = (map.get(x - dx, y) ? 0 : 1) | (map.get(x, y - dy) ? 0 : 2);
+      while (map.get(x, y)) {
+          int b = (map.get(x - dx, y + dy) ? 1 : 0) | (map.get(x + dx, y - dy) ? 2 : 0);
       if (x == target.x && y == target.y
           || (a & b) != 0
           || jumpHorizontal(x, y, dx) != null

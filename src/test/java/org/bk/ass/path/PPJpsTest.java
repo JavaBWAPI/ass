@@ -142,7 +142,7 @@ class PPJpsTest {
         new PPJps(
             new Map() {
               @Override
-              public boolean isWalkable(int x, int y) {
+              public Boolean get(int x, int y) {
                 return y >= 0
                     && y <= 999
                     && (x == 0 && y % 4 == 1
@@ -186,11 +186,11 @@ class PPJpsTest {
       Position start;
       do {
         start = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
-      } while (!map.isWalkable(start.x, start.y));
+      } while (!map.get(start.x, start.y));
       Position end;
       do {
         end = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
-      } while (!map.isWalkable(end.x, end.y));
+      } while (!map.get(end.x, end.y));
 
       // WHEN
       result = sut.findPath(start, end);
