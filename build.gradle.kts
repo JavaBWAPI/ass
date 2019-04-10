@@ -1,8 +1,9 @@
 plugins {
     java
     id("maven")
-    id("me.champeau.gradle.jmh") version "0.4.7"
-    id("org.sonarqube") version "2.6"
+    id("me.champeau.gradle.jmh") version "0.4.8"
+    id("org.sonarqube") version "2.7"
+    id("com.github.ben-manes.versions") version "0.21.0"
 }
 
 group = "org.bk"
@@ -22,10 +23,9 @@ dependencies {
     implementation(fileTree("lib").include("*.jar"))
     implementation("com.github.JasperGeurtz:JBWAPI:develop-SNAPSHOT")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
-    testImplementation("org.assertj:assertj-core:3.11.1")
-    testImplementation("io.jenetics:jenetics:4.3.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    testImplementation("org.assertj:assertj-core:3.12.2")
+    testImplementation("io.jenetics:jenetics:4.4.0")
 }
 
 configure<JavaPluginConvention> {
