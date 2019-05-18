@@ -144,6 +144,26 @@ class SimulatorTest {
   }
 
   @Test
+  void tankVsBurrowedZerglings() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(384).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(394).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(404).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(404));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).extracting("health")
+            .contains(80, // out of inner splash range while burrowed
+                    62, // direct hit
+                    62, // inner splash hit burrowed
+                    71); // unburrowed, inside outer splash
+  }
+
+  @Test
   void lurkerVsTwoMarinesSingleFrame() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine).setX(20));

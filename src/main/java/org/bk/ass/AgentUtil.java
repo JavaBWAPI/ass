@@ -60,21 +60,17 @@ public class AgentUtil {
   }
 
   private static void applySplashDamage(Weapon weapon, Agent mainTarget, Agent splashTarget) {
-    if (splashTarget == mainTarget
-        || splashTarget.burrowed
-        || splashTarget.isFlyer != mainTarget.isFlyer) {
+    if (splashTarget == mainTarget || splashTarget.isFlyer != mainTarget.isFlyer) {
       return;
     }
 
     int distanceSquared = distanceSquared(splashTarget, mainTarget);
-    if (distanceSquared <= weapon.outerSplashRadiusSquared) {
+    if (distanceSquared <= weapon.innerSplashRadiusSquared) {
+      applyDamage(splashTarget, weapon.damageType, weapon.damageShifted, weapon.hits);
+    } else if (!splashTarget.burrowed) {
       if (distanceSquared <= weapon.medianSplashRadiusSquared) {
-        if (distanceSquared <= weapon.innerSplashRadiusSquared) {
-          applyDamage(splashTarget, weapon.damageType, weapon.damageShifted, weapon.hits);
-        } else {
-          applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
-        }
-      } else {
+        applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
+      } else if (distanceSquared <= weapon.outerSplashRadiusSquared) {
         applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 4, weapon.hits);
       }
     }
@@ -106,7 +102,7 @@ public class AgentUtil {
             + weapon.innerSplashRadiusSquared;
     for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
-      if (enemy == mainTarget || enemy.burrowed || enemy.isFlyer != mainTarget.isFlyer) {
+      if (enemy == mainTarget || enemy.isFlyer != mainTarget.isFlyer) {
         continue;
       }
       int enemyDistSq = distanceSquared(enemy, source);
