@@ -11,6 +11,8 @@ public class SuiciderBehavior implements Behavior {
   @Override
   public boolean simUnit(
           Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+    // Don't check for lockdown - I believe there are no suiciders which can be locked down
+    if (agent.isStasised) return false;
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = enemies.size() - 1; i >= 0; i--) {

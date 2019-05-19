@@ -34,6 +34,7 @@ public class HealerBehavior implements Behavior {
       for (int i = allies.size() - 1; i >= 0; i--) {
         Agent ally = allies.get(i);
         if (ally.isOrganic
+                && !ally.isStasised
             && ally.healthShifted < ally.maxHealthShifted
             && !agent.healedThisFrame
             && ally != agent) {

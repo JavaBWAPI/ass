@@ -1,25 +1,16 @@
 package org.bk.ass;
 
-import static java.lang.Math.max;
+import org.bk.ass.info.BWAPI4JUnitInfo;
+import org.openbw.bwapi4j.BWMap;
+import org.openbw.bwapi4j.Player;
+import org.openbw.bwapi4j.type.*;
+import org.openbw.bwapi4j.unit.*;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.function.Consumer;
-import org.bk.ass.info.BWAPI4JUnitInfo;
-import org.openbw.bwapi4j.BWMap;
-import org.openbw.bwapi4j.Player;
-import org.openbw.bwapi4j.type.ExplosionType;
-import org.openbw.bwapi4j.type.Race;
-import org.openbw.bwapi4j.type.TechType;
-import org.openbw.bwapi4j.type.UnitSizeType;
-import org.openbw.bwapi4j.type.UnitType;
-import org.openbw.bwapi4j.type.UpgradeType;
-import org.openbw.bwapi4j.type.WeaponType;
-import org.openbw.bwapi4j.unit.Burrowable;
-import org.openbw.bwapi4j.unit.Firebat;
-import org.openbw.bwapi4j.unit.Marine;
-import org.openbw.bwapi4j.unit.PlayerUnit;
-import org.openbw.bwapi4j.unit.SpellCaster;
+
+import static java.lang.Math.max;
 
 public class BWAPI4JAgentFactory {
 
@@ -65,13 +56,13 @@ public class BWAPI4JAgentFactory {
       boolean speedUpgrade,
       boolean energyUpgrade) {
     return fromUnitType(
-        unitType,
-        groundWeaponUpgrades,
-        airWeaponUpgrades,
-        groundWeaponRangeUpgrade,
-        airWeaponRangeUpgrade,
-        speedUpgrade,
-        energyUpgrade)
+            unitType,
+            groundWeaponUpgrades,
+            airWeaponUpgrades,
+            groundWeaponRangeUpgrade,
+            airWeaponRangeUpgrade,
+            speedUpgrade,
+            energyUpgrade)
         .setHealth(unitType.maxHitPoints())
         .setShields(unitType.maxShields())
         .setEnergy(unitType.maxEnergy());
@@ -186,13 +177,13 @@ public class BWAPI4JAgentFactory {
     }
 
     return fromUnitType(
-        unit.getType(),
-        groundWeaponUpgrades,
-        airWeaponUpgrades,
-        groundWeaponRangeUpgrade,
-        airWeaponRangeUpgrade,
-        speedUpgrade,
-        energyUpgrade)
+            unit.getType(),
+            groundWeaponUpgrades,
+            airWeaponUpgrades,
+            groundWeaponRangeUpgrade,
+            airWeaponRangeUpgrade,
+            speedUpgrade,
+            energyUpgrade)
         .setHealth(unit.getHitPoints())
         .setShields(unit.getShields())
         .setEnergy(energy)
@@ -264,44 +255,44 @@ public class BWAPI4JAgentFactory {
   private boolean hasEnergyUpgrade(UnitType unitType, Player player) {
     return unitType == UnitType.Zerg_Queen && player.getUpgradeLevel(UpgradeType.Gamete_Meiosis) > 0
         || unitType == UnitType.Zerg_Defiler
-        && player.getUpgradeLevel(UpgradeType.Metasynaptic_Node) > 0
+            && player.getUpgradeLevel(UpgradeType.Metasynaptic_Node) > 0
         || unitType == UnitType.Protoss_High_Templar
-        && player.getUpgradeLevel(UpgradeType.Khaydarin_Amulet) > 0
+            && player.getUpgradeLevel(UpgradeType.Khaydarin_Amulet) > 0
         || unitType == UnitType.Protoss_Dark_Archon
-        && player.getUpgradeLevel(UpgradeType.Argus_Talisman) > 0
+            && player.getUpgradeLevel(UpgradeType.Argus_Talisman) > 0
         || unitType == UnitType.Protoss_Arbiter
-        && player.getUpgradeLevel(UpgradeType.Khaydarin_Core) > 0
+            && player.getUpgradeLevel(UpgradeType.Khaydarin_Core) > 0
         || unitType == UnitType.Protoss_Corsair
-        && player.getUpgradeLevel(UpgradeType.Argus_Jewel) > 0
+            && player.getUpgradeLevel(UpgradeType.Argus_Jewel) > 0
         || unitType == UnitType.Terran_Wraith
-        && player.getUpgradeLevel(UpgradeType.Apollo_Reactor) > 0
+            && player.getUpgradeLevel(UpgradeType.Apollo_Reactor) > 0
         || unitType == UnitType.Terran_Ghost
-        && player.getUpgradeLevel(UpgradeType.Moebius_Reactor) > 0
+            && player.getUpgradeLevel(UpgradeType.Moebius_Reactor) > 0
         || unitType == UnitType.Terran_Battlecruiser
-        && player.getUpgradeLevel(UpgradeType.Colossus_Reactor) > 0
+            && player.getUpgradeLevel(UpgradeType.Colossus_Reactor) > 0
         || unitType == UnitType.Terran_Science_Vessel
-        && player.getUpgradeLevel(UpgradeType.Titan_Reactor) > 0
+            && player.getUpgradeLevel(UpgradeType.Titan_Reactor) > 0
         || unitType == UnitType.Terran_Medic
-        && player.getUpgradeLevel(UpgradeType.Caduceus_Reactor) > 0;
+            && player.getUpgradeLevel(UpgradeType.Caduceus_Reactor) > 0;
   }
 
   private boolean hasSpeedUpgrade(UnitType unitType, Player player) {
     return unitType == UnitType.Zerg_Zergling
-        && player.getUpgradeLevel(UpgradeType.Metabolic_Boost) > 0
+            && player.getUpgradeLevel(UpgradeType.Metabolic_Boost) > 0
         || unitType == UnitType.Zerg_Hydralisk
-        && player.getUpgradeLevel(UpgradeType.Muscular_Augments) > 0
+            && player.getUpgradeLevel(UpgradeType.Muscular_Augments) > 0
         || unitType == UnitType.Zerg_Overlord
-        && player.getUpgradeLevel(UpgradeType.Pneumatized_Carapace) > 0
+            && player.getUpgradeLevel(UpgradeType.Pneumatized_Carapace) > 0
         || unitType == UnitType.Zerg_Ultralisk
-        && player.getUpgradeLevel(UpgradeType.Anabolic_Synthesis) > 0
+            && player.getUpgradeLevel(UpgradeType.Anabolic_Synthesis) > 0
         || unitType == UnitType.Protoss_Shuttle
-        && player.getUpgradeLevel(UpgradeType.Gravitic_Thrusters) > 0
+            && player.getUpgradeLevel(UpgradeType.Gravitic_Thrusters) > 0
         || unitType == UnitType.Protoss_Observer
-        && player.getUpgradeLevel(UpgradeType.Gravitic_Boosters) > 0
+            && player.getUpgradeLevel(UpgradeType.Gravitic_Boosters) > 0
         || unitType == UnitType.Protoss_Zealot
-        && player.getUpgradeLevel(UpgradeType.Leg_Enhancements) > 0
+            && player.getUpgradeLevel(UpgradeType.Leg_Enhancements) > 0
         || unitType == UnitType.Terran_Vulture
-        && player.getUpgradeLevel(UpgradeType.Ion_Thrusters) > 0;
+            && player.getUpgradeLevel(UpgradeType.Ion_Thrusters) > 0;
   }
 
   private SplashType splashType(WeaponType weaponType) {

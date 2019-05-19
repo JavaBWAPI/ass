@@ -19,6 +19,7 @@ public class AttackerBehavior implements Behavior {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
+    if (agent.isLockeddown || agent.isStasised) return false;
 
     Agent selectedEnemy = null;
     Weapon selectedWeapon = null;
@@ -37,7 +38,7 @@ public class AttackerBehavior implements Behavior {
       for (int i = enemies.size() - 1; i >= 0; i--) {
         Agent enemy = enemies.get(i);
         Weapon wpn = agent.weaponVs(enemy);
-        if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
+        if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected && !enemy.isStasised) {
           int distanceSquared = distanceSquared(agent, enemy);
           if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
             selectedDistanceSquared = distanceSquared;

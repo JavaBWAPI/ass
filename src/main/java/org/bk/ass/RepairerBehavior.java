@@ -28,7 +28,10 @@ public class RepairerBehavior implements Behavior {
     if (selectedAlly == null) {
       for (int i = allies.size() - 1; i >= 0; i--) {
         Agent ally = allies.get(i);
-        if (ally.isMechanic && ally.healthShifted < ally.maxHealthShifted && ally != agent) {
+        if (ally.isMechanic
+                && !ally.isStasised
+                && ally.healthShifted < ally.maxHealthShifted
+                && ally != agent) {
 
           int distance = distanceSquared(agent, ally);
           if (distance < selectedDistanceSquared) {

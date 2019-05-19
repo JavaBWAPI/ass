@@ -156,8 +156,10 @@ class SimulatorTest {
     simulator.simulate(1);
 
     // THEN
-    assertThat(simulator.getAgentsB()).extracting("health")
-            .contains(80, // out of inner splash range while burrowed
+    assertThat(simulator.getAgentsB())
+            .extracting("health")
+            .contains(
+                    80, // out of inner splash range while burrowed
                     62, // direct hit
                     62, // inner splash hit burrowed
                     71); // unburrowed, inside outer splash
@@ -650,5 +652,65 @@ class SimulatorTest {
 
     // THEN
     assertThat(simulator.collision).containsOnly(0);
+  }
+
+  @Test
+  void shouldNotAttackStasisedUnitsNorBeAttackedByThem() {
+    // GIVEN
+    simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
+    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
+
+    // WHEN
+    simulator.simulate();
+
+    // THEN
+    assertThat(simulator.getAgentsA()).first().extracting(Agent::getHealth).isEqualTo(125);
+    assertThat(simulator.getAgentsB()).first().extracting(Agent::getHealth).isEqualTo(120);
+  }
+
+  @Test
+  void shouldAttackLockeddownUnitsButDontBeAttackedByThem() {
+    // GIVEN
+    simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
+    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
+
+    // WHEN
+    simulator.simulate();
+
+    // THEN
+    assertThat(simulator.getAgentsA()).first().extracting(Agent::getHealth).isEqualTo(97);
+    assertThat(simulator.getAgentsB()).first().extracting(Agent::getHealth).isEqualTo(120);
+  }
+
+  @Test
+  void shouldNotRepairStasisedUnit() {
+    // GIVEN
+    simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
+    simulator.addAgentA(
+            factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true).setHealth(97));
+    simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
+
+    // WHEN
+    simulator.simulate();
+
+    // THEN
+    assertThat(simulator.getAgentsA()).extracting(Agent::getHealth).contains(97);
+  }
+
+  @Test
+  void shouldRepairLockeddownUnit() {
+    // GIVEN
+    simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
+    simulator.addAgentA(
+            factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true).setHealth(97));
+    simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
+
+    // WHEN
+    simulator.simulate();
+
+    // THEN
+    assertThat(simulator.getAgentsA()).extracting(Agent::getHealth).contains(97);
   }
 }

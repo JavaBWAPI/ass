@@ -1,9 +1,9 @@
 package org.bk.ass;
 
-import static java.lang.Math.max;
-
 import java.util.Collection;
 import java.util.function.Consumer;
+
+import static java.lang.Math.max;
 
 public class Agent {
 
@@ -57,6 +57,9 @@ public class Agent {
   // Visible to the other force
   boolean detected;
 
+  boolean isStasised;
+  boolean isLockeddown;
+
   UnitSize size;
 
   boolean isMelee;
@@ -105,6 +108,16 @@ public class Agent {
 
   public Agent setRemainingStimFrames(int remainingStimFrames) {
     this.remainingStimFrames = remainingStimFrames;
+    return this;
+  }
+
+  public Agent setStasised(boolean stasised) {
+    isStasised = stasised;
+    return this;
+  }
+
+  public Agent setLockeddown(boolean lockeddown) {
+    isLockeddown = lockeddown;
     return this;
   }
 
