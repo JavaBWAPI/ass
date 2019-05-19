@@ -1,23 +1,14 @@
 package org.bk.ass;
 
-import static java.lang.Math.max;
-import static java.util.Arrays.asList;
+import bwapi.*;
+import org.bk.ass.info.BWMirrorUnitInfo;
 
-import bwapi.ExplosionType;
-import bwapi.Game;
-import bwapi.Player;
-import bwapi.Race;
-import bwapi.TechType;
-import bwapi.Unit;
-import bwapi.UnitSizeType;
-import bwapi.UnitType;
-import bwapi.UpgradeType;
-import bwapi.WeaponType;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.bk.ass.info.BWMirrorUnitInfo;
+
+import static java.lang.Math.max;
 
 /**
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for
@@ -26,17 +17,15 @@ import org.bk.ass.info.BWMirrorUnitInfo;
 public class BWMirrorAgentFactory {
 
     private static final Set<UnitType> SUICIDERS =
-        new HashSet<>(
-            asList(
+            EnumSet.of(
                 UnitType.Zerg_Scourge,
                 UnitType.Zerg_Infested_Terran,
                 UnitType.Terran_Vulture_Spider_Mine,
-                UnitType.Protoss_Scarab));
+                    UnitType.Protoss_Scarab);
     private static final Set<UnitType> KITERS =
-        new HashSet<>(
-            asList(
+            EnumSet.of(
                 UnitType.Terran_Marine, UnitType.Terran_Vulture,
-                UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon));
+                    UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon);
 
     private Consumer<Collection<Agent>> bunkerReplacer =
         agents -> {
