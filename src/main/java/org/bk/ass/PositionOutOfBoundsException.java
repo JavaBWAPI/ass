@@ -6,6 +6,6 @@ package org.bk.ass;
 public class PositionOutOfBoundsException extends RuntimeException {
 
   PositionOutOfBoundsException(String message) {
-        super(message);
-    }
+    super(message);
+  }
 }

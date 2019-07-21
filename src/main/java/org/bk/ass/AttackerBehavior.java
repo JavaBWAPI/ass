@@ -38,7 +38,10 @@ public class AttackerBehavior implements Behavior {
       for (int i = enemies.size() - 1; i >= 0; i--) {
         Agent enemy = enemies.get(i);
         Weapon wpn = agent.weaponVs(enemy);
-        if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected && !enemy.isStasised) {
+          if (enemy.healthShifted >= 1
+                  && wpn.damageShifted != 0
+                  && enemy.detected
+                  && !enemy.isStasised) {
           int distanceSquared = distanceSquared(agent, enemy);
           if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
             selectedDistanceSquared = distanceSquared;

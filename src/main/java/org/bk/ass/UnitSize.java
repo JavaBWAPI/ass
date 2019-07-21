@@ -1,5 +1,8 @@
 package org.bk.ass;
 
 public enum UnitSize {
-  SMALL, MEDIUM, LARGE, IRRELEVANT;
+    SMALL,
+    MEDIUM,
+    LARGE,
+    IRRELEVANT
 }

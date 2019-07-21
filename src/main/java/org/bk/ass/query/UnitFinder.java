@@ -1,21 +1,12 @@
 package org.bk.ass.query;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.lang.Math.*;
 
 /**
  * Helper class to make area and range queries for "positions". While using an instance all
@@ -38,7 +29,7 @@ public class UnitFinder<U> extends AbstractCollection<U> {
   private final Function<U, PositionAndId> positionAndIdExtractor;
   private final DistanceProvider distanceProvider;
   private static final DistanceProvider EUCLIDEAN_DISTANCE =
-      (ax, ay, bx, by) -> (int) Math.sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay));
+          (ax, ay, bx, by) -> (int) Math.sqrt((float) (bx - ax) * (bx - ax) + (by - ay) * (by - ay));
   /**
    * When using this, all radius queries need to be made with the squared radius
    */
@@ -119,10 +110,10 @@ public class UnitFinder<U> extends AbstractCollection<U> {
   }
 
   private Stream<Entry<PositionAndId, U>> subMapOfArea(int ax, int ay, int bx, int by) {
-    return map.subMap(
-        new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
-        .entrySet()
-        .stream()
+    return map
+            .subMap(
+                    new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
+            .entrySet().stream()
         .filter(u -> u.getKey().y <= by && u.getKey().y >= ay);
   }
 

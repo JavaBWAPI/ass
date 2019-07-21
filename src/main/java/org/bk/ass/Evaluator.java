@@ -1,10 +1,10 @@
 package org.bk.ass;
 
-import static java.lang.Math.max;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static java.lang.Math.max;
 
 /**
  * Used to get a rough guess for combat outcome. Doesn't provide as much detail as the {@link
@@ -49,18 +49,16 @@ public class Evaluator {
     }
     double evalA =
         (double) damageToA
-            / (finalAgentsA
-            .stream()
-            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-            .sum()
-            + EPS);
+                / (finalAgentsA.stream()
+                .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+                .sum()
+                + EPS);
     double evalB =
         (double) damageToB
-            / (finalAgentsB
-            .stream()
-            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-            .sum()
-            + EPS);
+                / (finalAgentsB.stream()
+                .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+                .sum()
+                + EPS);
     // eval is a rough estimate on how many units where lost.
     // Directly comparing is bad since one might have lost more agents than he had.
     // So we just multiply with the enemy count and compare that instead.
@@ -72,8 +70,7 @@ public class Evaluator {
   private int regeneration(Collection<Agent> agents) {
     // Subtract 1 to prevent counting selfheal
     int healables = (int) (agents.stream().filter(it -> it.isOrganic).count() - 1);
-    return agents
-        .stream()
+      return agents.stream()
         .mapToInt(
             a -> {
               int healed = 0;
@@ -246,8 +243,8 @@ public class Evaluator {
 
     public Parameters() {
       this(
-          new double[]{
-              2.812625, 0.504625, 0.053, 1.2545, 2.27975, 1.86025, 976.7565, 513.109625, 586.87675
+              new double[]{
+                      2.812625, 0.504625, 0.053, 1.2545, 2.27975, 1.86025, 976.7565, 513.109625, 586.87675
           });
     }
   }

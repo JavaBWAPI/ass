@@ -25,7 +25,7 @@ public interface PPMap extends Map {
         left[y][x] = pos;
           if (map.get(x, y)) {
               if (map.get(x - 1, y - 1) && !map.get(x, y - 1)
-                  || map.get(x - 1, y + 1) && !map.get(x, y + 1)) {
+                      || map.get(x - 1, y + 1) && !map.get(x, y + 1)) {
             pos = (short) x;
           }
         } else {
@@ -37,7 +37,7 @@ public interface PPMap extends Map {
         right[y][x] = pos;
           if (map.get(x, y)) {
               if (map.get(x + 1, y - 1) && !map.get(x, y - 1)
-                  || map.get(x + 1, y + 1) && !map.get(x, y + 1)) {
+                      || map.get(x + 1, y + 1) && !map.get(x, y + 1)) {
             pos = (short) x;
           }
         } else {
@@ -51,7 +51,7 @@ public interface PPMap extends Map {
         up[y][x] = pos;
           if (map.get(x, y)) {
               if (map.get(x - 1, y - 1) && !map.get(x - 1, y)
-                  || map.get(x + 1, y - 1) && !map.get(x + 1, y)) {
+                      || map.get(x + 1, y - 1) && !map.get(x + 1, y)) {
             pos = (short) y;
           }
         } else {
@@ -63,7 +63,7 @@ public interface PPMap extends Map {
         down[y][x] = pos;
           if (map.get(x, y)) {
               if (map.get(x - 1, y + 1) && !map.get(x - 1, y)
-                  || map.get(x + 1, y + 1) && !map.get(x + 1, y)) {
+                      || map.get(x + 1, y + 1) && !map.get(x + 1, y)) {
             pos = (short) y;
           }
         } else {

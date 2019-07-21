@@ -1,9 +1,11 @@
 package org.bk.ass.info;
 
-
 import org.openbw.bwapi4j.type.UnitType;
 
 public class BWAPI4JUnitInfo {
+    private BWAPI4JUnitInfo() {
+        // Utility class
+    }
 
     public static int stopFrames(UnitType unitType) {
         switch (unitType) {
@@ -38,5 +40,4 @@ public class BWAPI4JUnitInfo {
                 return 2;
         }
     }
-
 }

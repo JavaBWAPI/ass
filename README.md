@@ -140,7 +140,7 @@ You can also use the `RetreatBehavior` to make some or all units run away instea
 A DBScan based clustering algorithm.
 * Stable clustering: Unless a cluster is split up, units will end up in the same cluster as in previous runs
 * Iterative: Instead of assigning all units to clusters at once, do it iteratively. Once done, 
-  it the clustering restarts and the previous result can be accessed.
+  the clustering restarts and the previous result can be accessed.
 
 ### UnitFinder
 A simple utility class to make queries for units within a radius/square at some position.

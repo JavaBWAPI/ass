@@ -7,9 +7,9 @@ import java.util.List;
  */
 public class Result {
 
-  /**
-   * The length of the path or {@link Float#POSITIVE_INFINITY} if none was found.
-   */
+    /**
+     * The length of the path or {@link Float#POSITIVE_INFINITY} if none was found.
+     */
   public final float length;
   /**
    * The path without intermediary steps. Each pair of positions describes a line to be followed.

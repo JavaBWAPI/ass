@@ -129,9 +129,7 @@ public class StableDBScanner<U> {
 
   private void updateElementClusters() {
     elementToCluster =
-        elementToWrapper
-            .entrySet()
-            .stream()
+            elementToWrapper.entrySet().stream()
             .collect(
                 Collectors.toMap(
                     Entry::getKey,
@@ -186,9 +184,7 @@ public class StableDBScanner<U> {
   }
 
   private List<WrappedElement<U>> elementsWithinRadius(WrappedElement<U> q) {
-    return inRadiusFinder
-        .apply(q.element)
-        .stream()
+    return inRadiusFinder.apply(q.element).stream()
         .map(u -> elementToWrapper.get(u))
         .filter(Objects::nonNull) // Yet unknown elements might be returned, ignore them
         .collect(Collectors.toList());
