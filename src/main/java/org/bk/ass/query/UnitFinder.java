@@ -3,6 +3,7 @@ package org.bk.ass.query;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -109,12 +110,29 @@ public class UnitFinder<U> extends AbstractCollection<U> {
     return subMapOfArea(ax, ay, bx, by).map(Entry::getValue).collect(Collectors.toList());
   }
 
+  /**
+   * Returns a collection of all units in the area with top left (ax, ay) and bottom right (bx, by)
+   * including those on the boundary. Only units passing the given criteria are returned.
+   */
+  public Collection<U> inArea(int ax, int ay, int bx, int by, Predicate<U> criteria) {
+    return subMapOfArea(ax, ay, bx, by, criteria).map(Entry::getValue).collect(Collectors.toList());
+  }
+
   private Stream<Entry<PositionAndId, U>> subMapOfArea(int ax, int ay, int bx, int by) {
     return map
             .subMap(
                     new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
             .entrySet().stream()
-        .filter(u -> u.getKey().y <= by && u.getKey().y >= ay);
+            .filter(u -> u.getKey().y <= by && u.getKey().y >= ay);
+  }
+
+  private Stream<Entry<PositionAndId, U>> subMapOfArea(
+          int ax, int ay, int bx, int by, Predicate<U> criteria) {
+    return map
+            .subMap(
+                    new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
+            .entrySet().stream()
+            .filter(u -> u.getKey().y <= by && u.getKey().y >= ay && criteria.test(u.getValue()));
   }
 
   /**
@@ -168,8 +186,42 @@ public class UnitFinder<U> extends AbstractCollection<U> {
       return Optional.empty();
     }
     return subMapOfArea(x - squareHSize, y - squareHSize, x + squareHSize, y + squareHSize)
-        .min(Comparator.comparing(e -> distanceProvider.distance(e.getKey().x, e.getKey().y, x, y)))
-        .map(Entry::getValue);
+            .min(Comparator.comparing(e -> distanceProvider.distance(e.getKey().x, e.getKey().y, x, y)))
+            .map(Entry::getValue);
+  }
+
+  /**
+   * Returns the closest unit to the given position matching the given criteria or {@link
+   * Optional#empty()} if no units are present.
+   */
+  public Optional<U> closestTo(int x, int y, Predicate<U> criteria) {
+    PositionAndId query = new PositionAndId(-1, x, y);
+    int squareHSize = Integer.MAX_VALUE;
+    Entry<PositionAndId, U> lowerBound = map.lowerEntry(query);
+    while (lowerBound != null && !criteria.test(lowerBound.getValue())) {
+      lowerBound = map.lowerEntry(lowerBound.getKey());
+    }
+    if (lowerBound != null) {
+      int lx = lowerBound.getKey().x;
+      int ly = lowerBound.getKey().y;
+      squareHSize = max(abs(lx - x), abs(ly - y));
+    }
+    Entry<PositionAndId, U> higherBound = map.higherEntry(query);
+    while (higherBound != null && !criteria.test(higherBound.getValue())) {
+      higherBound = map.higherEntry(higherBound.getKey());
+    }
+    if (higherBound != null) {
+      int hx = higherBound.getKey().x;
+      int hy = higherBound.getKey().y;
+      squareHSize = min(squareHSize, max(abs(hx - x), abs(hy - y)));
+    }
+    if (squareHSize == Integer.MAX_VALUE) {
+      return Optional.empty();
+    }
+    return subMapOfArea(
+            x - squareHSize, y - squareHSize, x + squareHSize, y + squareHSize, criteria)
+            .min(Comparator.comparing(e -> distanceProvider.distance(e.getKey().x, e.getKey().y, x, y)))
+            .map(Entry::getValue);
   }
 
   @Override

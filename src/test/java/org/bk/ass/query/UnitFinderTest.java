@@ -1,17 +1,19 @@
 package org.bk.ass.query;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Function;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UnitFinderTest {
 
   @Test
-  public void shouldNotDieIfEmpty() {
+  void shouldNotDieIfEmpty() {
     // GIVEN
     UnitFinder<Object> finder =
         new UnitFinder<>(
@@ -30,7 +32,7 @@ class UnitFinderTest {
   }
 
   @Test
-  public void shouldFindClosest() {
+  void shouldFindClosest() {
     // GIVEN
     UnitFinder<PositionAndId> finder =
         new UnitFinder<>(
@@ -45,7 +47,43 @@ class UnitFinderTest {
   }
 
   @Test
-  public void shouldFindAllInArea() {
+  void shouldFindClosestWithCriteria() {
+    // GIVEN
+    UnitFinder<Unit> finder =
+            new UnitFinder<>(
+                    Arrays.asList(
+                            new Unit(-1, new PositionAndId(-1, -30, 0)),
+                            new Unit(0, new PositionAndId(0, 0, -30)),
+                            new Unit(1, new PositionAndId(1, 30, 0))),
+                    u -> u.positionAndId);
+
+    // WHEN
+    Unit closest = finder.closestTo(0, 0, u -> u.id > 0).get();
+
+    // THEN
+    assertThat(closest).isEqualTo(new Unit(1, new PositionAndId(1, 30, 0)));
+  }
+
+  @Test
+  void shouldFindDifferentItemIfCriteriaFails() {
+    // GIVEN
+    UnitFinder<Unit> finder =
+            new UnitFinder<>(
+                    Arrays.asList(
+                            new Unit(-1, new PositionAndId(-1, -30, 0)),
+                            new Unit(0, new PositionAndId(0, 0, -30)),
+                            new Unit(1, new PositionAndId(1, 30, 0))),
+                    u -> u.positionAndId);
+
+    // WHEN
+    Unit closest = finder.closestTo(30, 0, u -> u.id < 0).get();
+
+    // THEN
+    assertThat(closest).isEqualTo(new Unit(-1, new PositionAndId(-1, -30, 0)));
+  }
+
+  @Test
+  void shouldFindAllInArea() {
     // GIVEN
     UnitFinder<PositionAndId> finder =
         new UnitFinder<>(
@@ -67,7 +105,7 @@ class UnitFinderTest {
   }
 
   @Test
-  public void shouldFindAllInRadius() {
+  void shouldFindAllInRadius() {
     // GIVEN
     UnitFinder<PositionAndId> finder =
         new UnitFinder<>(
@@ -88,7 +126,7 @@ class UnitFinderTest {
   }
 
   @Test
-  public void shouldFindAllInRadiusOfUnit() {
+  void shouldFindAllInRadiusOfUnit() {
     // GIVEN
     PositionAndId unit = new PositionAndId(-1, 0, 0);
     UnitFinder<PositionAndId> finder =
@@ -107,5 +145,36 @@ class UnitFinderTest {
 
     // THEN
     assertThat(result).hasSize(5);
+  }
+
+  private static class Unit {
+    public final int id;
+    public final PositionAndId positionAndId;
+
+    private Unit(int id, PositionAndId positionAndId) {
+      this.id = id;
+      this.positionAndId = positionAndId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Unit unit = (Unit) o;
+      return id == unit.id && Objects.equals(positionAndId, unit.positionAndId);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id, positionAndId);
+    }
+
+    @Override
+    public String toString() {
+      return "Unit{" +
+              "id=" + id +
+              ", positionAndId=" + positionAndId +
+              '}';
+    }
   }
 }
