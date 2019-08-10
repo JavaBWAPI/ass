@@ -439,10 +439,10 @@ class SimulatorTest {
   void _7MutasVs9Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+        simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(i * 16));
     }
     for (int i = 0; i < 9; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk));
+        simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(i * 16).setY(32));
     }
 
     // WHEN
