@@ -2,7 +2,6 @@ plugins {
     java
     id("maven")
     id("me.champeau.gradle.jmh") version "0.4.8"
-    id("org.sonarqube") version "2.7.1"
     id("com.github.ben-manes.versions") version "0.21.0"
 }
 
@@ -21,7 +20,7 @@ repositories {
 
 dependencies {
     implementation(fileTree("lib").include("*.jar"))
-    implementation("com.github.JavaBWAPI:JBWAPI:0.7")
+    implementation("com.github.JavaBWAPI:JBWAPI:0.7.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
     testImplementation("org.assertj:assertj-core:3.13.2")
