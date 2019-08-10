@@ -31,9 +31,9 @@ public class UnitFinder<U> extends AbstractCollection<U> {
   private final DistanceProvider distanceProvider;
   private static final DistanceProvider EUCLIDEAN_DISTANCE =
           (ax, ay, bx, by) -> (int) Math.sqrt((float) (bx - ax) * (bx - ax) + (by - ay) * (by - ay));
-  /**
-   * When using this, all radius queries need to be made with the squared radius
-   */
+    /**
+     * When using this, all radius queries need to be made with the squared radius
+     */
   public static final DistanceProvider EUCLIDEAN_DISTANCE_SQUARED =
       (ax, ay, bx, by) -> (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
   /** Use this to query using the distance approximation used in OpenBW */
@@ -119,20 +119,20 @@ public class UnitFinder<U> extends AbstractCollection<U> {
   }
 
   private Stream<Entry<PositionAndId, U>> subMapOfArea(int ax, int ay, int bx, int by) {
-    return map
-            .subMap(
-                    new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
-            .entrySet().stream()
-            .filter(u -> u.getKey().y <= by && u.getKey().y >= ay);
+      return map
+              .subMap(
+                      new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
+              .entrySet().stream()
+              .filter(u -> u.getKey().y <= by && u.getKey().y >= ay);
   }
 
   private Stream<Entry<PositionAndId, U>> subMapOfArea(
           int ax, int ay, int bx, int by, Predicate<U> criteria) {
-    return map
-            .subMap(
-                    new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
-            .entrySet().stream()
-            .filter(u -> u.getKey().y <= by && u.getKey().y >= ay && criteria.test(u.getValue()));
+      return map
+              .subMap(
+                      new PositionAndId(-1, ax, ay), true, new PositionAndId(Integer.MAX_VALUE, bx, by), true)
+              .entrySet().stream()
+              .filter(u -> u.getKey().y <= by && u.getKey().y >= ay && criteria.test(u.getValue()));
   }
 
   /**
@@ -170,19 +170,18 @@ public class UnitFinder<U> extends AbstractCollection<U> {
   public Optional<U> closestTo(int x, int y) {
     PositionAndId query = new PositionAndId(-1, x, y);
     int squareHSize = Integer.MAX_VALUE;
-    Entry<PositionAndId, U> lowerBound = map.lowerEntry(query);
+      PositionAndId lowerBound = map.lowerKey(query);
     if (lowerBound != null) {
-      int lx = lowerBound.getKey().x;
-      int ly = lowerBound.getKey().y;
-      squareHSize = max(abs(lx - x), abs(ly - y));
+        int lx = lowerBound.x;
+        int ly = lowerBound.y;
+        squareHSize = max(x - lx, abs(ly - y));
     }
-    Entry<PositionAndId, U> higherBound = map.higherEntry(query);
+      PositionAndId higherBound = map.higherKey(query);
     if (higherBound != null) {
-      int hx = higherBound.getKey().x;
-      int hy = higherBound.getKey().y;
-      squareHSize = min(squareHSize, max(abs(hx - x), abs(hy - y)));
-    }
-    if (squareHSize == Integer.MAX_VALUE) {
+        int hx = higherBound.x;
+        int hy = higherBound.y;
+        squareHSize = min(squareHSize, max(hx - x, abs(hy - y)));
+    } else if (lowerBound == null) {
       return Optional.empty();
     }
     return subMapOfArea(x - squareHSize, y - squareHSize, x + squareHSize, y + squareHSize)
@@ -204,7 +203,7 @@ public class UnitFinder<U> extends AbstractCollection<U> {
     if (lowerBound != null) {
       int lx = lowerBound.getKey().x;
       int ly = lowerBound.getKey().y;
-      squareHSize = max(abs(lx - x), abs(ly - y));
+        squareHSize = max(x - lx, abs(ly - y));
     }
     Entry<PositionAndId, U> higherBound = map.higherEntry(query);
     while (higherBound != null && !criteria.test(higherBound.getValue())) {
@@ -213,9 +212,8 @@ public class UnitFinder<U> extends AbstractCollection<U> {
     if (higherBound != null) {
       int hx = higherBound.getKey().x;
       int hy = higherBound.getKey().y;
-      squareHSize = min(squareHSize, max(abs(hx - x), abs(hy - y)));
-    }
-    if (squareHSize == Integer.MAX_VALUE) {
+        squareHSize = min(squareHSize, max(hx - x, abs(hy - y)));
+    } else if (lowerBound == null) {
       return Optional.empty();
     }
     return subMapOfArea(
