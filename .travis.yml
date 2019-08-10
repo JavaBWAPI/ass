@@ -1,1 +1,9 @@
 language: java
+deploy:
+  provider: releases
+  api_key:
+    secure: MTgRrJiJlTscx2uUYOSvjaWXcQSBfpI+hG7Pgm9VfxV6GCNto9uK4xVu0hfV28Tru+dz+j8OIa+2yiLicR4rnqn5FXrxPQs+jWkkQ/zzILhl2QQSCpoEOnAbHxe3MPtvu2AnPoPW3jhgRgHDYEIyYke1l7tUPkZ90EurBjs1rmab7GGxQ/KmQ2HQbD92Z1tEAConzSdfHxfar2QCetr2+8poOOKH1qjN/KUPonTLNW9T/FRMB853nHLqKcHUXqid9YqQW0Qsh8mZbM0xDMBMAeppczxRMZxTiqElTFZ3XLR/Bd5Re0Eq1/LKKAJwzQ32aLY/mD46EOnyg/rvPiVCUMbBnwGPLiGiEWAPNLmrCm7kMR8LIo6hKyMNlxXvPMikSEbVFlI5pMkdtpzErGTZe8GlI2MmIGGQ7T40GxSpf+OxWmc+dXhLA6VQS9WlIwqvif6aflKH2ziMFZ8oLch61cp3tAQ4lDMt7hq7gjB7dAdch/YBuMrtQjG9rkhuB8brMXN0IRCK/NbN9+rYgF3rGoJcW4JR76LI5sFdMZD9PtonpG54m11QFmvRmcPhBr2/8JbXoF+GUQK1GM+DY/0obMZrf1511fRgPuTE6wokG8w2LeECIGowtXw45+pIoDqd5qz8XnVGj5XHkIzwOC3Ax8GTC1iZgipy4ZB2ngmgiKY=
+  file: 'build/libs/ass-1.0.jar'
+  on:
+    repo: JavaBWAPI/ass
+    tags: true
