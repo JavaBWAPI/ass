@@ -261,7 +261,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
             if (pos(mid).x < pos(end).x) swap(mid, end);
             int pivot = pos(end).x;
             while (true) {
-                while (pos(start).x < pivot) start++;
+                while (pos(start).x <= pivot) start++;
                 while (pos(end).x > pivot) end--;
                 if (start >= end) return new Pivot(pivot, end);
                 swap(start, end);
@@ -293,7 +293,8 @@ public class PositionQueries<U> extends AbstractCollection<U> {
         }
 
         private Node makeTree(int start, int end, boolean xDim) {
-            if (end - start < 10) return new Node(Arrays.copyOfRange(data, start, end + 1));
+            // 15 elements seems to be the sweet spot for ~1000 positions
+            if (end - start < 15) return new Node(Arrays.copyOfRange(data, start, end + 1));
             Pivot pivot;
             if (xDim) {
                 pivot = partitionX(start, end);
