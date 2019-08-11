@@ -1,5 +1,7 @@
 package org.bk.ass.query;
 
+import org.bk.ass.path.Position;
+
 import java.util.Objects;
 
 /**
@@ -14,6 +16,10 @@ public class PositionAndId implements Comparable<PositionAndId> {
     this.x = x;
     this.y = y;
     this.id = id;
+  }
+
+  public Position toPosition() {
+    return new Position(x, y);
   }
 
   @Override

@@ -1,7 +1,7 @@
 package org.bk.ass.cluster;
 
 import org.bk.ass.collection.UnorderedCollection;
-import org.bk.ass.query.UnitFinder;
+import org.bk.ass.query.PositionQueries;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * is split into multiple clusters. In that case, only a part of the elements are retained in the
  * previous cluster. <br>
  * Make sure to call {@link #scan(int)} to actually perform clustering. Calling {@link
- * #updateDB(UnitFinder, int)} or {@link #updateDB(Collection, Function)} will reset the clustering
+ * #updateDB(PositionQueries, int)} or {@link #updateDB(Collection, Function)} will reset the clustering
  * process. Make sure to always cluster all elements or to check if the clustering is done with
  * {@link #isComplete()}.<br>
  * The clustering is ongoing, each call to {@link #scan(int)} will continue or restart the
@@ -35,8 +35,8 @@ public class StableDBScanner<U> {
   private Map<U, Cluster<U>> elementToCluster = Collections.emptyMap();
   private ClusterSurrogate<U> currentCluster;
 
-  public StableDBScanner(UnitFinder<U> unitFinder, int minPoints, int radius) {
-    this(unitFinder, minPoints, u -> unitFinder.inRadius(u, radius));
+  public StableDBScanner(PositionQueries<U> positionQueries, int minPoints, int radius) {
+    this(positionQueries, minPoints, u -> positionQueries.inRadius(u, radius));
   }
 
   public StableDBScanner(int minPoints) {
@@ -65,8 +65,8 @@ public class StableDBScanner<U> {
     return this;
   }
 
-  public StableDBScanner<U> updateDB(UnitFinder<U> unitFinder, int radius) {
-    return updateDB(unitFinder, u -> unitFinder.inRadius(u, radius));
+  public StableDBScanner<U> updateDB(PositionQueries<U> positionQueries, int radius) {
+    return updateDB(positionQueries, u -> positionQueries.inRadius(u, radius));
   }
 
   /**
