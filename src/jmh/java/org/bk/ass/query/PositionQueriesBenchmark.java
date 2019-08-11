@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.SplittableRandom;
 import java.util.function.Function;
 
-@Measurement(iterations = 2, time = 2)
-@Warmup(iterations = 2, time = 2)
-@Fork(2)
+@Measurement(iterations = 5, time = 5)
+@Fork(3)
 public class PositionQueriesBenchmark {
 
     @State(Scope.Thread)
