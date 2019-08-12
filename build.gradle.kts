@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.bk"
-version = "1.0"
+version = "1.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
