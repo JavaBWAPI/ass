@@ -207,6 +207,51 @@ class PositionQueriesTest {
     assertThat(result).hasSize(5);
   }
 
+  @Test
+  void shouldRemoveItem() {
+    // GIVEN
+    PositionQueries<Position> finder =
+            new PositionQueries<>(
+                    Arrays.asList(
+                            new Position(0, 0),
+                            new Position(0, 10),
+                            new Position(10, 0),
+                            new Position(10, 10),
+                            new Position(-10, 0),
+                            new Position(0, -10)),
+                    Function.identity());
+
+    // WHEN
+    boolean removed = finder.remove(new Position(10, 0));
+
+    // THEN
+    assertThat(removed).isTrue();
+  }
+
+  @Test
+  void shouldRemoveAllItems() {
+    // GIVEN
+    PositionQueries<Position> finder =
+            new PositionQueries<>(
+                    Arrays.asList(
+                            new Position(0, 0),
+                            new Position(0, 10),
+                            new Position(10, 0),
+                            new Position(10, 10),
+                            new Position(-10, 0),
+                            new Position(0, -10)),
+                    Function.identity());
+
+    // WHEN
+    boolean removed =
+            finder.removeAll(
+                    Arrays.asList(new Position(10, 0), new Position(0, 10), new Position(222, 222)));
+
+    // THEN
+    assertThat(removed).isTrue();
+    assertThat(finder).hasSize(4);
+  }
+
   private static class Unit {
     final int id;
     final Position Position;
