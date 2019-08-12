@@ -33,9 +33,9 @@ class PositionQueriesTest {
 
     // THEN
     Position actualNearest =
-            positions.stream()
-                    .min(Comparator.comparingInt(a -> EUCLIDEAN_DISTANCE.distance(a.x, a.y, 500, 500)))
-                    .orElseThrow(RuntimeException::new);
+        positions.stream()
+            .min(Comparator.comparingInt(a -> EUCLIDEAN_DISTANCE.distance(a.x, a.y, 500, 500)))
+            .orElseThrow(RuntimeException::new);
     assertThat(nearest).isEqualTo(actualNearest);
   }
 
@@ -49,9 +49,9 @@ class PositionQueriesTest {
 
     // THEN
     List<Position> actualNearest =
-            positions.stream()
-                    .filter(it -> it.x >= 10 && it.y >= 10 && it.x <= 1000 && it.y <= 1000)
-                    .collect(Collectors.toList());
+        positions.stream()
+            .filter(it -> it.x >= 10 && it.y >= 10 && it.x <= 1000 && it.y <= 1000)
+            .collect(Collectors.toList());
 
     assertThat(nearest).containsExactlyInAnyOrderElementsOf(actualNearest);
   }
@@ -66,9 +66,9 @@ class PositionQueriesTest {
 
     // THEN
     List<Position> actualNearest =
-            positions.stream()
-                    .filter(it -> EUCLIDEAN_DISTANCE.distance(5000, 5000, it.x, it.y) <= 1000)
-                    .collect(Collectors.toList());
+        positions.stream()
+            .filter(it -> EUCLIDEAN_DISTANCE.distance(5000, 5000, it.x, it.y) <= 1000)
+            .collect(Collectors.toList());
 
     assertThat(nearest).containsExactlyInAnyOrderElementsOf(actualNearest);
   }
@@ -77,16 +77,16 @@ class PositionQueriesTest {
   void shouldFindAllInArea() {
     // GIVEN
     PositionQueries<Position> kdTree =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            new Position(0, 0),
-                            new Position(0, 10),
-                            new Position(10, 0),
-                            new Position(10, 10),
-                            new Position(0, 11),
-                            new Position(11, 0),
-                            new Position(11, 11)),
-                    Function.identity());
+        new PositionQueries<>(
+            Arrays.asList(
+                new Position(0, 0),
+                new Position(0, 10),
+                new Position(10, 0),
+                new Position(10, 10),
+                new Position(0, 11),
+                new Position(11, 0),
+                new Position(11, 11)),
+            Function.identity());
 
     // WHEN
     Collection<Position> result = kdTree.inArea(0, 0, 10, 10);
@@ -99,11 +99,11 @@ class PositionQueriesTest {
   void shouldNotDieIfEmpty() {
     // GIVEN
     PositionQueries<Object> finder =
-            new PositionQueries<>(
-                    Collections.emptyList(),
-                    o -> {
-                      throw new IllegalStateException("On what object are you calling me?");
-                    });
+        new PositionQueries<>(
+            Collections.emptyList(),
+            o -> {
+              throw new IllegalStateException("On what object are you calling me?");
+            });
 
     // WHEN
     finder.nearest(0, 0);
@@ -118,8 +118,8 @@ class PositionQueriesTest {
   void shouldFindClosest() {
     // GIVEN
     PositionQueries<Position> finder =
-            new PositionQueries<>(
-                    Arrays.asList(new Position(-30, 0), new Position(0, -31)), Function.identity());
+        new PositionQueries<>(
+            Arrays.asList(new Position(-30, 0), new Position(0, -31)), Function.identity());
 
     // WHEN
     Position closest = finder.nearest(0, 0);
@@ -132,12 +132,12 @@ class PositionQueriesTest {
   void shouldFindClosestWithCriteria() {
     // GIVEN
     PositionQueries<Unit> finder =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            new Unit(-1, new Position(-30, 0)),
-                            new Unit(0, new Position(0, -30)),
-                            new Unit(1, new Position(30, 0))),
-                    u -> u.Position);
+        new PositionQueries<>(
+            Arrays.asList(
+                new Unit(-1, new Position(-30, 0)),
+                new Unit(0, new Position(0, -30)),
+                new Unit(1, new Position(30, 0))),
+            u -> u.Position);
 
     // WHEN
     Unit closest = finder.nearest(0, 0, u -> u.id > 0);
@@ -150,12 +150,12 @@ class PositionQueriesTest {
   void shouldFindDifferentItemIfCriteriaFails() {
     // GIVEN
     PositionQueries<Unit> finder =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            new Unit(-1, new Position(-30, 0)),
-                            new Unit(0, new Position(0, -30)),
-                            new Unit(1, new Position(30, 0))),
-                    u -> u.Position);
+        new PositionQueries<>(
+            Arrays.asList(
+                new Unit(-1, new Position(-30, 0)),
+                new Unit(0, new Position(0, -30)),
+                new Unit(1, new Position(30, 0))),
+            u -> u.Position);
 
     // WHEN
     Unit closest = finder.nearest(30, 0, u -> u.id < 0);
@@ -168,15 +168,15 @@ class PositionQueriesTest {
   void shouldFindAllInRadius() {
     // GIVEN
     PositionQueries<Position> finder =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            new Position(0, 0),
-                            new Position(0, 10),
-                            new Position(10, 0),
-                            new Position(10, 10),
-                            new Position(-10, 0),
-                            new Position(0, -10)),
-                    Function.identity());
+        new PositionQueries<>(
+            Arrays.asList(
+                new Position(0, 0),
+                new Position(0, 10),
+                new Position(10, 0),
+                new Position(10, 10),
+                new Position(-10, 0),
+                new Position(0, -10)),
+            Function.identity());
 
     // WHEN
     Collection<Position> result = finder.inRadius(0, 0, 10);
@@ -190,15 +190,15 @@ class PositionQueriesTest {
     // GIVEN
     Position unit = new Position(0, 0);
     PositionQueries<Position> finder =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            unit,
-                            new Position(0, 10),
-                            new Position(10, 0),
-                            new Position(10, 10),
-                            new Position(-10, 0),
-                            new Position(0, -10)),
-                    Function.identity());
+        new PositionQueries<>(
+            Arrays.asList(
+                unit,
+                new Position(0, 10),
+                new Position(10, 0),
+                new Position(10, 10),
+                new Position(-10, 0),
+                new Position(0, -10)),
+            Function.identity());
 
     // WHEN
     Collection<Position> result = finder.inRadius(unit, 10);
@@ -211,15 +211,15 @@ class PositionQueriesTest {
   void shouldRemoveItem() {
     // GIVEN
     PositionQueries<Position> finder =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            new Position(0, 0),
-                            new Position(0, 10),
-                            new Position(10, 0),
-                            new Position(10, 10),
-                            new Position(-10, 0),
-                            new Position(0, -10)),
-                    Function.identity());
+        new PositionQueries<>(
+            Arrays.asList(
+                new Position(0, 0),
+                new Position(0, 10),
+                new Position(10, 0),
+                new Position(10, 10),
+                new Position(-10, 0),
+                new Position(0, -10)),
+            Function.identity());
 
     // WHEN
     boolean removed = finder.remove(new Position(10, 0));
@@ -232,20 +232,20 @@ class PositionQueriesTest {
   void shouldRemoveAllItems() {
     // GIVEN
     PositionQueries<Position> finder =
-            new PositionQueries<>(
-                    Arrays.asList(
-                            new Position(0, 0),
-                            new Position(0, 10),
-                            new Position(10, 0),
-                            new Position(10, 10),
-                            new Position(-10, 0),
-                            new Position(0, -10)),
-                    Function.identity());
+        new PositionQueries<>(
+            Arrays.asList(
+                new Position(0, 0),
+                new Position(0, 10),
+                new Position(10, 0),
+                new Position(10, 10),
+                new Position(-10, 0),
+                new Position(0, -10)),
+            Function.identity());
 
     // WHEN
     boolean removed =
-            finder.removeAll(
-                    Arrays.asList(new Position(10, 0), new Position(0, 10), new Position(222, 222)));
+        finder.removeAll(
+            Arrays.asList(new Position(10, 0), new Position(0, 10), new Position(222, 222)));
 
     // THEN
     assertThat(removed).isTrue();
