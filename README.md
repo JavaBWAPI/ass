@@ -43,7 +43,7 @@ Add the maven repo:
 And the dependency:    	
 
       dependencies {
-        implementation 'com.github.Bytekeeper:ass:master-SNAPSHOT'
+        implementation 'com.github.Bytekeeper:ass:1.0'
       }
 
 
@@ -63,7 +63,7 @@ And the dependency:
     <dependency>
         <groupId>com.github.Bytekeeper</groupId>
         <artifactId>ass</artifactId>
-        <version>master-SNAPSHOT</version>
+        <version>1.0</version>
     </dependency>
 
 ### JAR file
@@ -142,8 +142,11 @@ A DBScan based clustering algorithm.
 * Iterative: Instead of assigning all units to clusters at once, do it iteratively. Once done, 
   the clustering restarts and the previous result can be accessed.
 
-### UnitFinder
-A simple utility class to make queries for units within a radius/square at some position.
+### PositionQueries
+A utility class to make 2D-position based queries:
+* radius queries
+* area queries
+* nearest queries 
 
 ### Jump Path Search
 An implementation of the algorithm described here: https://zerowidth.com/2013/05/05/jump-point-search-explained.html
