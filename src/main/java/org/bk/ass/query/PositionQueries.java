@@ -81,28 +81,23 @@ public class PositionQueries<U> extends AbstractCollection<U> {
   }
 
   /**
-   * Removes the given element, the internal data structure will not be changed - queries will
-   * therefore not be faster.
+   * Adds the given element, the internal data structure will not be changed - query performance
+   * will suffer.
    */
   @Override
-  public boolean remove(Object o) {
+  public boolean add(U u) {
+    Node node = findNodeFor(u);
+    Object[] newValues = Arrays.copyOf(node.values, node.values.length + 1);
+    newValues[node.values.length] = u;
+    node.values = newValues;
+    return true;
+  }
+
+  private Node findNodeFor(Object o) {
     Node current = root;
     boolean xDim = true;
     while (current != null) {
-      if (current.values != null && current.values.length > 0) {
-        Object[] replacement = new Object[current.values.length - 1];
-        int i;
-        for (i = 0; i < replacement.length && !Objects.equals(current.values[i], o); i++) {
-          replacement[i] = current.values[i];
-        }
-        if (i == replacement.length) return false;
-        for (; i < replacement.length; i++) {
-          replacement[i] = current.values[i + 1];
-        }
-        current.values = replacement;
-        size--;
-        return true;
-      }
+      if (current.values != null) return current;
       Position pos = positionExtractor.apply((U) o);
       if (xDim && pos.x <= current.p || !xDim && pos.y <= current.p) {
         current = current.left;
@@ -110,6 +105,30 @@ public class PositionQueries<U> extends AbstractCollection<U> {
         current = current.right;
       }
       xDim = !xDim;
+    }
+    throw new IllegalStateException("No node with values found!");
+  }
+
+  /**
+   * Removes the given element, the internal data structure will not be changed - queries will
+   * therefore not be faster.
+   */
+  @Override
+  public boolean remove(Object o) {
+    Node node = findNodeFor(o);
+    if (node.values.length > 0) {
+      Object[] replacement = new Object[node.values.length - 1];
+      int i;
+      for (i = 0; i < replacement.length && !Objects.equals(node.values[i], o); i++) {
+        replacement[i] = node.values[i];
+      }
+      if (i == replacement.length) return false;
+      for (; i < replacement.length; i++) {
+        replacement[i] = node.values[i + 1];
+      }
+      node.values = replacement;
+      size--;
+      return true;
     }
     return false;
   }

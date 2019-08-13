@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.bk.ass.query.Distances.EUCLIDEAN_DISTANCE;
 
@@ -100,7 +101,7 @@ class PositionQueriesTest {
     // GIVEN
     PositionQueries<Object> finder =
         new PositionQueries<>(
-            Collections.emptyList(),
+            emptyList(),
             o -> {
               throw new IllegalStateException("On what object are you calling me?");
             });
@@ -205,6 +206,18 @@ class PositionQueriesTest {
 
     // THEN
     assertThat(result).hasSize(5);
+  }
+
+  @Test
+  void shouldAddItem() {
+    // GIVEN
+    PositionQueries<Position> queries = new PositionQueries<>(emptyList(), Function.identity());
+
+    // WHEN
+    queries.add(new Position(0, 0));
+
+    // THEN
+    assertThat(queries).containsExactly(new Position(0, 0));
   }
 
   @Test
