@@ -242,6 +242,19 @@ class PositionQueriesTest {
   }
 
   @Test
+  void shouldRemoveLastItem() {
+    // GIVEN
+    PositionQueries<Position> finder =
+        new PositionQueries<>(Collections.singletonList(new Position(0, 0)), Function.identity());
+
+    // WHEN
+    boolean removed = finder.remove(new Position(0, 0));
+
+    // THEN
+    assertThat(removed).isTrue();
+  }
+
+  @Test
   void shouldRemoveAllItems() {
     // GIVEN
     PositionQueries<Position> finder =
