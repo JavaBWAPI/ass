@@ -36,12 +36,17 @@ configurations.jmhCompile.get().extendsFrom(configurations.implementation.get())
 
 tasks {
     check {
-        dependsOn("jmh")
+        dependsOn("jmh", "javadoc")
     }
 
     test {
         useJUnitPlatform()
     }
+
+    javadoc {
+        destinationDir = File("docs")
+    }
+
 }
 
 jmh {

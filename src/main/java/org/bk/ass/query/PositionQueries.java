@@ -36,34 +36,57 @@ public class PositionQueries<U> extends AbstractCollection<U> {
     this.size = elements.size();
   }
 
+  /**
+   * Returns the element nearest to the given position. If multiple elements have the same distance,
+   * returns any one of them.
+   */
   public U nearest(int x, int y) {
     return new NearestSearcher(x, y).search();
   }
 
+  /**
+   * Returns the nearest element to the given position, matching the given criteria. If multiple
+   * matching elements have the same distance, returns any one of them. <em>The given criteria might
+   * be called often, make sure it is fast!</em>
+   */
   public U nearest(int x, int y, Predicate<U> criteria) {
     return new NearestSearcher(x, y, criteria).search();
   }
 
+  /** Returns all elements in the given rectangular area, including those on the border. */
   public Collection<U> inArea(int ax, int ay, int bx, int by) {
     if (ax > bx || ay > by)
       throw new IllegalArgumentException("ax should be <= bx and ay should be <= by");
     return new RectAreaSearcher(ax, ay, bx, by).search();
   }
 
+  /**
+   * Returns all elements matching the given criteria in the given rectangular area, including those
+   * on the border. <em>The given criteria might be called often, make sure it is fast!</em>
+   */
   public Collection<U> inArea(int ax, int ay, int bx, int by, Predicate<U> criteria) {
     return new RectAreaSearcher(ax, ay, bx, by, criteria).search();
   }
 
+  /**
+   * Returns all elements in the given radius around the given element, including those on the
+   * border.
+   */
   public Collection<U> inRadius(U u, int radius) {
     if (radius <= 0) throw new IllegalArgumentException("radius should be > 0");
     Position position = positionExtractor.apply(u);
     return new RadiusAreaSearcher(position.x, position.y, radius).search();
   }
 
+  /** Returns all elements in the given radius, including those on the border. */
   public Collection<U> inRadius(int x, int y, int radius) {
     return new RadiusAreaSearcher(x, y, radius).search();
   }
 
+  /**
+   * Returns all elements matching the given criteria in the given radius, including those on the
+   * border. <em>The given criteria might be called often, make sure it is fast!</em>
+   */
   public Collection<U> inRadius(int x, int y, int radius, Predicate<U> criteria) {
     return new RadiusAreaSearcher(x, y, radius, criteria).search();
   }
