@@ -122,7 +122,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
       for (i = 0; i < replacement.length && !Objects.equals(node.values[i], o); i++) {
         replacement[i] = node.values[i];
       }
-      if (i == node.values.length) return false;
+      if (!Objects.equals(node.values[i], o)) return false;
       for (; i < replacement.length; i++) {
         replacement[i] = node.values[i + 1];
       }
