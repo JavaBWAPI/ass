@@ -358,7 +358,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
       if (pos(mid).x < pos(end).x) swap(mid, end);
       int pivot = pos(end).x;
       while (true) {
-        while (pos(start).x <= pivot) start++;
+        while (start < end && pos(start).x <= pivot) start++;
         while (pos(end).x > pivot) end--;
         if (start >= end) return new Pivot(pivot, end);
         swap(start, end);
@@ -374,7 +374,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
       if (pos(mid).y < pos(end).y) swap(mid, end);
       int pivot = pos(end).y;
       while (true) {
-        while (pos(start).y < pivot) start++;
+        while (start < end && pos(start).y <= pivot) start++;
         while (pos(end).y > pivot) end--;
         if (start >= end) return new Pivot(pivot, end);
         swap(start, end);

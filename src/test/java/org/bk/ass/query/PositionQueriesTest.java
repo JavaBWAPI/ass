@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.bk.ass.query.Distances.EUCLIDEAN_DISTANCE;
 
 class PositionQueriesTest {
-  private static Collection<Position> positions;
+  private static List<Position> positions;
 
   @BeforeAll
   static void setup() {
@@ -26,18 +27,35 @@ class PositionQueriesTest {
 
   @Test
   void shouldFindNearest() {
+    for (int i = 3; i < positions.size(); i = i * 14 / 10) {
+      // GIVEN
+      List<Position> testList = PositionQueriesTest.positions.subList(0, i);
+      PositionQueries<Position> tree = new PositionQueries<>(testList, Function.identity());
+
+      // WHEN
+      Position nearest = tree.nearest(500, 500);
+
+      // THEN
+      Position actualNearest =
+          testList.stream()
+              .min(Comparator.comparingInt(a -> EUCLIDEAN_DISTANCE.distance(a.x, a.y, 500, 500)))
+              .orElseThrow(RuntimeException::new);
+      assertThat(nearest).isEqualTo(actualNearest);
+    }
+  }
+
+  @Test
+  void shouldPivotMatchingToOneSide() {
     // GIVEN
+    List<Position> positions =
+        IntStream.range(0, 30).mapToObj(it -> new Position(0, it)).collect(Collectors.toList());
     PositionQueries<Position> tree = new PositionQueries<>(positions, Function.identity());
 
     // WHEN
-    Position nearest = tree.nearest(500, 500);
+    Collection<Position> result = tree.inArea(0, 0, 0, 150);
 
     // THEN
-    Position actualNearest =
-        positions.stream()
-            .min(Comparator.comparingInt(a -> EUCLIDEAN_DISTANCE.distance(a.x, a.y, 500, 500)))
-            .orElseThrow(RuntimeException::new);
-    assertThat(nearest).isEqualTo(actualNearest);
+    assertThat(result).containsExactlyInAnyOrderElementsOf(positions);
   }
 
   @Test
