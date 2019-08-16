@@ -389,7 +389,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
       data[b] = tmp;
     }
 
-    private Node makeTree(int start, int end, boolean xDim) {
+    Node makeTree(int start, int end, boolean xDim) {
       // 15 elements seems to be the sweet spot for ~1000 positions
       if (end - start < 15) return new Node(Arrays.copyOfRange(data, start, end + 1));
       Pivot pivot;
@@ -398,6 +398,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
       } else {
         pivot = partitionY(start, end);
       }
+      if (pivot.index == end) return new Node(Arrays.copyOfRange(data, start, end + 1));
       Node mNode = new Node(pivot.value);
       mNode.left = makeTree(start, pivot.index, !xDim);
       mNode.right = makeTree(pivot.index + 1, end, !xDim);
@@ -409,7 +410,6 @@ public class PositionQueries<U> extends AbstractCollection<U> {
     Object[] values;
     final int p;
     Node left;
-
     Node right;
 
     Node(int p) {

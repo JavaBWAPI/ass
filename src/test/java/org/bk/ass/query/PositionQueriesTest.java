@@ -296,6 +296,19 @@ class PositionQueriesTest {
     assertThat(finder).hasSize(4);
   }
 
+  @Test
+  void shouldWorkForMultipleElementsOnSamePosition() {
+    // GIVEN
+    List<Position> positions =
+        IntStream.range(0, 20).mapToObj(it -> new Position(0, 0)).collect(Collectors.toList());
+
+    // WHEN
+    PositionQueries<Position> tree = new PositionQueries<>(positions, Function.identity());
+
+    // THEN
+    assertThat(tree).containsExactlyInAnyOrderElementsOf(positions);
+  }
+
   private static class Unit {
     final int id;
     final Position Position;
