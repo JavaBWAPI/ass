@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.manage;
 
 import bwapi.TechType;
 import bwapi.UnitType;

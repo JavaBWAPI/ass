@@ -1,9 +1,10 @@
-package org.bk.ass;
+package org.bk.ass.collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FastArrayFillTest {
 
