@@ -8,9 +8,9 @@ import static java.lang.Integer.max;
 
 /** Representing gas + minerals + supply */
 public final class GMS {
-  final int gas;
-  final int minerals;
-  final int supply;
+  public final int gas;
+  public final int minerals;
+  public final int supply;
 
   public GMS(int gas, int minerals, int supply) {
     this.gas = gas;
@@ -63,5 +63,10 @@ public final class GMS {
     return max(0, gas) >= gms.gas
         && max(0, minerals) >= gms.minerals
         && max(0, supply) >= gms.supply;
+  }
+
+  @Override
+  public String toString() {
+    return "gas: " + gas + ", minerals: " + minerals + ", supply: " + supply;
   }
 }
