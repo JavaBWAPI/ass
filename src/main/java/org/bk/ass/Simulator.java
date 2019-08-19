@@ -4,6 +4,7 @@ import org.bk.ass.collection.UnorderedCollection;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.ToIntFunction;
 
 /**
  * Used to simulate 2 groups of agents engaging each other. Either use the default constructor which
@@ -18,14 +19,16 @@ import java.util.Collections;
  *   <li>Before each simulation call <code>resetUnits()</code> before adding units
  * </ol>
  *
- * Do <b>not</b> modify {@link Agent}s, after adding them to the simulation.
+ * Be cautious when modifying {@link Agent}s after they have been added to the simulation.
  */
 public class Simulator {
+  public static final ToIntFunction<Agent> HEALTH_AND_SHIELD =
+      agent -> agent.getHealth() + agent.getShields();
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
   public static final int MIN_SIMULATION_RANGE =
-          (TILE_SIZE + TILE_SIZE / 2) * (TILE_SIZE + TILE_SIZE / 2);
+      (TILE_SIZE + TILE_SIZE / 2) * (TILE_SIZE + TILE_SIZE / 2);
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
@@ -50,6 +53,14 @@ public class Simulator {
       collision[colindex(agent.x, agent.y)]++;
     }
     return this;
+  }
+
+  public void removeAgentA(Agent agent) {
+    playerA.remove(agent);
+  }
+
+  public void removeAgentB(Agent agent) {
+    playerB.remove(agent);
   }
 
   public Simulator addAgentB(Agent agent) {
@@ -77,7 +88,23 @@ public class Simulator {
   }
 
   /**
+   * Performs a summation of evaluations on agents of player a and b.
+   *
+   * @param agentEval the evaluation function to use
+   * @return the sum of evaluations for all agents, accumulated to an {@link IntEvaluation}.
+   */
+  public IntEvaluation evalToInt(ToIntFunction<Agent> agentEval) {
+    int evalA = 0;
+    for (Agent agent : playerA) evalA += agentEval.applyAsInt(agent);
+    int evalB = 0;
+    for (Agent agent : playerB) evalB += agentEval.applyAsInt(agent);
+    return new IntEvaluation(evalA, evalB);
+  }
+
+  /**
    * Simulates 4 seconds into the future.
+   *
+   * @return the actual number of frames simulated, 96 if the battle was not decided earlier
    */
   public int simulate() {
     return simulate(96);
@@ -86,6 +113,8 @@ public class Simulator {
   /**
    * Simulate the given number of frames. If negative, simulation will only stop if one party has no
    * agents left. If units decide to run away, this could be an endless loop - use with care!
+   *
+   * @return the actual number of frames simulated, usually the given number of frames
    */
   public int simulate(int frames) {
     while (frames-- != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
@@ -263,5 +292,33 @@ public class Simulator {
 
     boolean simUnit(
         Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies);
+  }
+
+  public static class IntEvaluation {
+    public final int evalA;
+    public final int evalB;
+
+    IntEvaluation(int evalA, int evalB) {
+      this.evalA = evalA;
+      this.evalB = evalB;
+    }
+
+    /**
+     * Returns the delta of the evaluations for player a and b (evalA - evalB). Evaluating before
+     * and after a simulation, the 2 resulting deltas can be used to determine a positive or
+     * negative outcome.
+     */
+    public int delta() {
+      return evalA - evalB;
+    }
+
+    /**
+     * Subtracts another evaluation and returns the result. Evaluating before and after a
+     * simulation, this can be used to calculate before - after. This in turn represents the loss
+     * each player had in the meantime.
+     */
+    public IntEvaluation subtract(IntEvaluation other) {
+      return new IntEvaluation(evalA - other.evalA, evalB - other.evalB);
+    }
   }
 }
