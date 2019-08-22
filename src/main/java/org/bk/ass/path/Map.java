@@ -2,9 +2,7 @@ package org.bk.ass.path;
 
 import org.bk.ass.grid.Grid;
 
-/**
- * The query interface of the path finding algorithm.
- */
+/** The query interface of the path finding algorithm. */
 public interface Map extends Grid<Boolean> {
   static Map fromBooleanArray(boolean[][] map) {
     return new Map() {

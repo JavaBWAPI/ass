@@ -1,22 +1,22 @@
 package org.bk.ass.path;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.SplittableRandom;
-import javax.imageio.ImageIO;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PPJpsTest {
 
   @Test
   void shouldReturnIdentityIfStartAndEndMatch() {
     // GIVEN
-    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true}}));
+    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][] {{true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 0));
@@ -28,7 +28,7 @@ class PPJpsTest {
   @Test
   void shouldFindNotFindPathWhenBlocked() {
     // GIVEN
-    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true, false, true}}));
+    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][] {{true, false, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -40,7 +40,7 @@ class PPJpsTest {
   @Test
   void shouldFindVerticalPath() {
     // GIVEN
-    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true, true, true}}));
+    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][] {{true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 2));
@@ -52,7 +52,7 @@ class PPJpsTest {
   @Test
   void shouldFindHorizontalPath() {
     // GIVEN
-    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+    PPJps sut = new PPJps(PPMap.fromBooleanArray(new boolean[][] {{true}, {true}, {true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -67,7 +67,7 @@ class PPJpsTest {
     PPJps sut =
         new PPJps(
             PPMap.fromBooleanArray(
-                new boolean[][]{{true, true, true}, {true, true, true}, {true, true, true}}));
+                new boolean[][] {{true, true, true}, {true, true, true}, {true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(2, 2), new Position(0, 0));
@@ -82,7 +82,7 @@ class PPJpsTest {
     PPJps sut =
         new PPJps(
             PPMap.fromBooleanArray(
-                new boolean[][]{{true, true, true}, {true, false, false}, {true, true, true}}));
+                new boolean[][] {{true, true, true}, {true, false, false}, {true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(2, 2), new Position(0, 0));
@@ -99,12 +99,12 @@ class PPJpsTest {
     PPJps sut =
         new PPJps(
             PPMap.fromBooleanArray(
-                new boolean[][]{
-                    {true, true, true, true, true},
-                    {true, false, false, false, true},
-                    {true, false, true, false, true},
-                    {true, false, false, false, true},
-                    {true, true, true, true, true}
+                new boolean[][] {
+                  {true, true, true, true, true},
+                  {true, false, false, false, true},
+                  {true, false, true, false, true},
+                  {true, false, false, false, true},
+                  {true, true, true, true, true}
                 }));
 
     // WHEN
@@ -120,12 +120,12 @@ class PPJpsTest {
     PPJps sut =
         new PPJps(
             PPMap.fromBooleanArray(
-                new boolean[][]{
-                    {true, true, true, true, true},
-                    {true, false, false, false, true},
-                    {true, false, true, false, true},
-                    {true, false, false, true, true},
-                    {true, true, true, true, true}
+                new boolean[][] {
+                  {true, true, true, true, true},
+                  {true, false, false, false, true},
+                  {true, false, true, false, true},
+                  {true, false, false, true, true},
+                  {true, true, true, true, true}
                 }));
 
     // WHEN
@@ -146,8 +146,8 @@ class PPJpsTest {
                 return y >= 0
                     && y <= 999
                     && (x == 0 && y % 4 == 1
-                    || x == 999 && y % 4 == 3
-                    || y % 2 == 0 && x >= 0 && x <= 999);
+                        || x == 999 && y % 4 == 3
+                        || y % 2 == 0 && x >= 0 && x <= 999);
               }
 
               @Override

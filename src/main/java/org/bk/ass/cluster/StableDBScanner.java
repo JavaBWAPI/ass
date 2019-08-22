@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
  * is split into multiple clusters. In that case, only a part of the elements are retained in the
  * previous cluster. <br>
  * Make sure to call {@link #scan(int)} to actually perform clustering. Calling {@link
- * #updateDB(PositionQueries, int)} or {@link #updateDB(Collection, Function)} will reset the clustering
- * process. Make sure to always cluster all elements or to check if the clustering is done with
- * {@link #isComplete()}.<br>
+ * #updateDB(PositionQueries, int)} or {@link #updateDB(Collection, Function)} will reset the
+ * clustering process. Make sure to always cluster all elements or to check if the clustering is
+ * done with {@link #isComplete()}.<br>
  * The clustering is ongoing, each call to {@link #scan(int)} will continue or restart the
  * clustering.<br>
  * When updating the DB be aware that elements are compared with <code>==</code> and not <code>
@@ -69,9 +69,7 @@ public class StableDBScanner<U> {
     return updateDB(positionQueries, u -> positionQueries.inRadius(u, radius));
   }
 
-  /**
-   * @return true, if the last {@link #scan(int)} assigned all elements of DB to clusters
-   */
+  /** @return true, if the last {@link #scan(int)} assigned all elements of DB to clusters */
   public final boolean isComplete() {
     return remainingDbEntries.isEmpty();
   }
@@ -129,7 +127,7 @@ public class StableDBScanner<U> {
 
   private void updateElementClusters() {
     elementToCluster =
-            elementToWrapper.entrySet().stream()
+        elementToWrapper.entrySet().stream()
             .collect(
                 Collectors.toMap(
                     Entry::getKey,

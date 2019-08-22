@@ -1,15 +1,11 @@
 package org.bk.ass;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Measurement(iterations = 5, time = 5)
 @Fork(3)

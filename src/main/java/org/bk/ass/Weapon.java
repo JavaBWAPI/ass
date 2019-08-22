@@ -52,9 +52,7 @@ public class Weapon {
     return this;
   }
 
-  /**
-   * Number of hits this weapon will apply
-   */
+  /** Number of hits this weapon will apply */
   public Weapon setHits(int hits) {
     this.hits = hits;
     return this;

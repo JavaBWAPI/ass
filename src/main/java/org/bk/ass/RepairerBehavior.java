@@ -13,7 +13,7 @@ public class RepairerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
 
@@ -29,9 +29,9 @@ public class RepairerBehavior implements Behavior {
       for (int i = allies.size() - 1; i >= 0; i--) {
         Agent ally = allies.get(i);
         if (ally.isMechanic
-                && !ally.isStasised
-                && ally.healthShifted < ally.maxHealthShifted
-                && ally != agent) {
+            && !ally.isStasised
+            && ally.healthShifted < ally.maxHealthShifted
+            && ally != agent) {
 
           int distance = distanceSquared(agent, ally);
           if (distance < selectedDistanceSquared) {

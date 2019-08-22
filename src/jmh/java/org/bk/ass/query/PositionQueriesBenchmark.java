@@ -14,50 +14,48 @@ import java.util.function.Function;
 @Fork(3)
 public class PositionQueriesBenchmark {
 
-    @State(Scope.Thread)
-    public static class MyState {
+  @State(Scope.Thread)
+  public static class MyState {
 
-        PositionQueries<Position> positionQueries;
-        List<PositionAndId> entities;
-        List<Position> items;
+    PositionQueries<Position> positionQueries;
+    List<PositionAndId> entities;
+    List<Position> items;
 
-        @Setup
-        public void setup() {
-            SplittableRandom rnd = new SplittableRandom(815);
-            entities = new ArrayList<>();
-            items = new ArrayList<>();
-            for (int i = 0; i < 1000; i++) {
-                int x = rnd.nextInt(0, 10000);
-                int y = rnd.nextInt(0, 10000);
-                entities.add(new PositionAndId(i, x, y));
-                items.add(new Position(x, y));
-            }
-            positionQueries = new PositionQueries<>(items, Function.identity());
-        }
+    @Setup
+    public void setup() {
+      SplittableRandom rnd = new SplittableRandom(815);
+      entities = new ArrayList<>();
+      items = new ArrayList<>();
+      for (int i = 0; i < 1000; i++) {
+        int x = rnd.nextInt(0, 10000);
+        int y = rnd.nextInt(0, 10000);
+        entities.add(new PositionAndId(i, x, y));
+        items.add(new Position(x, y));
+      }
+      positionQueries = new PositionQueries<>(items, Function.identity());
     }
+  }
 
-    static {
-        try {
-            BWDataProvider.injectValues();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+  static {
+    try {
+      BWDataProvider.injectValues();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+  }
 
+  @Benchmark
+  public PositionQueries<Position> queryCreation(MyState state) {
+    return new PositionQueries<>(state.items, Function.identity());
+  }
 
-    @Benchmark
-    public PositionQueries<Position> queryCreation(MyState state) {
-        return new PositionQueries<>(state.items, Function.identity());
-    }
+  @Benchmark
+  public Collection<Position> inRadius(MyState state) {
+    return state.positionQueries.inRadius(5000, 5000, 1000);
+  }
 
-
-    @Benchmark
-    public Collection<Position> inRadius(MyState state) {
-        return state.positionQueries.inRadius(5000, 5000, 1000);
-    }
-
-    @Benchmark
-    public Position nearest(MyState state) {
-        return state.positionQueries.nearest(2500, 2500);
-    }
+  @Benchmark
+  public Position nearest(MyState state) {
+    return state.positionQueries.nearest(2500, 2500);
+  }
 }

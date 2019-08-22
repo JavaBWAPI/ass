@@ -10,7 +10,7 @@ public class RetreatBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     return simFlee(agent, enemies);
   }
 

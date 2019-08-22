@@ -1,8 +1,6 @@
 package org.bk.ass.query;
 
-/**
- * Provide the distance between to positions.
- */
+/** Provide the distance between to positions. */
 @FunctionalInterface
 public interface DistanceProvider {
 

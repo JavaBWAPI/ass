@@ -49,15 +49,15 @@ public class Evaluator {
     }
     double evalA =
         (double) damageToA
-                / (finalAgentsA.stream()
-                .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-                .sum()
+            / (finalAgentsA.stream()
+                    .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+                    .sum()
                 + EPS);
     double evalB =
         (double) damageToB
-                / (finalAgentsB.stream()
-                .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-                .sum()
+            / (finalAgentsB.stream()
+                    .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+                    .sum()
                 + EPS);
     // eval is a rough estimate on how many units where lost.
     // Directly comparing is bad since one might have lost more agents than he had.
@@ -70,7 +70,7 @@ public class Evaluator {
   private int regeneration(Collection<Agent> agents) {
     // Subtract 1 to prevent counting selfheal
     int healables = (int) (agents.stream().filter(it -> it.isOrganic).count() - 1);
-      return agents.stream()
+    return agents.stream()
         .mapToInt(
             a -> {
               int healed = 0;
@@ -115,13 +115,13 @@ public class Evaluator {
       double damageToApply = calculateDamage(agent, weapon);
       if (weapon.damageType == DamageType.CONCUSSIVE) {
         groundConcussiveHits += weapon.hits;
-          groundConcussiveDamage += (int) damageToApply;
+        groundConcussiveDamage += (int) damageToApply;
       } else if (weapon.damageType == DamageType.EXPLOSIVE) {
         groundExplosiveHits += weapon.hits;
-          groundExplosiveDamage += (int) damageToApply;
+        groundExplosiveDamage += (int) damageToApply;
       } else {
         groundNormalHits += weapon.hits;
-          groundDamageNormal += (int) damageToApply;
+        groundDamageNormal += (int) damageToApply;
       }
     }
 
@@ -129,13 +129,13 @@ public class Evaluator {
       Weapon weapon = agent.groundWeapon;
       double damageToApply = calculateDamage(agent, weapon);
       if (agent.airWeapon.damageType == DamageType.CONCUSSIVE) {
-          airConcussiveDamage += (int) damageToApply;
+        airConcussiveDamage += (int) damageToApply;
         airConcussiveHits += weapon.hits;
       } else if (agent.airWeapon.damageType == DamageType.EXPLOSIVE) {
-          airExplosiveDamage += (int) damageToApply;
+        airExplosiveDamage += (int) damageToApply;
         airExplosiveHits += weapon.hits;
       } else {
-          airDamageNormal += (int) damageToApply;
+        airDamageNormal += (int) damageToApply;
         airNormalHits += weapon.hits;
       }
     }
@@ -243,8 +243,8 @@ public class Evaluator {
 
     public Parameters() {
       this(
-              new double[]{
-                      2.812625, 0.504625, 0.053, 1.2545, 2.27975, 1.86025, 976.7565, 513.109625, 586.87675
+          new double[] {
+            2.812625, 0.504625, 0.053, 1.2545, 2.27975, 1.86025, 976.7565, 513.109625, 586.87675
           });
     }
   }

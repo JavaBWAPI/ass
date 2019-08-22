@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Simplest form of a cluster, just contains the clustered elements and a user defined object.
- */
+/** Simplest form of a cluster, just contains the clustered elements and a user defined object. */
 public class Cluster<U> {
 
   private Object userObject;

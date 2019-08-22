@@ -1,22 +1,22 @@
 package org.bk.ass.path;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.SplittableRandom;
-import javax.imageio.ImageIO;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JpsTest {
 
   @Test
   void shouldReturnIdentityIfStartAndEndMatch() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 0));
@@ -28,7 +28,7 @@ class JpsTest {
   @Test
   void shouldFindNotFindPathWhenBlocked() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true, false, true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true, false, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -40,7 +40,7 @@ class JpsTest {
   @Test
   void shouldFindVerticalPath() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true, true, true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 2));
@@ -52,7 +52,7 @@ class JpsTest {
   @Test
   void shouldFindHorizontalPath() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][]{{true}, {true}, {true}}));
+    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true}, {true}, {true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -67,7 +67,7 @@ class JpsTest {
     Jps sut =
         new Jps(
             Map.fromBooleanArray(
-                    new boolean[][]{{true, true, true}, {true, true, true}, {true, true, true}}));
+                new boolean[][] {{true, true, true}, {true, true, true}, {true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(2, 2), new Position(0, 0));
@@ -82,7 +82,7 @@ class JpsTest {
     Jps sut =
         new Jps(
             Map.fromBooleanArray(
-                    new boolean[][]{{true, true, true}, {true, false, false}, {true, true, true}}));
+                new boolean[][] {{true, true, true}, {true, false, false}, {true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(2, 2), new Position(0, 0));
@@ -99,12 +99,12 @@ class JpsTest {
     Jps sut =
         new Jps(
             Map.fromBooleanArray(
-                    new boolean[][]{
-                            {true, true, true, true, true},
-                            {true, false, false, false, true},
-                            {true, false, true, false, true},
-                            {true, false, false, false, true},
-                            {true, true, true, true, true}
+                new boolean[][] {
+                  {true, true, true, true, true},
+                  {true, false, false, false, true},
+                  {true, false, true, false, true},
+                  {true, false, false, false, true},
+                  {true, true, true, true, true}
                 }));
 
     // WHEN
@@ -120,12 +120,12 @@ class JpsTest {
     Jps sut =
         new Jps(
             Map.fromBooleanArray(
-                    new boolean[][]{
-                            {true, true, true, true, true},
-                            {true, false, false, false, true},
-                            {true, false, true, false, true},
-                            {true, false, false, true, true},
-                            {true, true, true, true, true}
+                new boolean[][] {
+                  {true, true, true, true, true},
+                  {true, false, false, false, true},
+                  {true, false, true, false, true},
+                  {true, false, false, true, true},
+                  {true, true, true, true, true}
                 }));
 
     // WHEN

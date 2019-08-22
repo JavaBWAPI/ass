@@ -162,10 +162,11 @@ class StableDBScannerTest {
     for (int i = 0; i < 10000; i++) {
       db.add(new PositionAndId(i, rnd.nextInt(0, 5000), rnd.nextInt(0, 5000)));
     }
-    PositionQueries<PositionAndId> positionQueries = new PositionQueries<>(db, PositionAndId::toPosition);
+    PositionQueries<PositionAndId> positionQueries =
+        new PositionQueries<>(db, PositionAndId::toPosition);
 
     StableDBScanner<PositionAndId> sut =
-            new StableDBScanner<>(db, 3, positionAndId -> positionQueries.inRadius(positionAndId, 200));
+        new StableDBScanner<>(db, 3, positionAndId -> positionQueries.inRadius(positionAndId, 200));
 
     // WHEN
     Collection<Cluster<PositionAndId>> clusters = sut.scan(-1).getClusters();

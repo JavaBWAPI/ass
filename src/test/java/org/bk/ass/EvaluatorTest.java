@@ -1,15 +1,16 @@
 package org.bk.ass;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.openbw.bwapi4j.test.BWDataProvider;
+import org.openbw.bwapi4j.type.UnitType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.openbw.bwapi4j.test.BWDataProvider;
-import org.openbw.bwapi4j.type.UnitType;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The most interesting tests are those where the outcome is not a landslide. But of course some

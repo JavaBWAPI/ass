@@ -2,9 +2,9 @@ package org.bk.ass.grid;
 
 public interface Grid<T> {
 
-    int getWidth();
+  int getWidth();
 
-    int getHeight();
+  int getHeight();
 
-    T get(int x, int y);
+  T get(int x, int y);
 }

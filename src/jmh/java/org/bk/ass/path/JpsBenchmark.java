@@ -24,10 +24,10 @@ public class JpsBenchmark {
     public void setup() throws IOException {
       ImageIO.setUseCache(false);
       BufferedImage image = ImageIO.read(JpsTest.class.getResourceAsStream("/dungeon_map.bmp"));
-        boolean[][] data = new boolean[image.getHeight()][image.getWidth()];
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                data[x][y] = image.getRGB(x, y) == -1;
+      boolean[][] data = new boolean[image.getHeight()][image.getWidth()];
+      for (int x = 0; x < image.getWidth(); x++) {
+        for (int y = 0; y < image.getHeight(); y++) {
+          data[x][y] = image.getRGB(x, y) == -1;
         }
       }
       map = Map.fromBooleanArray(data);
@@ -45,7 +45,7 @@ public class JpsBenchmark {
         do {
           end = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
         } while (map.get(end.x, end.y));
-        positions.add(new Position[]{start, end});
+        positions.add(new Position[] {start, end});
       }
     }
   }

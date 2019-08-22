@@ -157,12 +157,12 @@ class SimulatorTest {
 
     // THEN
     assertThat(simulator.getAgentsB())
-            .extracting("health")
-            .contains(
-                    80, // out of inner splash range while burrowed
-                    62, // direct hit
-                    62, // inner splash hit burrowed
-                    71); // unburrowed, inside outer splash
+        .extracting("health")
+        .contains(
+            80, // out of inner splash range while burrowed
+            62, // direct hit
+            62, // inner splash hit burrowed
+            71); // unburrowed, inside outer splash
   }
 
   @Test
@@ -368,8 +368,8 @@ class SimulatorTest {
   void _2LurkersVs12Marines() {
     // GIVEN
     simulator
-            .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(130).setY(30))
-            .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(150).setY(50));
+        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(130).setY(30))
+        .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(150).setY(50));
 
     for (int i = 0; i < 12; i++) {
       simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
@@ -439,10 +439,10 @@ class SimulatorTest {
   void _7MutasVs9Hydras() {
     // GIVEN
     for (int i = 0; i < 7; i++) {
-        simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(i * 16));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(i * 16));
     }
     for (int i = 0; i < 9; i++) {
-        simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(i * 16).setY(32));
+      simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(i * 16).setY(32));
     }
 
     // WHEN
@@ -483,7 +483,7 @@ class SimulatorTest {
     }
     for (int i = 0; i < 10; i++) {
       simulator.addAgentB(
-              factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200 + i * 8));
+          factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200 + i * 8));
     }
 
     // WHEN
@@ -689,7 +689,7 @@ class SimulatorTest {
     // GIVEN
     simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
     simulator.addAgentA(
-            factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true).setHealth(97));
+        factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true).setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN
@@ -704,7 +704,7 @@ class SimulatorTest {
     // GIVEN
     simulator = new Simulator(new RetreatBehavior(), new RoleBasedBehavior());
     simulator.addAgentA(
-            factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true).setHealth(97));
+        factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true).setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN

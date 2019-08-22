@@ -41,9 +41,7 @@ public class AgentUtil {
     return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
   }
 
-  /**
-   * Deal splash damage to enemies and allies
-   */
+  /** Deal splash damage to enemies and allies */
   public static void dealRadialSplashDamage(
       Weapon weapon,
       Agent mainTarget,
@@ -76,9 +74,7 @@ public class AgentUtil {
     }
   }
 
-  /**
-   * Deal splash damage to enemies only
-   */
+  /** Deal splash damage to enemies only */
   public static void dealRadialSplashDamage(
       Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
     for (int i = enemies.size() - 1; i >= 0; i--) {

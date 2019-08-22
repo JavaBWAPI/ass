@@ -70,8 +70,7 @@ public class Agent {
   Agent lastAlly;
 
   // Allow replacement of units on death (for example bunker -> marines)
-  Consumer<Collection<Agent>> onDeathReplacer = ignored -> {
-  };
+  Consumer<Collection<Agent>> onDeathReplacer = ignored -> {};
 
   public Agent(String name) {
     this.name = name;
@@ -290,9 +289,7 @@ public class Agent {
     return groundWeapon;
   }
 
-  /**
-   * Has to be called *after* max health has been set
-   */
+  /** Has to be called *after* max health has been set */
   public Agent setHpConstructionRate(int buildTime) {
     this.hpConstructionRate =
         max(1, (maxHealthShifted - maxHealthShifted / 10 + buildTime - 1) / buildTime);

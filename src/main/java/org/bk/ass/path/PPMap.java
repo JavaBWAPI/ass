@@ -23,9 +23,9 @@ public interface PPMap extends Map {
       short pos = -1;
       for (int x = 0; x < map.getWidth(); x++) {
         left[y][x] = pos;
-          if (map.get(x, y)) {
-              if (map.get(x - 1, y - 1) && !map.get(x, y - 1)
-                      || map.get(x - 1, y + 1) && !map.get(x, y + 1)) {
+        if (map.get(x, y)) {
+          if (map.get(x - 1, y - 1) && !map.get(x, y - 1)
+              || map.get(x - 1, y + 1) && !map.get(x, y + 1)) {
             pos = (short) x;
           }
         } else {
@@ -35,9 +35,9 @@ public interface PPMap extends Map {
       pos = (short) -map.getWidth();
       for (int x = map.getWidth() - 1; x >= 0; x--) {
         right[y][x] = pos;
-          if (map.get(x, y)) {
-              if (map.get(x + 1, y - 1) && !map.get(x, y - 1)
-                      || map.get(x + 1, y + 1) && !map.get(x, y + 1)) {
+        if (map.get(x, y)) {
+          if (map.get(x + 1, y - 1) && !map.get(x, y - 1)
+              || map.get(x + 1, y + 1) && !map.get(x, y + 1)) {
             pos = (short) x;
           }
         } else {
@@ -49,9 +49,9 @@ public interface PPMap extends Map {
       short pos = -1;
       for (int y = 0; y < map.getHeight(); y++) {
         up[y][x] = pos;
-          if (map.get(x, y)) {
-              if (map.get(x - 1, y - 1) && !map.get(x - 1, y)
-                      || map.get(x + 1, y - 1) && !map.get(x + 1, y)) {
+        if (map.get(x, y)) {
+          if (map.get(x - 1, y - 1) && !map.get(x - 1, y)
+              || map.get(x + 1, y - 1) && !map.get(x + 1, y)) {
             pos = (short) y;
           }
         } else {
@@ -61,9 +61,9 @@ public interface PPMap extends Map {
       pos = (short) -map.getHeight();
       for (int y = map.getHeight() - 1; y >= 0; y--) {
         down[y][x] = pos;
-          if (map.get(x, y)) {
-              if (map.get(x - 1, y + 1) && !map.get(x - 1, y)
-                      || map.get(x + 1, y + 1) && !map.get(x + 1, y)) {
+        if (map.get(x, y)) {
+          if (map.get(x - 1, y + 1) && !map.get(x - 1, y)
+              || map.get(x + 1, y + 1) && !map.get(x + 1, y)) {
             pos = (short) y;
           }
         } else {
@@ -94,7 +94,7 @@ public interface PPMap extends Map {
 
       @Override
       public Boolean get(int x, int y) {
-          return map.get(x, y);
+        return map.get(x, y);
       }
 
       @Override

@@ -43,17 +43,17 @@ public class EvaluatorParameterTuner {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     EvolutionResult<DoubleGene, Integer> result =
-            engine.stream()
+        engine.stream()
             .limit(
                 Limits.<Integer>bySteadyFitness(200000)
-                        .and(Limits.byFitnessThreshold(TEST_METHODS.length - 1)))
+                    .and(Limits.byFitnessThreshold(TEST_METHODS.length - 1)))
             .collect(EvolutionResult.toBestEvolutionResult());
     stopWatch.stop();
     System.out.println("GA time: " + stopWatch);
     System.out.println("Best result " + result.getBestFitness() + "/" + TEST_METHODS.length);
     Genotype<DoubleGene> bestGenotype = result.getBestPhenotype().getGenotype();
     System.out.println(
-            bestGenotype.stream()
+        bestGenotype.stream()
             .flatMap(Chromosome::stream)
             .mapToDouble(DoubleGene::doubleValue)
             .map(EvaluatorParameterTuner::round)

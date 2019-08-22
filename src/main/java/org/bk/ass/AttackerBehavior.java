@@ -15,7 +15,7 @@ public class AttackerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-          Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
@@ -38,10 +38,10 @@ public class AttackerBehavior implements Behavior {
       for (int i = enemies.size() - 1; i >= 0; i--) {
         Agent enemy = enemies.get(i);
         Weapon wpn = agent.weaponVs(enemy);
-          if (enemy.healthShifted >= 1
-                  && wpn.damageShifted != 0
-                  && enemy.detected
-                  && !enemy.isStasised) {
+        if (enemy.healthShifted >= 1
+            && wpn.damageShifted != 0
+            && enemy.detected
+            && !enemy.isStasised) {
           int distanceSquared = distanceSquared(agent, enemy);
           if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
             selectedDistanceSquared = distanceSquared;
@@ -71,7 +71,7 @@ public class AttackerBehavior implements Behavior {
     }
 
     if (agent.cooldown == 0
-            && selectedDistanceSquared
+        && selectedDistanceSquared
             <= Math.max(Simulator.MIN_SIMULATION_RANGE, selectedWeapon.maxRangeSquared)) {
       simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
     }

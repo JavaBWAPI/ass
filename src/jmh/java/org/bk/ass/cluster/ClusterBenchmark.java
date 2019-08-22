@@ -1,20 +1,11 @@
 package org.bk.ass.cluster;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SplittableRandom;
+import org.openbw.bwapi4j.test.BWDataProvider;
+import org.openjdk.jmh.annotations.*;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.openbw.bwapi4j.test.BWDataProvider;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
 
 @Measurement(iterations = 5, time = 5)
 @Fork(3)

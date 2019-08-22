@@ -37,17 +37,17 @@ class UnorderedCollectionTest {
     assertThat(sut.items).containsOnlyNulls();
   }
 
-    @Test
-    public void shouldNotClearReferencesIfFull() {
-        // GIVEN
-        for (int i = 0; i < 16; i++) sut.add("a");
+  @Test
+  public void shouldNotClearReferencesIfFull() {
+    // GIVEN
+    for (int i = 0; i < 16; i++) sut.add("a");
 
-        // WHEN
-        sut.clearReferences();
+    // WHEN
+    sut.clearReferences();
 
-        // THEN
-        assertThat(sut.items).doesNotContainNull();
-    }
+    // THEN
+    assertThat(sut.items).doesNotContainNull();
+  }
 
   @Test
   public void shouldAddElements() {
