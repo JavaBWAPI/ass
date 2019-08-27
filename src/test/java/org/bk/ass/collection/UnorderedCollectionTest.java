@@ -3,6 +3,7 @@ package org.bk.ass.collection;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,5 +84,39 @@ class UnorderedCollectionTest {
 
     // THEN
     assertThat(sut).containsExactly("test2");
+  }
+
+  @Test
+  void shouldRemoveInIterator() {
+    // GIVEN
+    String toRemove = "test";
+    sut.add(toRemove);
+
+    Iterator<Object> iterator = sut.iterator();
+    iterator.next();
+
+    // WHEN
+    iterator.remove();
+
+    // THEN
+    assertThat(sut).isEmpty();
+  }
+
+  @Test
+  void shouldRemoveCorrectItemInIterator() {
+    // GIVEN
+    String toRemove = "test";
+    sut.add(toRemove);
+    String expectedRemainingItem = "test2";
+    sut.add(expectedRemainingItem);
+
+    Iterator<Object> iterator = sut.iterator();
+    iterator.next();
+
+    // WHEN
+    iterator.remove();
+
+    // THEN
+    assertThat(sut).containsExactly(expectedRemainingItem);
   }
 }

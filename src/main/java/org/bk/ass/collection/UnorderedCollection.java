@@ -1,9 +1,6 @@
 package org.bk.ass.collection;
 
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -107,7 +104,7 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
 
   @Override
   public Object[] toArray() {
-    return items;
+    return Arrays.copyOf(items, size);
   }
 
   @Override
@@ -134,6 +131,11 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
 
   private class UnorderedListIterator implements Iterator<T> {
     private int index;
+
+    @Override
+    public void remove() {
+      UnorderedCollection.this.removeAt(index - 1);
+    }
 
     @Override
     public boolean hasNext() {
