@@ -39,9 +39,9 @@ public class HealerBehavior implements Behavior {
             && !agent.healedThisFrame
             && ally != agent) {
 
-          int distance = distanceSquared(agent, ally);
-          if (distance < selectedDistanceSquared) {
-            selectedDistanceSquared = distance;
+          int distanceSq = distanceSquared(agent, ally);
+          if (distanceSq < selectedDistanceSquared) {
+            selectedDistanceSquared = distanceSq;
             selectedAlly = ally;
 
             // If we can heal it this frame, we're done searching
@@ -58,7 +58,7 @@ public class HealerBehavior implements Behavior {
       return false;
     }
 
-    moveToward(agent, selectedAlly, selectedDistanceSquared);
+    moveToward(agent, selectedAlly, (float) Math.sqrt(selectedDistanceSquared));
     if (selectedDistanceSquared > MEDICS_HEAL_RANGE_SQUARED) {
       return true;
     }

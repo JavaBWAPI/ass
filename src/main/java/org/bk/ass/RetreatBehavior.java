@@ -3,6 +3,7 @@ package org.bk.ass;
 import org.bk.ass.Simulator.Behavior;
 import org.bk.ass.collection.UnorderedCollection;
 
+import static java.lang.Math.sqrt;
 import static org.bk.ass.AgentUtil.distanceSquared;
 import static org.bk.ass.AgentUtil.moveAwayFrom;
 
@@ -22,9 +23,9 @@ public class RetreatBehavior implements Behavior {
       Agent enemy = enemies.get(i);
       Weapon wpn = enemy.weaponVs(agent);
       if (wpn.damageShifted != 0) {
-        int distance = distanceSquared(agent, enemy);
-        if (distance >= wpn.minRangeSquared && distance < selectedDistanceSquared) {
-          selectedDistanceSquared = distance;
+        int distanceSq = distanceSquared(agent, enemy);
+        if (distanceSq >= wpn.minRangeSquared && distanceSq < selectedDistanceSquared) {
+          selectedDistanceSquared = distanceSq;
           selectedEnemy = enemy;
 
           // If we can hit it this frame, we're done searching
@@ -37,7 +38,7 @@ public class RetreatBehavior implements Behavior {
     if (selectedEnemy == null) {
       return false;
     }
-    moveAwayFrom(agent, selectedEnemy, selectedDistanceSquared);
+    moveAwayFrom(agent, selectedEnemy, (float) sqrt(selectedDistanceSquared));
     return true;
   }
 }

@@ -14,24 +14,22 @@ public class AgentUtil {
     // Utility class
   }
 
-  public static void moveToward(Agent agent, Agent target, int distanceSquared) {
-    if (distanceSquared <= agent.speedSquared) {
+  public static void moveToward(Agent agent, Agent target, float distance) {
+    if (distance <= agent.speed) {
       agent.vx = target.x - agent.x;
       agent.vy = target.y - agent.y;
     } else {
-      float distance = (float) sqrt(distanceSquared);
       agent.vx = (int) ((target.x - agent.x) * agent.speed / distance);
       agent.vy = (int) ((target.y - agent.y) * agent.speed / distance);
     }
   }
 
-  public static void moveAwayFrom(Agent agent, Agent target, int distanceSquared) {
-    if (distanceSquared == 0) {
+  public static void moveAwayFrom(Agent agent, Agent target, float distance) {
+    if (distance == 0) {
       double a = rnd.nextDouble(Math.PI * 2);
       agent.vx = (int) (cos(a) * agent.speed);
       agent.vy = (int) (sin(a) * agent.speed);
     } else {
-      float distance = (float) sqrt(distanceSquared);
       agent.vx = (int) ((agent.x - target.x) * agent.speed / distance);
       agent.vy = (int) ((agent.y - target.y) * agent.speed / distance);
     }

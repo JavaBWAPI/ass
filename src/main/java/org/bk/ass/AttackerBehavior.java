@@ -46,10 +46,10 @@ public class AttackerBehavior implements Behavior {
             && enemy.detected
             && !enemy.isStasised
             && prioCmp >= 0) {
-          int distanceSquared = distanceSquared(agent, enemy);
-          if (distanceSquared >= wpn.minRangeSquared
-              && (distanceSquared < selectedDistanceSquared || prioCmp > 0)) {
-            selectedDistanceSquared = distanceSquared;
+          int distanceSq = distanceSquared(agent, enemy);
+          if (distanceSq >= wpn.minRangeSquared
+              && (distanceSq < selectedDistanceSquared || prioCmp > 0)) {
+            selectedDistanceSquared = distanceSq;
             selectedEnemy = enemy;
             selectedWeapon = wpn;
 
@@ -127,13 +127,13 @@ public class AttackerBehavior implements Behavior {
             && agent.cooldown > 0
             && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared
             && selectedEnemy.speed < agent.speed;
+    float distance = (float) sqrt(selectedDistanceSquared);
     if (shouldKite) {
-      double distance = sqrt(selectedDistanceSquared);
       if (distance + agent.speed < selectedWeapon.maxRange) {
-        moveAwayFrom(agent, selectedEnemy, selectedDistanceSquared);
+        moveAwayFrom(agent, selectedEnemy, distance);
       }
     } else {
-      moveToward(agent, selectedEnemy, selectedDistanceSquared);
+      moveToward(agent, selectedEnemy, distance);
     }
   }
 }
