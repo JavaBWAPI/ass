@@ -1,13 +1,19 @@
 package org.bk.ass;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 import static java.lang.Math.max;
 
 public class Agent {
+  static final BiConsumer<Agent, Collection<Agent>> CARRIER_DEATH_HANDLER =
+      (carrier, agents) -> agents.removeAll(carrier.interceptors);
 
   private final String name;
+  TargetingPriority attackTargetPriority = TargetingPriority.HIGHEST;
   int armorShifted;
   int shieldUpgrades;
   Object userObject;
@@ -52,6 +58,7 @@ public class Agent {
   boolean isMechanic;
   boolean isKiter;
   boolean isRepairer;
+  boolean protectedByDarkSwarm;
   boolean burrowed;
   boolean burrowedAttacker;
   // Visible to the other force
@@ -66,11 +73,14 @@ public class Agent {
   Weapon airWeapon;
   Weapon groundWeapon;
 
-  Agent lastEnemy;
-  Agent lastAlly;
+  Agent attackTarget;
+  // Target for healing/repairing
+  Agent restoreTarget;
+
+  List<Agent> interceptors = Collections.emptyList();
 
   // Allow replacement of units on death (for example bunker -> marines)
-  Consumer<Collection<Agent>> onDeathReplacer = ignored -> {};
+  BiConsumer<Agent, Collection<Agent>> onDeathHandler = (ignored1, ignored2) -> {};
 
   public Agent(String name) {
     this.name = name;
@@ -262,8 +272,8 @@ public class Agent {
     return this;
   }
 
-  public Agent setOnDeathReplacer(Consumer<Collection<Agent>> onDeathReplacer) {
-    this.onDeathReplacer = onDeathReplacer;
+  public Agent setOnDeathHandler(BiConsumer<Agent, Collection<Agent>> onDeathHandler) {
+    this.onDeathHandler = onDeathHandler;
     return this;
   }
 
@@ -282,6 +292,37 @@ public class Agent {
     return this;
   }
 
+  /**
+   * Sets the agents target to attack. Might be overridden by behavior. Ie. if the target is out of
+   * range in a simulation frame.
+   */
+  public void setAttackTarget(Agent attackTarget) {
+    this.attackTarget = attackTarget;
+  }
+
+  /** Sets agents that are linked to this one (ie. Carriers<->Interceptors). */
+  public void setInterceptors(Collection<Agent> childAgents) {
+    this.interceptors = new ArrayList<>(childAgents);
+  }
+
+  /**
+   * Change the priority of this agent when other agents try to find a new target. For best
+   * performance keep most agents on {@link TargetingPriority#HIGHEST}.
+   *
+   * <p>Interceptors are assigned a low priority by default, the rest defaults to {@link
+   * TargetingPriority#HIGHEST}.
+   */
+  public Agent setAttackTargetPriority(TargetingPriority attackTargetPriority) {
+    this.attackTargetPriority = attackTargetPriority;
+    return this;
+  }
+
+  /** Mark this agent as being protected by dark swarm (ground unit and under dark swarm). */
+  public Agent setProtectedByDarkSwarm(boolean protectedByDarkSwarm) {
+    this.protectedByDarkSwarm = protectedByDarkSwarm;
+    return this;
+  }
+
   final Weapon weaponVs(Agent other) {
     if (other.isFlyer) {
       return airWeapon;
@@ -294,5 +335,11 @@ public class Agent {
     this.hpConstructionRate =
         max(1, (maxHealthShifted - maxHealthShifted / 10 + buildTime - 1) / buildTime);
     return this;
+  }
+
+  public enum TargetingPriority {
+    LOW,
+    MEDIUM,
+    HIGHEST // Intentionally named "highest" as it also speeds up target selection
   }
 }

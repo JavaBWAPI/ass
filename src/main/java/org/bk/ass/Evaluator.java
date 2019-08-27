@@ -30,9 +30,9 @@ public class Evaluator {
    */
   public double evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
     List<Agent> finalAgentsA = new ArrayList<>();
-    agentsA.forEach(a -> a.onDeathReplacer.accept(finalAgentsA));
+    agentsA.forEach(a -> a.onDeathHandler.accept(a, finalAgentsA));
     List<Agent> finalAgentsB = new ArrayList<>();
-    agentsB.forEach(a -> a.onDeathReplacer.accept(finalAgentsB));
+    agentsB.forEach(a -> a.onDeathHandler.accept(a, finalAgentsB));
     finalAgentsA.addAll(agentsA);
     finalAgentsB.addAll(agentsB);
     int damageToA = new DamageBoard(finalAgentsB).sumDamageTo(finalAgentsA);

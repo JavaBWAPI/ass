@@ -8,9 +8,10 @@ import org.openbw.bwapi4j.unit.*;
 
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import static java.lang.Math.max;
+import static org.bk.ass.Agent.CARRIER_DEATH_HANDLER;
 
 public class BWAPI4JAgentFactory {
 
@@ -25,8 +26,8 @@ public class BWAPI4JAgentFactory {
           UnitType.Terran_Marine, UnitType.Terran_Vulture,
           UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon);
 
-  private Consumer<Collection<Agent>> bunkerReplacer =
-      agents -> {
+  private BiConsumer<Agent, Collection<Agent>> bunkerDeathHandler =
+      (bunker, agents) -> {
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
@@ -104,10 +105,17 @@ public class BWAPI4JAgentFactory {
 
     Agent agent =
         new Agent(unitType.name())
+            .setAttackTargetPriority(
+                unitType == UnitType.Protoss_Interceptor
+                    ? Agent.TargetingPriority.LOW
+                    : Agent.TargetingPriority.HIGHEST)
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-            .setMaxCooldown(max(groundWeapon.damageCooldown(), airWeapon.damageCooldown()))
+            .setMaxCooldown(
+                unitType != UnitType.Protoss_Interceptor
+                    ? max(groundWeapon.damageCooldown(), airWeapon.damageCooldown())
+                    : 45)
             .setAirWeapon(
                 weapon(
                     airWeaponUpgrades,
@@ -144,7 +152,9 @@ public class BWAPI4JAgentFactory {
             .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
 
     if (unitType == UnitType.Terran_Bunker) {
-      agent.setOnDeathReplacer(bunkerReplacer);
+      agent.setOnDeathHandler(bunkerDeathHandler);
+    } else if (unitType == UnitType.Protoss_Carrier) {
+      agent.setOnDeathHandler(CARRIER_DEATH_HANDLER);
     }
     return agent;
   }
@@ -220,6 +230,7 @@ public class BWAPI4JAgentFactory {
             hasEnergyUpgrade(unitType, player));
     if (map != null && !unit.isFlying()) {
       agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
+//      agent.setProtectedByDarkSwarm(unit.isUnderDarkSwarm()); Not supported by BWAPI4J currently
     }
     if (unitType == UnitType.Terran_Marine || unitType == UnitType.Terran_Firebat) {
       agent.setCanStim(player.hasResearched(TechType.Stim_Packs));

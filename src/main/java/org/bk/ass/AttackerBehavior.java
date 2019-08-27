@@ -25,11 +25,11 @@ public class AttackerBehavior implements Behavior {
     Weapon selectedWeapon = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
 
-    if (agent.lastEnemy != null && agent.lastEnemy.healthShifted >= 0) {
-      int dstSq = distanceSquared(agent, agent.lastEnemy);
-      selectedWeapon = agent.weaponVs(agent.lastEnemy);
+    if (agent.attackTarget != null && agent.attackTarget.healthShifted >= 0) {
+      int dstSq = distanceSquared(agent, agent.attackTarget);
+      selectedWeapon = agent.weaponVs(agent.attackTarget);
       if (dstSq >= selectedWeapon.minRangeSquared && dstSq <= selectedWeapon.maxRangeSquared) {
-        selectedEnemy = agent.lastEnemy;
+        selectedEnemy = agent.attackTarget;
         selectedDistanceSquared = dstSq;
       }
     }
@@ -38,25 +38,32 @@ public class AttackerBehavior implements Behavior {
       for (int i = enemies.size() - 1; i >= 0; i--) {
         Agent enemy = enemies.get(i);
         Weapon wpn = agent.weaponVs(enemy);
+        int prioCmp =
+            selectedEnemy == null
+                ? 1
+                : enemy.attackTargetPriority.compareTo(selectedEnemy.attackTargetPriority);
         if (enemy.healthShifted >= 1
             && wpn.damageShifted != 0
             && enemy.detected
-            && !enemy.isStasised) {
+            && !enemy.isStasised
+            && prioCmp >= 0) {
           int distanceSquared = distanceSquared(agent, enemy);
-          if (distanceSquared >= wpn.minRangeSquared && distanceSquared < selectedDistanceSquared) {
+          if (distanceSquared >= wpn.minRangeSquared
+              && (distanceSquared < selectedDistanceSquared || prioCmp > 0)) {
             selectedDistanceSquared = distanceSquared;
             selectedEnemy = enemy;
             selectedWeapon = wpn;
 
             // If we can hit it this frame, we're done searching
-            if (selectedDistanceSquared <= wpn.maxRangeSquared) {
+            if (selectedDistanceSquared <= wpn.maxRangeSquared
+                && enemy.attackTargetPriority == Agent.TargetingPriority.HIGHEST) {
               break;
             }
           }
         }
       }
     }
-    agent.lastEnemy = selectedEnemy;
+    agent.attackTarget = selectedEnemy;
 
     if (selectedEnemy == null) {
       return !agent.burrowed && simFlee(agent, enemies);

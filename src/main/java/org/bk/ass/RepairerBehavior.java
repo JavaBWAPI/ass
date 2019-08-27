@@ -17,10 +17,10 @@ public class RepairerBehavior implements Behavior {
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
 
-    if (agent.lastAlly != null && agent.healthShifted < agent.maxHealthShifted) {
-      int dstSq = distanceSquared(agent, agent.lastAlly);
+    if (agent.restoreTarget != null && agent.healthShifted < agent.maxHealthShifted) {
+      int dstSq = distanceSquared(agent, agent.restoreTarget);
       if (dstSq <= SCV_REPAIR_RANGE_SQUARED) {
-        selectedAlly = agent.lastAlly;
+        selectedAlly = agent.restoreTarget;
         selectedDistanceSquared = dstSq;
       }
     }
@@ -46,7 +46,7 @@ public class RepairerBehavior implements Behavior {
         }
       }
     }
-    agent.lastAlly = selectedAlly;
+    agent.restoreTarget = selectedAlly;
 
     if (selectedAlly == null) {
       return false;

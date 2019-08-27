@@ -170,7 +170,7 @@ public class Simulator {
       if (agents.get(i).healthShifted < 1) {
         Agent agent = agents.removeAt(i);
         if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
-        agent.onDeathReplacer.accept(agents);
+        agent.onDeathHandler.accept(agent, agents);
       } else {
         i++;
       }

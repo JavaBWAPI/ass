@@ -139,6 +139,9 @@ public class AgentUtil {
     int remainingDamage = wpn.damageShifted;
 
     if (!agent.isMelee) {
+      // https://liquipedia.net/starcraft/Dark_Swarm
+      if (target.protectedByDarkSwarm) return;
+
       // http://www.starcraftai.com/wiki/Chance_to_Hit
       if ((agent.elevationLevel >= 0 && agent.elevationLevel < target.elevationLevel)
           || (target.elevationLevel & 1) == 1) {

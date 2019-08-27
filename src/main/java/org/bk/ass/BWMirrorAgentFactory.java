@@ -6,9 +6,10 @@ import org.bk.ass.info.BWMirrorUnitInfo;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import static java.lang.Math.max;
+import static org.bk.ass.Agent.CARRIER_DEATH_HANDLER;
 
 /**
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for
@@ -29,8 +30,8 @@ public class BWMirrorAgentFactory {
           UnitType.Zerg_Mutalisk,
           UnitType.Protoss_Dragoon);
 
-  private Consumer<Collection<Agent>> bunkerReplacer =
-      agents -> {
+  private BiConsumer<Agent, Collection<Agent>> bunkerReplacer =
+      (bunker, agents) -> {
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
@@ -108,10 +109,17 @@ public class BWMirrorAgentFactory {
 
     Agent agent =
         new Agent(unitType.toString())
+            .setAttackTargetPriority(
+                unitType == UnitType.Protoss_Interceptor
+                    ? Agent.TargetingPriority.LOW
+                    : Agent.TargetingPriority.HIGHEST)
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-            .setMaxCooldown(max(groundWeapon.damageCooldown(), airWeapon.damageCooldown()))
+            .setMaxCooldown(
+                unitType != UnitType.Protoss_Interceptor
+                    ? max(groundWeapon.damageCooldown(), airWeapon.damageCooldown())
+                    : 45)
             .setAirWeapon(
                 weapon(
                     airWeaponUpgrades,
@@ -148,7 +156,9 @@ public class BWMirrorAgentFactory {
             .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
 
     if (unitType == UnitType.Terran_Bunker) {
-      agent.setOnDeathReplacer(bunkerReplacer);
+      agent.setOnDeathHandler(bunkerReplacer);
+    } else if (unitType == UnitType.Protoss_Carrier) {
+      agent.setOnDeathHandler(CARRIER_DEATH_HANDLER);
     }
     return agent;
   }
@@ -225,6 +235,7 @@ public class BWMirrorAgentFactory {
             hasEnergyUpgrade(unitType, player));
     if (game != null && !unit.isFlying()) {
       agent.setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
+      agent.setProtectedByDarkSwarm(unit.isUnderDarkSwarm());
     }
     if (unitType == UnitType.Terran_Marine || unitType == UnitType.Terran_Firebat) {
       agent.setCanStim(player.hasResearched(TechType.Stim_Packs));

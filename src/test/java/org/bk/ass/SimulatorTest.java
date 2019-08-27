@@ -713,4 +713,62 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).extracting(Agent::getHealth).contains(97);
   }
+
+  @Test
+  void shouldSelectCarrierAndNotInterceptor() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    Agent carrier = factory.of(UnitType.Protoss_Carrier);
+    simulator.addAgentA(carrier.setX(500));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(500));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).first().extracting(a -> a.attackTarget).isEqualTo(carrier);
+  }
+
+  @Test
+  void InterceptorsShouldDieIfCarrierDies() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    Agent carrier = factory.of(UnitType.Protoss_Carrier);
+    carrier.setInterceptors(simulator.getAgentsA());
+    simulator.addAgentA(carrier.setX(500));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void darkSwarmZerglingVsMarines() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setProtectedByDarkSwarm(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setProtectedByDarkSwarm(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine).setProtectedByDarkSwarm(true));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setProtectedByDarkSwarm(true));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
 }

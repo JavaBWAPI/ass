@@ -20,12 +20,12 @@ public class HealerBehavior implements Behavior {
     Agent selectedAlly = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
 
-    if (agent.lastAlly != null
-        && !agent.lastAlly.healedThisFrame
+    if (agent.restoreTarget != null
+        && !agent.restoreTarget.healedThisFrame
         && agent.healthShifted < agent.maxHealthShifted) {
-      int dstSq = distanceSquared(agent, agent.lastAlly);
+      int dstSq = distanceSquared(agent, agent.restoreTarget);
       if (dstSq <= MEDICS_HEAL_RANGE_SQUARED) {
-        selectedAlly = agent.lastAlly;
+        selectedAlly = agent.restoreTarget;
         selectedDistanceSquared = dstSq;
       }
     }
@@ -52,7 +52,7 @@ public class HealerBehavior implements Behavior {
         }
       }
     }
-    agent.lastAlly = selectedAlly;
+    agent.restoreTarget = selectedAlly;
 
     if (selectedAlly == null) {
       return false;
