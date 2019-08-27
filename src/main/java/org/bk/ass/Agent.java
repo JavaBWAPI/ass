@@ -300,7 +300,7 @@ public class Agent {
     this.attackTarget = attackTarget;
   }
 
-  /** Sets agents that are linked to this one (ie. Carriers<->Interceptors). */
+  /** Set this carriers interceptors. These will be killed as well, if the carrier dies. */
   public void setInterceptors(Collection<Agent> childAgents) {
     this.interceptors = new ArrayList<>(childAgents);
   }
