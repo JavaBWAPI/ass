@@ -19,7 +19,6 @@ public class AttackerBehavior implements Behavior {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
-    if (agent.isLockeddown || agent.isStasised) return false;
 
     Agent selectedEnemy = null;
     Weapon selectedWeapon = null;

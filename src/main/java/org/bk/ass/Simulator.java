@@ -152,10 +152,18 @@ public class Simulator {
   private boolean step() {
     boolean simRunning = false;
     for (int i = playerA.size() - 1; i >= 0; i--) {
-      simRunning |= playerABehavior.simUnit(playerA.get(i), playerA, playerB);
+      Agent agent = playerA.get(i);
+      simRunning |=
+          agent.isLockeddown
+              || agent.isStasised
+              || playerABehavior.simUnit(agent, playerA, playerB);
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
-      simRunning |= playerBBehavior.simUnit(playerB.get(i), playerB, playerA);
+      Agent agent = playerB.get(i);
+      simRunning |=
+          agent.isLockeddown
+              || agent.isStasised
+              || playerBBehavior.simUnit(agent, playerB, playerA);
     }
     removeDead(playerA);
     removeDead(playerB);
