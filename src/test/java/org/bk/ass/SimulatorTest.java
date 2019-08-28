@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
+import org.openbw.bwapi4j.type.WeaponType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -770,5 +771,46 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isEmpty();
     assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void shouldDealPlagueDamage() {
+    // GIVEN
+    simulator.addAgentA(
+        factory.of(UnitType.Terran_Marine).setPlagueDamage(WeaponType.Plague.damageAmount()));
+
+    // Dummy unit
+    simulator.addAgentB(factory.of(UnitType.Protoss_Carrier));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .first()
+        .extracting(a -> a.healthShifted)
+        .isEqualTo(9230); // ~4 damage taken
+  }
+
+  @Test
+  void shouldNotDieFromPlague() {
+    // GIVEN
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Terran_Marine)
+            .setPlagueDamage(WeaponType.Plague.damageAmount())
+            .setHealth(2));
+
+    // Dummy unit
+    simulator.addAgentB(factory.of(UnitType.Protoss_Carrier));
+
+    // WHEN
+    simulator.simulate(1);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .first()
+        .extracting(a -> a.healthShifted)
+        .isEqualTo(512); // No damage taken
   }
 }

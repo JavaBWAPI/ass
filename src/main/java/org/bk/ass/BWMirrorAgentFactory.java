@@ -209,7 +209,8 @@ public class BWMirrorAgentFactory {
         .setUserObject(unit)
         .setBurrowed(unit.isBurrowed())
         .setStasised(unit.isStasised())
-        .setLockeddown(unit.isLockedDown());
+        .setLockeddown(unit.isLockedDown())
+        .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0);
   }
 
   public Agent of(Unit unit) {

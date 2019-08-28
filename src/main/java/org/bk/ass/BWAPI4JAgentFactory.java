@@ -230,7 +230,6 @@ public class BWAPI4JAgentFactory {
             hasEnergyUpgrade(unitType, player));
     if (map != null && !unit.isFlying()) {
       agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
-//      agent.setProtectedByDarkSwarm(unit.isUnderDarkSwarm()); Not supported by BWAPI4J currently
     }
     if (unitType == UnitType.Terran_Marine || unitType == UnitType.Terran_Firebat) {
       agent.setCanStim(player.hasResearched(TechType.Stim_Packs));

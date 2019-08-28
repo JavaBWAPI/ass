@@ -46,6 +46,7 @@ public class Agent {
   int stopFrames;
   int remainingStimFrames;
   boolean canStim;
+  int plagueDamagePerFrameShifted;
 
   // Is Zerg and not an Egg/Larva
   boolean regeneratesHealth;
@@ -334,6 +335,11 @@ public class Agent {
   public Agent setHpConstructionRate(int buildTime) {
     this.hpConstructionRate =
         max(1, (maxHealthShifted - maxHealthShifted / 10 + buildTime - 1) / buildTime);
+    return this;
+  }
+
+  public Agent setPlagueDamage(int plagueDamage) {
+    this.plagueDamagePerFrameShifted = (plagueDamage << 8) / 76;
     return this;
   }
 

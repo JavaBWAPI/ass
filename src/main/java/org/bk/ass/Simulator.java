@@ -199,6 +199,15 @@ public class Simulator {
       if (agent.cooldown > 0) {
         agent.cooldown--;
       }
+      if (agent.shieldsShifted < agent.maxShieldsShifted) {
+        agent.shieldsShifted += 7;
+        if (agent.shieldsShifted > agent.maxShieldsShifted) {
+          agent.shieldsShifted = agent.maxShieldsShifted;
+        }
+      }
+      if (agent.plagueDamagePerFrameShifted < agent.healthShifted) {
+        agent.healthShifted -= agent.plagueDamagePerFrameShifted;
+      }
       if (agent.remainingStimFrames > 0) {
         agent.remainingStimFrames--;
       }
@@ -206,12 +215,6 @@ public class Simulator {
         agent.healthShifted += 4;
         if (agent.healthShifted > agent.maxHealthShifted) {
           agent.healthShifted = agent.maxHealthShifted;
-        }
-      }
-      if (agent.shieldsShifted < agent.maxShieldsShifted) {
-        agent.shieldsShifted += 7;
-        if (agent.shieldsShifted > agent.maxShieldsShifted) {
-          agent.shieldsShifted = agent.maxShieldsShifted;
         }
       }
       agent.energyShifted += 8;
