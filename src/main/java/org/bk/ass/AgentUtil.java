@@ -7,8 +7,12 @@ import java.util.SplittableRandom;
 import static java.lang.Math.*;
 
 public class AgentUtil {
-
   private static final SplittableRandom rnd = new SplittableRandom();
+
+  // Retrieved from OpenBW
+  private static final int STIM_TIMER = 37;
+  private static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
+
 
   private AgentUtil() {
     // Utility class
@@ -187,5 +191,10 @@ public class AgentUtil {
       }
     }
     return damageShifted;
+  }
+
+  public static void stim(Agent agent) {
+    agent.remainingStimFrames = STIM_TIMER;
+    agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
   }
 }

@@ -27,6 +27,7 @@ public class Simulator {
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
+  // Hack to fix DTs not being able to hit a target in another TILE due to collision
   public static final int MIN_SIMULATION_RANGE =
       (TILE_SIZE + TILE_SIZE / 2) * (TILE_SIZE + TILE_SIZE / 2);
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;

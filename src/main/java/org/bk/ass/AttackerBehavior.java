@@ -9,10 +9,6 @@ import static org.bk.ass.RetreatBehavior.simFlee;
 
 public class AttackerBehavior implements Behavior {
 
-  // Retrieved from OpenBW
-  public static final int STIM_TIMER = 37;
-  public static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
-
   @Override
   public boolean simUnit(
       Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
@@ -24,7 +20,7 @@ public class AttackerBehavior implements Behavior {
     Weapon selectedWeapon = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
 
-    if (agent.attackTarget != null && agent.attackTarget.healthShifted >= 0) {
+    if (agent.attackTarget != null && agent.attackTarget.healthShifted > 0) {
       int dstSq = distanceSquared(agent, agent.attackTarget);
       selectedWeapon = agent.weaponVs(agent.attackTarget);
       if (dstSq >= selectedWeapon.minRangeSquared && dstSq <= selectedWeapon.maxRangeSquared) {
@@ -41,7 +37,7 @@ public class AttackerBehavior implements Behavior {
             selectedEnemy == null
                 ? 1
                 : enemy.attackTargetPriority.compareTo(selectedEnemy.attackTargetPriority);
-        if (enemy.healthShifted >= 1
+        if (enemy.healthShifted > 0
             && wpn.damageShifted != 0
             && enemy.detected
             && !enemy.isStasised
@@ -94,8 +90,7 @@ public class AttackerBehavior implements Behavior {
     if (agent.canStim
         && agent.remainingStimFrames == 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
-      agent.remainingStimFrames = STIM_TIMER;
-      agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
+      AgentUtil.stim(agent);
     }
     dealDamage(agent, selectedWeapon, selectedEnemy);
     switch (selectedWeapon.splashType) {
