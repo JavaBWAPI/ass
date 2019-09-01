@@ -4,13 +4,14 @@ import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.Limits;
+import io.jenetics.util.IntRange;
 import org.bk.ass.Evaluator.Parameters;
 import org.openbw.bwapi4j.org.apache.commons.lang3.time.StopWatch;
 import org.openbw.bwapi4j.test.BWDataProvider;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,77 @@ public class EvaluatorParameterTuner {
   public static void main(String[] args) throws Exception {
     BWDataProvider.injectValues();
 
+    SplittableRandom prng = new SplittableRandom();
+    List<Par> candidates = new ArrayList<>();
+    int[] miss = new int[9];
+    for (int i = 0; i < 20; i++) {
+      double[] d = new double[9];
+      for (int j = 0; j < d.length; j++) {
+        d[j] = prng.nextDouble(0.0001, 1000.0);
+      }
+      Par e = new Par(d);
+      if (e.score == TEST_METHODS.length) {
+        System.out.println(d);
+        return;
+      }
+      candidates.add(e);
+    }
+    int best = 0;
+    for (int i = 0; i < 5000000; i++) {
+      int ci = prng.nextInt(candidates.size() * 12 / 10);
+      Par sub;
+      if (ci < candidates.size()) {
+        Par par = candidates.get(ci);
+
+        int index = prng.nextInt(par.d.length);
+
+        sub = IntRange.of(0, 50).stream()
+                .mapToObj(d -> {
+                  double[] next = Arrays.copyOf(par.d, par.d.length);
+                  next[index] = prng.nextDouble(0.0001, 1000.0);
+                  return new Par(next);
+                }).max(Comparator.comparingInt(p -> p.score)).get();
+        if (sub.score == par.score) {
+          miss[index]++;
+          continue;
+        }
+      } else {
+        double[] d = new double[9];
+        for (int j = 0; j < d.length; j++) {
+          d[j] = prng.nextDouble(0.0001, 1000.0);
+        }
+        sub = new Par(d);
+      }
+      int min = 0;
+      for (int j = 1; j < candidates.size(); j++) {
+        if (candidates.get(j).score + prng.nextDouble() < candidates.get(min).score + prng.nextDouble()) {
+          min = j;
+        }
+      }
+      if (sub.score >= candidates.get(min).score) {
+        candidates.set(min, sub);
+        if (sub.score > best) {
+          best = sub.score;
+          System.out.println("Best: " + best);
+          System.out.println(Arrays.stream(sub.d)
+                  .mapToObj(String::valueOf)
+                  .collect(Collectors.joining(", ", "new double[] {", "}")));
+        }
+      }
+      if (sub.score == TEST_METHODS.length) {
+        System.out.println(Arrays.stream(sub.d)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining(", ", "new double[] {", "}")));
+        return;
+      }
+    }
+
+    System.out.println("NOT FOUND");
+    System.out.println(Arrays.toString(miss));
+    System.exit(0);
+
     Genotype<DoubleGene> genotype =
-        Genotype.of(DoubleChromosome.of(0.0001, 3.0, 6), DoubleChromosome.of(0, 1000, 3));
+        Genotype.of(DoubleChromosome.of(0.0001, 20.0, 6), DoubleChromosome.of(300, 1300, 3));
 
     Function<Genotype<DoubleGene>, Integer> eval =
         gt -> {
@@ -62,7 +132,7 @@ public class EvaluatorParameterTuner {
   }
 
   private static double round(double v) {
-    return Math.round(v * 8000) / 8000.0;
+    return Math.round(v * 1000) / 1000.0;
   }
 
   private static final Method[] TEST_METHODS =
@@ -75,13 +145,36 @@ public class EvaluatorParameterTuner {
           .toArray(Method[]::new);
 
   private static int hits(EvaluatorTest test) {
+    int result = 0;
     for (int i = 0; i < TEST_METHODS.length; i++) {
       try {
         TEST_METHODS[i].invoke(test);
+        result++;
       } catch (Exception e) {
-        return i;
+        // Ignore
       }
     }
-    return TEST_METHODS.length;
+    return result;
+  }
+
+  private static class Par {
+    final double[] d;
+    final int score;
+
+    private Par(double[] d) {
+      this.d = d;
+      this.score = eval();
+    }
+
+    private int eval() {
+      EvaluatorTest test = new EvaluatorTest();
+      test.evaluator = new Evaluator(new Parameters(d));
+      return hits(test);
+    }
+
+    @Override
+    public String toString() {
+      return score + " : " + Arrays.toString(d);
+    }
   }
 }

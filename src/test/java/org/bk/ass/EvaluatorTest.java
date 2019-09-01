@@ -1,5 +1,6 @@
 package org.bk.ass;
 
+import io.jenetics.util.IntRange;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -267,7 +269,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isLessThan(0.5);
+    assertThat(result).isBetween(0.2, 0.4);
   }
 
   @Test
@@ -289,6 +291,36 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isGreaterThan(0.5);
+    assertThat(result).isBetween(0.5, 0.7);
+  }
+
+  @Test
+  void reaverVs12Lings() {
+    // GIVEN
+
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Protoss_Reaver));
+
+    List<Agent> b = IntRange.of(0, 11).stream().mapToObj(unused -> factory.of(UnitType.Zerg_Zergling)).collect(Collectors.toList());
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isBetween(0.2, 0.4);
+  }
+
+  @Test
+  void reaverVs9Lings() {
+    // GIVEN
+
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Protoss_Reaver));
+
+    List<Agent> b = IntRange.of(0, 9).stream().mapToObj(unused -> factory.of(UnitType.Zerg_Zergling)).collect(Collectors.toList());
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isBetween(0.6, 0.8);
   }
 }

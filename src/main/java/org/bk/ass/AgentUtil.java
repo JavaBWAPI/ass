@@ -12,6 +12,8 @@ public class AgentUtil {
   // Retrieved from OpenBW
   private static final int STIM_TIMER = 37;
   private static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
+  public static final int INTERCEPTOR_COOLDOWN = 45;
+  public static final int REAVER_COOLDOWN = 60;
 
 
   private AgentUtil() {

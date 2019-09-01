@@ -813,4 +813,39 @@ class SimulatorTest {
         .extracting(a -> a.healthShifted)
         .isEqualTo(512); // No damage taken
   }
+
+  @Test
+  void reaverVs9Lings() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Protoss_Reaver));
+
+    for (int i = 0; i < 9; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(i * 30));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
+
+  }
+
+  @Test
+  void reaverVs12Lings() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Protoss_Reaver));
+
+    for (int i = 0; i < 12; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(i * 30));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
 }

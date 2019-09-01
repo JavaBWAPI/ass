@@ -90,8 +90,11 @@ public class BWMirrorAgentFactory {
     if (unitType == UnitType.Terran_Bunker) {
       airWeapon = groundWeapon = UnitType.Terran_Marine.groundWeapon();
       maxAirHits = maxGroundHits = UnitType.Terran_Marine.maxAirHits();
-      rangeExtension += 64;
+      rangeExtension = 64;
       hitsFactor = 4;
+    } else if (unitType == UnitType.Protoss_Reaver) {
+      groundWeapon = WeaponType.Scarab;
+      maxGroundHits = UnitType.Protoss_Scarab.maxGroundHits();
     }
 
     float speed = (float) unitType.topSpeed();
@@ -107,6 +110,18 @@ public class BWMirrorAgentFactory {
       }
     }
 
+    int cd;
+    switch (unitType) {
+      case Protoss_Interceptor:
+        cd = AgentUtil.INTERCEPTOR_COOLDOWN;
+        break;
+      case Protoss_Reaver:
+        cd = AgentUtil.REAVER_COOLDOWN;
+        break;
+      default:
+        cd = max(groundWeapon.damageCooldown(), airWeapon.damageCooldown());
+    }
+
     Agent agent =
         new Agent(unitType.toString())
             .setAttackTargetPriority(
@@ -116,10 +131,7 @@ public class BWMirrorAgentFactory {
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-            .setMaxCooldown(
-                unitType != UnitType.Protoss_Interceptor
-                    ? max(groundWeapon.damageCooldown(), airWeapon.damageCooldown())
-                    : 45)
+                .setMaxCooldown(cd)
             .setAirWeapon(
                 weapon(
                     airWeaponUpgrades,

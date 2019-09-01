@@ -143,12 +143,9 @@ public class Evaluator {
     private double calculateDamage(Agent attacker, Weapon weapon) {
       double rangeFactor = 1.0 + weapon.maxRange * parameters.rangeScale;
       double speedFactor = 1.0 + attacker.speed * parameters.speedScale;
-      double radialSplashFactor =
-          weapon.splashType == SplashType.RADIAL_SPLASH ? parameters.radialSplashFactor : 1.0;
-      double lineSplashFactor =
-          weapon.splashType == SplashType.LINE_SPLASH ? parameters.lineSplashFactor : 1.0;
-      double bounceSplashFactor =
-          weapon.splashType == SplashType.BOUNCE ? parameters.radialSplashFactor : 1.0;
+      double radialSplashFactor = weapon.splashType == SplashType.RADIAL_ENEMY_SPLASH || weapon.splashType == SplashType.RADIAL_SPLASH ? 1.0 + parameters.radialSplashFactor * weapon.innerSplashRadius : 1.0;
+      double lineSplashFactor = weapon.splashType == SplashType.LINE_SPLASH ? 1.0 + parameters.lineSplashFactor * weapon.innerSplashRadius : 1.0;
+      double bounceSplashFactor = weapon.splashType == SplashType.BOUNCE ? parameters.bounceSplashFactor : 1.0;
 
       return weapon.damageShifted
           * rangeFactor
@@ -242,10 +239,7 @@ public class Evaluator {
     }
 
     public Parameters() {
-      this(
-          new double[] {
-            2.812625, 0.504625, 0.053, 1.2545, 2.27975, 1.86025, 976.7565, 513.109625, 586.87675
-          });
+      this(new double[] {62.55550402780286, 455.5108652989783, 16.644298951231356, 0.0881036657313995, 534.3720029493211, 2.2237277860926357, 506.53351985609726, 780.675841755981, 778.571115050493});
     }
   }
 }
