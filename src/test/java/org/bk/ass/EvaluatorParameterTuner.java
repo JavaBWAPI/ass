@@ -16,17 +16,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class EvaluatorParameterTuner {
+  private static int PARAMS = 7;
 
   public static void main(String[] args) throws Exception {
     BWDataProvider.injectValues();
 
     SplittableRandom prng = new SplittableRandom();
     List<Par> candidates = new ArrayList<>();
-    int[] miss = new int[9];
+    int[] miss = new int[PARAMS];
     for (int i = 0; i < 20; i++) {
-      double[] d = new double[9];
+      double[] d = new double[PARAMS];
       for (int j = 0; j < d.length; j++) {
-        d[j] = prng.nextDouble(0.0001, 1000.0);
+        d[j] = prng.nextDouble(0.00001, 10.0);
       }
       Par e = new Par(d);
       if (e.score == TEST_METHODS.length) {
@@ -36,7 +37,7 @@ public class EvaluatorParameterTuner {
       candidates.add(e);
     }
     int best = 0;
-    for (int i = 0; i < 5000000; i++) {
+    for (int i = 0; i < 100000; i++) {
       int ci = prng.nextInt(candidates.size() * 12 / 10);
       Par sub;
       if (ci < candidates.size()) {
@@ -44,10 +45,10 @@ public class EvaluatorParameterTuner {
 
         int index = prng.nextInt(par.d.length);
 
-        sub = IntRange.of(0, 50).stream()
+        sub = IntRange.of(0, 5).stream()
                 .mapToObj(d -> {
                   double[] next = Arrays.copyOf(par.d, par.d.length);
-                  next[index] = prng.nextDouble(0.0001, 1000.0);
+                  next[index] = prng.nextDouble(0.0001, 10.0);
                   return new Par(next);
                 }).max(Comparator.comparingInt(p -> p.score)).get();
         if (sub.score == par.score) {
@@ -55,9 +56,9 @@ public class EvaluatorParameterTuner {
           continue;
         }
       } else {
-        double[] d = new double[9];
+        double[] d = new double[PARAMS];
         for (int j = 0; j < d.length; j++) {
-          d[j] = prng.nextDouble(0.0001, 1000.0);
+          d[j] = prng.nextDouble(0.0001, 10.0);
         }
         sub = new Par(d);
       }
@@ -90,7 +91,7 @@ public class EvaluatorParameterTuner {
     System.exit(0);
 
     Genotype<DoubleGene> genotype =
-        Genotype.of(DoubleChromosome.of(0.0001, 20.0, 6), DoubleChromosome.of(300, 1300, 3));
+            Genotype.of(DoubleChromosome.of(0.0001, 3.0, 6), DoubleChromosome.of(1, 1000, 1));
 
     Function<Genotype<DoubleGene>, Integer> eval =
         gt -> {

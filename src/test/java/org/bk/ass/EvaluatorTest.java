@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,7 +80,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(agentsA, agentsB);
 
     // THEN
-    assertThat(result).isGreaterThan(0.6);
+    assertThat(result).isBetween(0.4, 0.6);
   }
 
   @Test
@@ -133,7 +134,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isLessThan(0.45);
+    assertThat(result).isLessThan(0.5);
   }
 
   @Test
@@ -155,7 +156,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isGreaterThan(0.7);
+    assertThat(result).isGreaterThan(0.6);
   }
 
   @Test
@@ -205,7 +206,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isGreaterThan(0.51);
+    assertThat(result).isGreaterThan(0.5);
   }
 
   @Test
@@ -250,7 +251,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isGreaterThan(0.51);
+    assertThat(result).isGreaterThan(0.5);
   }
 
   @Test
@@ -306,7 +307,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isBetween(0.2, 0.4);
+    assertThat(result).isBetween(0.2, 0.45);
   }
 
   @Test
@@ -321,6 +322,23 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isBetween(0.6, 0.8);
+    assertThat(result).isBetween(0.5, 0.8);
+  }
+
+  @Test
+  void MvsMM() {
+    // GIVEN
+    List<Agent> a = IntRange.of(0, 4).stream().mapToObj(unused -> factory.of(UnitType.Terran_Marine)).collect(Collectors.toList());
+    List<Agent> b = Stream.concat(
+            IntRange.of(0, 3).stream().mapToObj(unused -> factory.of(UnitType.Terran_Marine)),
+            IntRange.of(0, 1).stream().mapToObj(unused -> factory.of(UnitType.Terran_Medic)))
+            .collect(Collectors.toList());
+
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isLessThan(0.3);
   }
 }

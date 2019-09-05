@@ -35,8 +35,9 @@ public class Evaluator {
     agentsB.forEach(a -> a.onDeathHandler.accept(a, finalAgentsB));
     finalAgentsA.addAll(agentsA);
     finalAgentsB.addAll(agentsB);
-    int damageToA = new DamageBoard(finalAgentsB).sumDamageTo(finalAgentsA);
-    int damageToB = new DamageBoard(finalAgentsA).sumDamageTo(finalAgentsB);
+    double damageToA = new DamageBoard(finalAgentsB).sumDamageTo(finalAgentsA);
+    double damageToB = new DamageBoard(finalAgentsA).sumDamageTo(finalAgentsB);
+
     int regenToA = regeneration(finalAgentsA);
     int regenToB = regeneration(finalAgentsB);
     damageToA -= regenToA;
@@ -48,14 +49,12 @@ public class Evaluator {
       damageToB = 0;
     }
     double evalA =
-        (double) damageToA
-            / (finalAgentsA.stream()
+            damageToA / (finalAgentsA.stream()
                     .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
                     .sum()
                 + EPS);
     double evalB =
-        (double) damageToB
-            / (finalAgentsB.stream()
+            damageToB / (finalAgentsB.stream()
                     .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
                     .sum()
                 + EPS);
@@ -74,12 +73,6 @@ public class Evaluator {
         .mapToInt(
             a -> {
               int healed = 0;
-              if (a.regeneratesHealth) {
-                healed = parameters.healthRegen;
-              }
-              if (a.maxShieldsShifted > 0) {
-                healed += parameters.shieldRegen;
-              }
               if (a.isHealer) {
                 healed += healables * parameters.heal;
               }
@@ -126,12 +119,12 @@ public class Evaluator {
     }
 
     private void sumAirDamage(Agent agent) {
-      Weapon weapon = agent.groundWeapon;
+      Weapon weapon = agent.airWeapon;
       double damageToApply = calculateDamage(agent, weapon);
-      if (agent.airWeapon.damageType == DamageType.CONCUSSIVE) {
+      if (weapon.damageType == DamageType.CONCUSSIVE) {
         airConcussiveDamage += (int) damageToApply;
         airConcussiveHits += weapon.hits;
-      } else if (agent.airWeapon.damageType == DamageType.EXPLOSIVE) {
+      } else if (weapon.damageType == DamageType.EXPLOSIVE) {
         airExplosiveDamage += (int) damageToApply;
         airExplosiveHits += weapon.hits;
       } else {
@@ -141,23 +134,19 @@ public class Evaluator {
     }
 
     private double calculateDamage(Agent attacker, Weapon weapon) {
-      double rangeFactor = 1.0 + weapon.maxRange * parameters.rangeScale;
-      double speedFactor = 1.0 + attacker.speed * parameters.speedScale;
-      double radialSplashFactor = weapon.splashType == SplashType.RADIAL_ENEMY_SPLASH || weapon.splashType == SplashType.RADIAL_SPLASH ? 1.0 + parameters.radialSplashFactor * weapon.innerSplashRadius : 1.0;
-      double lineSplashFactor = weapon.splashType == SplashType.LINE_SPLASH ? 1.0 + parameters.lineSplashFactor * weapon.innerSplashRadius : 1.0;
-      double bounceSplashFactor = weapon.splashType == SplashType.BOUNCE ? parameters.bounceSplashFactor : 1.0;
+      double rangeFactor = weapon.maxRange * parameters.rangeScale;
+      double speedFactor = attacker.burrowedAttacker ? 0.0 : attacker.speed * parameters.speedScale;
+      double radialSplashFactor = weapon.splashType == SplashType.RADIAL_ENEMY_SPLASH || weapon.splashType == SplashType.RADIAL_SPLASH ? parameters.radialSplashScale * weapon.innerSplashRadius : 0.0;
+      double lineSplashFactor = weapon.splashType == SplashType.LINE_SPLASH ? parameters.lineSplashScale * weapon.innerSplashRadius : 0.0;
+      double bounceSplashFactor = weapon.splashType == SplashType.BOUNCE ? parameters.bounceSplashFactor : 0.0;
 
       return weapon.damageShifted
-          * rangeFactor
-          * speedFactor
-          * radialSplashFactor
-          * lineSplashFactor
-          * bounceSplashFactor
+              * (1.0 + rangeFactor + speedFactor + radialSplashFactor + lineSplashFactor + bounceSplashFactor)
           / attacker.maxCooldown;
     }
 
-    int sumDamageTo(Collection<Agent> targets) {
-      int damageSum = 0;
+    double sumDamageTo(Collection<Agent> targets) {
+      double damageSum = 0;
       for (Agent target : targets) {
         if (!target.detected) {
           continue;
@@ -219,27 +208,23 @@ public class Evaluator {
     final double shieldScale;
     final double speedScale;
     final double rangeScale;
-    final double radialSplashFactor;
-    final double lineSplashFactor;
+    final double radialSplashScale;
+    final double lineSplashScale;
     final double bounceSplashFactor;
-    final int heal;
-    final int healthRegen;
-    final int shieldRegen;
+    final double heal;
 
     public Parameters(double[] source) {
       shieldScale = source[0];
       speedScale = source[1];
       rangeScale = source[2];
-      radialSplashFactor = source[3];
-      lineSplashFactor = source[4];
+      radialSplashScale = source[3];
+      lineSplashScale = source[4];
       bounceSplashFactor = source[5];
-      heal = (int) source[6];
-      healthRegen = (int) source[7];
-      shieldRegen = (int) source[8];
+      heal = source[6] * 500000;
     }
 
     public Parameters() {
-      this(new double[] {62.55550402780286, 455.5108652989783, 16.644298951231356, 0.0881036657313995, 534.3720029493211, 2.2237277860926357, 506.53351985609726, 780.675841755981, 778.571115050493});
+      this(new double[]{2.0608350462547205, 8.19938619214691, 0.19223277374228906, 7.706789576045348, 6.154650149331842, 5.884458141154542, 0.8991451082849068});
     }
   }
 }

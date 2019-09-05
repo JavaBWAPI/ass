@@ -40,6 +40,26 @@ class SimulatorTest {
   }
 
   @Test
+  void mmVsM() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
   void MMVsSunkens() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine));
