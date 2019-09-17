@@ -91,6 +91,17 @@ public class PositionQueries<U> extends AbstractCollection<U> {
     return new RadiusAreaSearcher(x, y, radius, criteria).search();
   }
 
+  /**
+   * Returns all elements matching the given criteria in the given radius around the given element,
+   * including those on the border. <em>The given criteria might be called often, make sure it is
+   * fast!</em>`
+   */
+  public Collection<U> inRadius(U u, int radius, Predicate<U> criteria) {
+    if (radius <= 0) throw new IllegalArgumentException("radius should be > 0");
+    Position position = positionExtractor.apply(u);
+    return new RadiusAreaSearcher(position.x, position.y, radius, criteria).search();
+  }
+
   @Override
   public Iterator<U> iterator() {
     List<U> items = new ArrayList<>();

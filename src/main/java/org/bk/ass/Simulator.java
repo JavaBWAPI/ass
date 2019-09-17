@@ -22,8 +22,16 @@ import java.util.function.ToIntFunction;
  * Be cautious when modifying {@link Agent}s after they have been added to the simulation.
  */
 public class Simulator {
+  /**
+   * Use to count health and shields as equal, maybe useful in PvP?
+   */
   public static final ToIntFunction<Agent> HEALTH_AND_SHIELD =
-      agent -> agent.getHealth() + agent.getShields();
+          agent -> agent.getHealth() + agent.getShields();
+  /**
+   * Use to count shields as half the value of health.
+   */
+  public static final ToIntFunction<Agent> HEALTH_AND_HALFED_SHIELD =
+          agent -> agent.getHealth() + agent.getShields() / 2;
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
