@@ -95,27 +95,8 @@ public class AttackerBehavior implements Behavior {
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
       agent.stim();
     }
-    dealDamage(agent, selectedWeapon, selectedEnemy);
-    switch (selectedWeapon.splashType) {
-      case BOUNCE:
-        dealBounceDamage(selectedWeapon, selectedEnemy, enemies);
-        break;
-      case RADIAL_SPLASH:
-        dealRadialSplashDamage(selectedWeapon, selectedEnemy, allies, enemies);
-        break;
-      case RADIAL_ENEMY_SPLASH:
-        dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
-        break;
-      case LINE_SPLASH:
-        dealLineSplashDamage(agent, selectedWeapon, selectedEnemy, enemies);
-        break;
-      default:
-        // No splash
-    }
-    agent.cooldown = agent.maxCooldown;
-    if (agent.remainingStimFrames > 0) {
-      agent.cooldown /= 2;
-    }
+
+    AgentUtil.attack(agent, selectedWeapon, selectedEnemy, allies, enemies);
   }
 
   private void simCombatMove(
@@ -131,7 +112,7 @@ public class AttackerBehavior implements Behavior {
             && selectedEnemy.speed < agent.speed;
     float distance = (float) sqrt(selectedDistanceSquared);
     if (shouldKite) {
-      if (distance + agent.speed < selectedWeapon.maxRange) {
+      if (distance + agent.speed <= selectedWeapon.maxRange) {
         moveAwayFrom(frameSkip, agent, selectedEnemy, distance);
       }
     } else {

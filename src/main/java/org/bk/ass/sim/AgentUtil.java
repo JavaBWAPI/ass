@@ -194,4 +194,28 @@ public class AgentUtil {
     }
     return damageShifted;
   }
+
+  public static void attack(Agent agent, Weapon selectedWeapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+    dealDamage(agent, selectedWeapon, selectedEnemy);
+    switch (selectedWeapon.splashType) {
+      case BOUNCE:
+        dealBounceDamage(selectedWeapon, selectedEnemy, enemies);
+        break;
+      case RADIAL_SPLASH:
+        dealRadialSplashDamage(selectedWeapon, selectedEnemy, allies, enemies);
+        break;
+      case RADIAL_ENEMY_SPLASH:
+        dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
+        break;
+      case LINE_SPLASH:
+        dealLineSplashDamage(agent, selectedWeapon, selectedEnemy, enemies);
+        break;
+      default:
+        // No splash
+    }
+    agent.cooldown = agent.maxCooldown;
+    if (agent.remainingStimFrames > 0) {
+      agent.cooldown /= 2;
+    }
+  }
 }
