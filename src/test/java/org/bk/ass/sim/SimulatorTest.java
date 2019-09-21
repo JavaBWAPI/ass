@@ -1,6 +1,7 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
-import org.bk.ass.Simulator.RoleBasedBehavior;
+import org.bk.ass.PositionOutOfBoundsException;
+import org.bk.ass.sim.Simulator.RoleBasedBehavior;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;

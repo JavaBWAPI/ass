@@ -1,10 +1,10 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
-import org.bk.ass.Simulator.Behavior;
 import org.bk.ass.collection.UnorderedCollection;
+import org.bk.ass.sim.Simulator.Behavior;
 
-import static org.bk.ass.AgentUtil.dealDamage;
-import static org.bk.ass.AgentUtil.distanceSquared;
+import static org.bk.ass.sim.AgentUtil.dealDamage;
+import static org.bk.ass.sim.AgentUtil.distanceSquared;
 
 public class SuiciderBehavior implements Behavior {
 

@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +29,9 @@ public class Evaluator {
    *     obliterated.
    */
   public double evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
+    if (agentsA.isEmpty() && agentsB.isEmpty()) return 0.5;
+    if (agentsA.isEmpty()) return 0.0;
+    if (agentsB.isEmpty()) return 1.0;
     List<Agent> finalAgentsA = new ArrayList<>();
     agentsA.forEach(a -> a.onDeathHandler.accept(a, finalAgentsA));
     List<Agent> finalAgentsB = new ArrayList<>();

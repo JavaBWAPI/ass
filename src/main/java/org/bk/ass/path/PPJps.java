@@ -1,9 +1,11 @@
 package org.bk.ass.path;
 
+import org.bk.ass.grid.Grid;
+
 import java.util.Collections;
 
 /**
- * Jump point search. Initialize with a {@link Map} instance and call {@link #findPath(Position,
+ * Jump point search. Initialize with a {@link PPMap} instance and call {@link #findPath(Position,
  * Position)}. This implementation uses preprocessed maps to improve runtime performance (~40%).
  * (Note: This is not JPS+, only verticals and horizontals are precomputed)
  */
@@ -15,7 +17,7 @@ public class PPJps {
     this.map = map;
   }
 
-  public PPJps(Map map) {
+  public PPJps(Grid<Boolean> map) {
     this(PPMap.fromMap(map));
   }
 

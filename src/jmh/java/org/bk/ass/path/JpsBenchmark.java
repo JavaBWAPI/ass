@@ -16,7 +16,7 @@ public class JpsBenchmark {
   @State(Scope.Thread)
   public static class MyState {
     List<Position[]> positions;
-    Map map;
+    PPMap map;
     Jps jps;
     PPJps PPJps;
 
@@ -30,7 +30,7 @@ public class JpsBenchmark {
           data[x][y] = image.getRGB(x, y) == -1;
         }
       }
-      map = Map.fromBooleanArray(data);
+      map = PPMap.fromBooleanArray(data);
       jps = new Jps(map);
       PPJps = new PPJps(map);
 

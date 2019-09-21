@@ -1,5 +1,6 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
+import org.bk.ass.PositionOutOfBoundsException;
 import org.bk.ass.collection.UnorderedCollection;
 
 import java.util.Collection;
@@ -330,6 +331,15 @@ public class Simulator {
      */
     public int delta() {
       return evalA - evalB;
+    }
+
+
+    public int dot(IntEvaluation other) {
+      return evalA * other.evalA - evalB * other.evalB;
+    }
+
+    public int cross(IntEvaluation other) {
+      return evalA * other.evalB - evalB * other.evalA;
     }
 
     /**

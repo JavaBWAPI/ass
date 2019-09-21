@@ -1,5 +1,6 @@
 package org.bk.ass.path;
 
+import org.bk.ass.grid.Grid;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -140,7 +141,7 @@ class PPJpsTest {
     // GIVEN
     PPJps sut =
         new PPJps(
-            new Map() {
+            new Grid<Boolean>() {
               @Override
               public Boolean get(int x, int y) {
                 return y >= 0
@@ -178,7 +179,7 @@ class PPJpsTest {
         data[y][x] = image.getRGB(x, y) == -1;
       }
     }
-    Map map = PPMap.fromBooleanArray(data);
+    PPMap map = PPMap.fromBooleanArray(data);
     PPJps sut = new PPJps(map);
     SplittableRandom rnd = new SplittableRandom(123456);
     Result result = null;

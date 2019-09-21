@@ -1,5 +1,8 @@
 package org.bk.ass;
 
+import org.bk.ass.sim.Agent;
+import org.bk.ass.sim.BWAPI4JAgentFactory;
+import org.bk.ass.sim.Evaluator;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openjdk.jmh.annotations.*;

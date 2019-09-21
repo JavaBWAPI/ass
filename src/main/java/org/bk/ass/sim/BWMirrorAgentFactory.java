@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
 import bwapi.*;
 import org.bk.ass.info.BWMirrorUnitInfo;
@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import static java.lang.Math.max;
-import static org.bk.ass.Agent.CARRIER_DEATH_HANDLER;
+import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
 
 /**
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for

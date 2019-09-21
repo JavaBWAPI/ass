@@ -1,6 +1,8 @@
 package org.bk.ass.path;
 
-public interface PPMap extends Map {
+import org.bk.ass.grid.Grid;
+
+public interface PPMap extends Grid<Boolean> {
 
   short left(int x, int y);
 
@@ -11,10 +13,25 @@ public interface PPMap extends Map {
   short right(int x, int y);
 
   static PPMap fromBooleanArray(boolean[][] map) {
-    return fromMap(Map.fromBooleanArray(map));
+      return fromMap(new Grid<Boolean>() {
+          @Override
+          public Boolean get(int x, int y) {
+              return y >= 0 && y < map[0].length && x >= 0 && x < map.length && map[x][y];
+          }
+
+          @Override
+          public int getWidth() {
+              return map.length;
+          }
+
+          @Override
+          public int getHeight() {
+              return map[0].length;
+          }
+      });
   }
 
-  static PPMap fromMap(Map map) {
+  static PPMap fromMap(Grid<Boolean> map) {
     short[][] left = new short[map.getHeight()][map.getWidth()];
     short[][] right = new short[map.getHeight()][map.getWidth()];
     short[][] up = new short[map.getHeight()][map.getWidth()];

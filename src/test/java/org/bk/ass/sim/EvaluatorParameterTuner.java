@@ -1,11 +1,11 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.Limits;
 import io.jenetics.util.IntRange;
-import org.bk.ass.Evaluator.Parameters;
+import org.bk.ass.sim.Evaluator.Parameters;
 import org.openbw.bwapi4j.org.apache.commons.lang3.time.StopWatch;
 import org.openbw.bwapi4j.test.BWDataProvider;
 

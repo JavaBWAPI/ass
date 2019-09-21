@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     implementation(fileTree("lib").include("*.jar"))
-    implementation("com.github.JavaBWAPI:JBWAPI:0.7.2")
+    implementation("com.github.JavaBWAPI:JBWAPI:0.8.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
     testImplementation("org.assertj:assertj-core:3.13.2")

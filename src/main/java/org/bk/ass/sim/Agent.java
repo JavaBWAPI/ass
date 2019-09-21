@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
 import java.util.ArrayList;
 import java.util.Collection;

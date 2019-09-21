@@ -1,4 +1,4 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
 import io.jenetics.util.IntRange;
 import org.junit.jupiter.api.BeforeAll;
@@ -340,5 +340,17 @@ class EvaluatorTest {
 
     // THEN
     assertThat(result).isLessThan(0.3);
+  }
+
+  @Test
+  void vsNothingIsFreeWin() {
+    List<Agent> a = IntRange.of(0, 4).stream().mapToObj(unused -> factory.of(UnitType.Terran_Marine)).collect(Collectors.toList());
+    List<Agent> b = Collections.emptyList();
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isGreaterThan(0.9);
   }
 }

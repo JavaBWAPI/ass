@@ -1,5 +1,7 @@
 package org.bk.ass.path;
 
+import org.bk.ass.grid.Grid;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,9 +14,9 @@ abstract class AbstractPathFinder {
   private final PriorityQueue<Node> openQueue = new PriorityQueue<>();
   private final Node[] nodes;
   final Position target;
-  private final Map map;
+  private final Grid<Boolean> map;
 
-  AbstractPathFinder(Position target, Map map) {
+  AbstractPathFinder(Position target, Grid<Boolean> map) {
     this.target = target;
     this.map = map;
     nodes = new Node[map.getHeight() * map.getWidth()];

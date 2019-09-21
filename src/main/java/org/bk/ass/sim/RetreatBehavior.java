@@ -1,11 +1,11 @@
-package org.bk.ass;
+package org.bk.ass.sim;
 
-import org.bk.ass.Simulator.Behavior;
 import org.bk.ass.collection.UnorderedCollection;
+import org.bk.ass.sim.Simulator.Behavior;
 
 import static java.lang.Math.sqrt;
-import static org.bk.ass.AgentUtil.distanceSquared;
-import static org.bk.ass.AgentUtil.moveAwayFrom;
+import static org.bk.ass.sim.AgentUtil.distanceSquared;
+import static org.bk.ass.sim.AgentUtil.moveAwayFrom;
 
 public class RetreatBehavior implements Behavior {
 

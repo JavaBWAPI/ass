@@ -1,16 +1,18 @@
 package org.bk.ass.path;
 
+import org.bk.ass.grid.Grid;
+
 import java.util.Collections;
 
 /**
- * Jump point search. Initialize with a {@link Map} instance and call {@link #findPath(Position,
+ * Jump point search. Initialize with a {@link Grid} instance and call {@link #findPath(Position,
  * Position)}.
  */
 public class Jps {
 
-  private final Map map;
+  private final Grid<Boolean> map;
 
-  public Jps(Map map) {
+  public Jps(Grid<Boolean> map) {
     this.map = map;
   }
 
@@ -29,9 +31,9 @@ public class Jps {
 
   private static class PathFinder extends AbstractPathFinder {
 
-    private final Map map;
+    private final Grid<Boolean> map;
 
-    protected PathFinder(Position target, Map map) {
+    protected PathFinder(Position target, Grid<Boolean> map) {
       super(target, map);
       this.map = map;
     }

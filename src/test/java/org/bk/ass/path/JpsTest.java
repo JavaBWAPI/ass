@@ -1,5 +1,6 @@
 package org.bk.ass.path;
 
+import org.bk.ass.grid.Grid;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -16,7 +17,7 @@ class JpsTest {
   @Test
   void shouldReturnIdentityIfStartAndEndMatch() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true}}));
+    Jps sut = new Jps(PPMap.fromBooleanArray(new boolean[][] {{true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 0));
@@ -28,7 +29,7 @@ class JpsTest {
   @Test
   void shouldFindNotFindPathWhenBlocked() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true, false, true}}));
+    Jps sut = new Jps(PPMap.fromBooleanArray(new boolean[][] {{true, false, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -40,7 +41,7 @@ class JpsTest {
   @Test
   void shouldFindVerticalPath() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true, true, true}}));
+    Jps sut = new Jps(PPMap.fromBooleanArray(new boolean[][] {{true, true, true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(0, 2));
@@ -52,7 +53,7 @@ class JpsTest {
   @Test
   void shouldFindHorizontalPath() {
     // GIVEN
-    Jps sut = new Jps(Map.fromBooleanArray(new boolean[][] {{true}, {true}, {true}}));
+    Jps sut = new Jps(PPMap.fromBooleanArray(new boolean[][] {{true}, {true}, {true}}));
 
     // WHEN
     Result result = sut.findPath(new Position(0, 0), new Position(2, 0));
@@ -66,7 +67,7 @@ class JpsTest {
     // GIVEN
     Jps sut =
         new Jps(
-            Map.fromBooleanArray(
+            PPMap.fromBooleanArray(
                 new boolean[][] {{true, true, true}, {true, true, true}, {true, true, true}}));
 
     // WHEN
@@ -81,7 +82,7 @@ class JpsTest {
     // GIVEN
     Jps sut =
         new Jps(
-            Map.fromBooleanArray(
+            PPMap.fromBooleanArray(
                 new boolean[][] {{true, true, true}, {true, false, false}, {true, true, true}}));
 
     // WHEN
@@ -98,7 +99,7 @@ class JpsTest {
     // GIVEN
     Jps sut =
         new Jps(
-            Map.fromBooleanArray(
+            PPMap.fromBooleanArray(
                 new boolean[][] {
                   {true, true, true, true, true},
                   {true, false, false, false, true},
@@ -119,7 +120,7 @@ class JpsTest {
     // GIVEN
     Jps sut =
         new Jps(
-            Map.fromBooleanArray(
+            PPMap.fromBooleanArray(
                 new boolean[][] {
                   {true, true, true, true, true},
                   {true, false, false, false, true},
@@ -140,7 +141,7 @@ class JpsTest {
     // GIVEN
     Jps sut =
         new Jps(
-            new Map() {
+            new Grid<Boolean>() {
               @Override
               public Boolean get(int x, int y) {
                 return y >= 0
@@ -178,7 +179,7 @@ class JpsTest {
         data[x][y] = image.getRGB(x, y) == -1;
       }
     }
-    Map map = Map.fromBooleanArray(data);
+    PPMap map = PPMap.fromBooleanArray(data);
     Jps sut = new Jps(map);
     SplittableRandom rnd = new SplittableRandom(123456);
     Result result = null;
