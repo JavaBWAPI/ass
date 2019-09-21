@@ -7,11 +7,15 @@ Part of the problem is the question "who will win?"
 
 ASS tries to answer that question by allowing a simulation of possible outcome.
 
+Additionally, various utilities for path-finding or fast location queries are also available. 
+
 ## References
 
 [Appveyor Build Artifact](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts)
 
 [Javadoc](http://docs.bytekeeper.org/)
+
+[JBWAPI](https://github.com/JasperGeurtz/JBWAPI/)
 
 [BWAPI4J](https://github.com/OpenBW/BWAPI4J)
 
@@ -24,8 +28,8 @@ ASS tries to answer that question by allowing a simulation of possible outcome.
 
 
 ## Usage
-While the simulator is API independent, [BWAPI4J](https://github.com/OpenBW/BWAPI4J)
-is working out of the box. [JBWAPI](https://github.com/JasperGeurtz/JBWAPI/) 
+While the simulator is API independent, [JBWAPI](https://github.com/JasperGeurtz/JBWAPI/)
+and [BWAPI4J](https://github.com/OpenBW/BWAPI4J) work out of the box. 
 [BWMirror](https://github.com/vjurenka/BWMirror) should also
 work but is not thoroughly tested. 
 
@@ -75,20 +79,10 @@ To get it, either download and build it yourself or grab the
 the `BWAPI4JAgentFactory` (resp. `BWMirrorAgentFactory`) can be used to create an `Agent` for an existing `Unit`.
 Creating `Agents` by using just a `UnitType` is also possible.
 
-### Simulator
+# Simulator
 The main class is `Simulator`. You can add `Agents` for player A or player B here.
 After doing that, you can simulate a number of frames (default: 96). Next, you
 retrieve the result and check if it's to your liking (some of your units survived?).
-
-### Evaluator
-Another way to estimate outcome of a battle is to use the `Evaluator`. It does not simulate
-agents as the `Simulator does`. Instead it uses some heuristics to determine a 
-"how well is player A going to be vs B" ranging from [0-1].
-
-The basic idea is:
-* Let all agents of A shoot at B and all agents of B shoot at A
-* Divide through the combined health to determine how many agents would have died in that round
-* Medic heal, health and shield regen are also factored in
 
 ## Features
 Simulates:
@@ -104,10 +98,11 @@ Simulates:
 * Splash (Radial, Line and "Bounce" aka Tanks, Lurkers and Mutas)
 * Stim, Armor, Weapon, Range and Speed upgrades
 * `master`: Effects like plague, lockdown, stasis, dark swarm
+* `master`: Frame skipping to improve simulation performance at cost of precision
 
 ## Limitations
 * Elevation is deemed "constant" within the simulation
-* Visibility is ignored
+* Visibility is ignored (`master`: visibility is "constant" within the simulation)
 * Spellcasters are doing nothing
 * Distance mechanism does not match BW's "boxed" distances
 * Instant acceleration 
@@ -135,21 +130,37 @@ Attackers:
 
 You can also use the `RetreatBehavior` to make some or all units run away instead of attacking.
 
-## Additional APIs
+## Evaluator
+Another way to estimate outcome of a battle is to use the `Evaluator`. It does not simulate
+agents as the `Simulator does`. Instead it uses some heuristics to determine a 
+"how well is player A going to be vs B" ranging from [0-1].
 
-### Modified DBScan
+The basic idea is:
+* Let all agents of A shoot at B and all agents of B shoot at A
+* Divide through the combined health to determine how many agents would have died in that round
+* Medic heal, health and shield regen are also factored in
+
+
+# Additional APIs
+
+## Modified DBScan
 A DBScan based clustering algorithm.
 * Stable clustering: Unless a cluster is split up, units will end up in the same cluster as in previous runs
 * Iterative: Instead of assigning all units to clusters at once, do it iteratively. Once done, 
   the clustering restarts and the previous result can be accessed.
 
-### PositionQueries
+## PositionQueries
 A utility class to make 2D-position based queries:
 * radius queries
 * area queries
 * nearest queries 
 
-### Jump Path Search
+## Jump Path Search
 An implementation of the algorithm described here: https://zerowidth.com/2013/05/05/jump-point-search-explained.html
 
 Generally much faster that a normal A* while still being optimal.
+
+## `Master`-only
+* GMS class to manage gas, minerals and supply in one value type.
+  * Can be used to manage existing resources vs cost of units, tech or upgrades
+
