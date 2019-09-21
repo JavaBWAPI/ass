@@ -11,11 +11,11 @@ public class RetreatBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    return simFlee(agent, enemies);
+          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+    return simFlee(frameSkip, agent, enemies);
   }
 
-  static boolean simFlee(Agent agent, UnorderedCollection<Agent> enemies) {
+  static boolean simFlee(int frames, Agent agent, UnorderedCollection<Agent> enemies) {
     if (agent.burrowed || agent.isStasised || agent.isLockeddown) return false;
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
@@ -38,7 +38,7 @@ public class RetreatBehavior implements Behavior {
     if (selectedEnemy == null) {
       return false;
     }
-    moveAwayFrom(agent, selectedEnemy, (float) sqrt(selectedDistanceSquared));
+    moveAwayFrom(frames, agent, selectedEnemy, (float) sqrt(selectedDistanceSquared));
     return true;
   }
 }

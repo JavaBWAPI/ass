@@ -3,14 +3,13 @@ package org.bk.ass.sim;
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
 
-import static org.bk.ass.sim.AgentUtil.dealDamage;
-import static org.bk.ass.sim.AgentUtil.distanceSquared;
+import static org.bk.ass.sim.AgentUtil.*;
 
 public class SuiciderBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     // Don't check for lockdown - I believe there are no suiciders which can be locked down
     if (agent.isStasised) return false;
     Agent selectedEnemy = null;
@@ -35,6 +34,8 @@ public class SuiciderBehavior implements Behavior {
     if (selectedEnemy == null) {
       return false;
     }
+
+    moveToward(frameSkip, agent, selectedEnemy, (float) Math.sqrt(selectedDistanceSquared));
 
     if (selectedDistanceSquared <= agent.speedSquared) {
       dealDamage(agent, agent.weaponVs(selectedEnemy), selectedEnemy);

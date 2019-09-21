@@ -106,6 +106,31 @@ class SimulatorTest {
   }
 
   @Test
+  void MMvsMM_FS4() {
+    // GIVEN
+    simulator = new Simulator(4);
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentA(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(2);
+    assertThat(simulator.getAgentsB()).size().isLessThanOrEqualTo(2);
+  }
+
+  @Test
   void vultureVs4Zergling() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Vulture).setX(20).setY(50));
@@ -868,5 +893,26 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isEmpty();
     assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void lingsVsZealots_FS3() {
+    // GIVEN
+    simulator = new Simulator(3);
+    simulator.addAgentA(factory.of(UnitType.Protoss_Zealot));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Zealot));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isOne();
+    assertThat(simulator.getAgentsB()).size().isZero();
   }
 }

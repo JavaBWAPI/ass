@@ -3,6 +3,7 @@ package org.bk.ass.sim;
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
 
+import static java.lang.Math.min;
 import static org.bk.ass.sim.AgentUtil.distanceSquared;
 import static org.bk.ass.sim.AgentUtil.moveToward;
 
@@ -13,7 +14,7 @@ public class HealerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.energyShifted < 256) {
       return true;
     }
@@ -58,16 +59,13 @@ public class HealerBehavior implements Behavior {
       return false;
     }
 
-    moveToward(agent, selectedAlly, (float) Math.sqrt(selectedDistanceSquared));
+    moveToward(frameSkip, agent, selectedAlly, (float) Math.sqrt(selectedDistanceSquared));
     if (selectedDistanceSquared > MEDICS_HEAL_RANGE_SQUARED) {
       return true;
     }
-    agent.energyShifted -= 256;
+    agent.energyShifted -= 256 * frameSkip;
     selectedAlly.healedThisFrame = true;
-    selectedAlly.healthShifted += 150;
-    if (selectedAlly.healthShifted > selectedAlly.maxHealthShifted) {
-      selectedAlly.healthShifted = selectedAlly.maxHealthShifted;
-    }
+    selectedAlly.healthShifted = min(selectedAlly.maxHealthShifted, selectedAlly.healthShifted + 150 * frameSkip);
 
     return true;
   }

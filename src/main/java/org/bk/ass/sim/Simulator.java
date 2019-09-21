@@ -5,7 +5,10 @@ import org.bk.ass.collection.UnorderedCollection;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.ToIntFunction;
+
+import static java.lang.Math.min;
 
 /**
  * Used to simulate 2 groups of agents engaging each other. Either use the default constructor which
@@ -23,16 +26,12 @@ import java.util.function.ToIntFunction;
  * Be cautious when modifying {@link Agent}s after they have been added to the simulation.
  */
 public class Simulator {
-  /**
-   * Use to count health and shields as equal, maybe useful in PvP?
-   */
+  /** Use to count health and shields as equal, maybe useful in PvP? */
   public static final ToIntFunction<Agent> HEALTH_AND_SHIELD =
-          agent -> agent.getHealth() + agent.getShields();
-  /**
-   * Use to count shields as half the value of health.
-   */
+      agent -> agent.getHealth() + agent.getShields();
+  /** Use to count shields as half the value of health. */
   public static final ToIntFunction<Agent> HEALTH_AND_HALFED_SHIELD =
-          agent -> agent.getHealth() + agent.getShields() / 2;
+      agent -> agent.getHealth() + agent.getShields() / 2;
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
@@ -46,14 +45,28 @@ public class Simulator {
   final byte[] collision = new byte[COLLISION_MAP_DIMENSION * COLLISION_MAP_DIMENSION];
   private final Behavior playerABehavior;
   private final Behavior playerBBehavior;
+  private final int frameSkip;
 
   public Simulator() {
-    this(new RoleBasedBehavior(), new RoleBasedBehavior());
+    this(1);
   }
 
   public Simulator(Behavior playerABehavior, Behavior playerBBehavior) {
+    this(1, playerABehavior, playerBBehavior);
+  }
+
+  public Simulator(int frameSkip) {
+    this(frameSkip, new RoleBasedBehavior(), new RoleBasedBehavior());
+  }
+
+  public Simulator(int frameSkip, Behavior playerABehavior, Behavior playerBBehavior) {
+    if (frameSkip < 1) throw new IllegalArgumentException("frameSkip must be >= 1");
+    Objects.requireNonNull(playerABehavior, "Behavior of player A must be set");
+    Objects.requireNonNull(playerBBehavior, "Behavior of player B must be set");
+
     this.playerABehavior = playerABehavior;
     this.playerBBehavior = playerBBehavior;
+    this.frameSkip = frameSkip;
   }
 
   public Simulator addAgentA(Agent agent) {
@@ -127,7 +140,9 @@ public class Simulator {
    * @return the actual number of frames simulated, usually the given number of frames
    */
   public int simulate(int frames) {
-    while (frames-- != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
+    if (frames > 0) frames = (frames + frameSkip - 1) / frameSkip;
+    while (frames != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
+      frames -= frameSkip;
       if (!step()) {
         break;
       }
@@ -166,14 +181,14 @@ public class Simulator {
       simRunning |=
           agent.isLockeddown
               || agent.isStasised
-              || playerABehavior.simUnit(agent, playerA, playerB);
+              || playerABehavior.simUnit(frameSkip, agent, playerA, playerB);
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
       Agent agent = playerB.get(i);
       simRunning |=
           agent.isLockeddown
               || agent.isStasised
-              || playerBBehavior.simUnit(agent, playerB, playerA);
+              || playerBBehavior.simUnit(frameSkip, agent, playerB, playerA);
     }
     removeDead(playerA);
     removeDead(playerB);
@@ -206,31 +221,14 @@ public class Simulator {
       agent.vy = 0;
       agent.healedThisFrame = false;
 
-      if (agent.cooldown > 0) {
-        agent.cooldown--;
-      }
-      if (agent.shieldsShifted < agent.maxShieldsShifted) {
-        agent.shieldsShifted += 7;
-        if (agent.shieldsShifted > agent.maxShieldsShifted) {
-          agent.shieldsShifted = agent.maxShieldsShifted;
-        }
-      }
-      if (agent.plagueDamagePerFrameShifted < agent.healthShifted) {
-        agent.healthShifted -= agent.plagueDamagePerFrameShifted;
-      }
-      if (agent.remainingStimFrames > 0) {
-        agent.remainingStimFrames--;
-      }
-      if (agent.regeneratesHealth && agent.healthShifted < agent.maxHealthShifted) {
-        agent.healthShifted += 4;
-        if (agent.healthShifted > agent.maxHealthShifted) {
-          agent.healthShifted = agent.maxHealthShifted;
-        }
-      }
-      agent.energyShifted += 8;
-      if (agent.energyShifted > agent.maxEnergyShifted) {
-        agent.energyShifted = agent.maxEnergyShifted;
-      }
+      agent.cooldown = agent.cooldown - frameSkip;
+      agent.shieldsShifted = min(agent.maxShieldsShifted, agent.shieldsShifted + 7 * frameSkip);
+      if (agent.plagueDamagePerFrameShifted * frameSkip < agent.healthShifted)
+        agent.healthShifted -= agent.plagueDamagePerFrameShifted * frameSkip;
+      agent.remainingStimFrames = agent.remainingStimFrames - frameSkip;
+      if (agent.regeneratesHealth)
+        agent.healthShifted = min(agent.maxHealthShifted, agent.healthShifted + 4 * frameSkip);
+      agent.energyShifted = min(agent.energyShifted + 8 * frameSkip, agent.maxEnergyShifted);
     }
   }
 
@@ -290,18 +288,21 @@ public class Simulator {
 
     @Override
     public boolean simUnit(
-        Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+        int frameSkip,
+        Agent agent,
+        UnorderedCollection<Agent> allies,
+        UnorderedCollection<Agent> enemies) {
       if (agent.isSuicider) {
-        return suiciderSimulator.simUnit(agent, allies, enemies);
+        return suiciderSimulator.simUnit(frameSkip, agent, allies, enemies);
       }
       if (agent.isHealer) {
-        return healerSimulator.simUnit(agent, allies, enemies);
+        return healerSimulator.simUnit(frameSkip, agent, allies, enemies);
       }
-      if (agent.isRepairer && repairerSimulator.simUnit(agent, allies, enemies)) {
+      if (agent.isRepairer && repairerSimulator.simUnit(frameSkip, agent, allies, enemies)) {
         return true;
         // Otherwise FIGHT, you puny SCV!
       }
-      return attackerSimulator.simUnit(agent, allies, enemies);
+      return attackerSimulator.simUnit(frameSkip, agent, allies, enemies);
     }
   }
 
@@ -312,7 +313,10 @@ public class Simulator {
   public interface Behavior {
 
     boolean simUnit(
-        Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies);
+        int frameSkip,
+        Agent agent,
+        UnorderedCollection<Agent> allies,
+        UnorderedCollection<Agent> enemies);
   }
 
   public static class IntEvaluation {
@@ -332,7 +336,6 @@ public class Simulator {
     public int delta() {
       return evalA - evalB;
     }
-
 
     public int dot(IntEvaluation other) {
       return evalA * other.evalA - evalB * other.evalB;

@@ -11,7 +11,7 @@ public class AttackerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-      Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
@@ -61,18 +61,18 @@ public class AttackerBehavior implements Behavior {
     agent.attackTarget = selectedEnemy;
 
     if (selectedEnemy == null) {
-      return !agent.burrowed && simFlee(agent, enemies);
+      return !agent.burrowed && simFlee(frameSkip, agent, enemies);
     }
 
     if (!agent.burrowed) {
-      simCombatMove(agent, selectedEnemy, selectedDistanceSquared, selectedWeapon);
+      simCombatMove(frameSkip, agent, selectedEnemy, selectedDistanceSquared, selectedWeapon);
     }
 
     if (agent.burrowedAttacker != agent.burrowed) {
       return false;
     }
 
-    if (agent.cooldown == 0
+    if (agent.cooldown <= 0
         && selectedDistanceSquared
             <= Math.max(Simulator.MIN_SIMULATION_RANGE, selectedWeapon.maxRangeSquared)) {
       simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
@@ -88,7 +88,7 @@ public class AttackerBehavior implements Behavior {
       Agent selectedEnemy,
       Weapon selectedWeapon) {
     if (agent.canStim
-        && agent.remainingStimFrames == 0
+        && agent.remainingStimFrames <= 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
       AgentUtil.stim(agent);
     }
@@ -116,7 +116,7 @@ public class AttackerBehavior implements Behavior {
   }
 
   private void simCombatMove(
-      Agent agent, Agent selectedEnemy, int selectedDistanceSquared, Weapon selectedWeapon) {
+          int frameSkip, Agent agent, Agent selectedEnemy, int selectedDistanceSquared, Weapon selectedWeapon) {
     boolean shouldKite =
         agent.isKiter
             && agent.cooldown > 0
@@ -125,10 +125,10 @@ public class AttackerBehavior implements Behavior {
     float distance = (float) sqrt(selectedDistanceSquared);
     if (shouldKite) {
       if (distance + agent.speed < selectedWeapon.maxRange) {
-        moveAwayFrom(agent, selectedEnemy, distance);
+        moveAwayFrom(frameSkip, agent, selectedEnemy, distance);
       }
     } else {
-      moveToward(agent, selectedEnemy, distance);
+      moveToward(frameSkip, agent, selectedEnemy, distance);
     }
   }
 }
