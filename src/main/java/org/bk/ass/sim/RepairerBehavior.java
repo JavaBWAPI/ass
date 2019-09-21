@@ -3,7 +3,6 @@ package org.bk.ass.sim;
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
 
-import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static org.bk.ass.sim.AgentUtil.distanceSquared;
 import static org.bk.ass.sim.AgentUtil.moveToward;
@@ -58,7 +57,7 @@ public class RepairerBehavior implements Behavior {
     if (selectedDistanceSquared > SCV_REPAIR_RANGE_SQUARED) {
       return true;
     }
-    selectedAlly.healthShifted = min(selectedAlly.maxHealthShifted, selectedAlly.healthShifted + selectedAlly.hpConstructionRate * frameSkip);
+    selectedAlly.heal(selectedAlly.hpConstructionRate * frameSkip);
 
     return true;
   }

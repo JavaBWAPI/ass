@@ -10,8 +10,6 @@ public class AgentUtil {
   private static final SplittableRandom rnd = new SplittableRandom();
 
   // Retrieved from OpenBW
-  private static final int STIM_TIMER = 37;
-  private static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
   public static final int INTERCEPTOR_COOLDOWN = 45;
   public static final int REAVER_COOLDOWN = 60;
 
@@ -160,7 +158,7 @@ public class AgentUtil {
   }
 
   private static void applyDamage(Agent target, DamageType damageType, int damage, int hits) {
-    int shields = target.shieldsShifted - damage + target.shieldUpgrades;
+    int shields = min(target.maxShieldsShifted, target.shieldsShifted) - damage + target.shieldUpgrades;
     if (shields > 0) {
       target.shieldsShifted = shields;
       return;
@@ -176,7 +174,7 @@ public class AgentUtil {
         reduceDamageByTargetSizeAndDamageType(
             target, damageType, damage - target.armorShifted * hits);
 
-    target.healthShifted -= max(128, damage);
+    target.consumeHealth(max(128, damage));
   }
 
   public static int reduceDamageByTargetSizeAndDamageType(
@@ -195,10 +193,5 @@ public class AgentUtil {
       }
     }
     return damageShifted;
-  }
-
-  public static void stim(Agent agent) {
-    agent.remainingStimFrames = STIM_TIMER;
-    agent.healthShifted -= STIM_ENERGY_COST_SHIFTED;
   }
 }

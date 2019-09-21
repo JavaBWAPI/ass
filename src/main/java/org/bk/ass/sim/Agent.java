@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class Agent {
   static final BiConsumer<Agent, Collection<Agent>> CARRIER_DEATH_HANDLER =
       (carrier, agents) -> agents.removeAll(carrier.interceptors);
+  // Retrieved from OpenBW
+  private static final int STIM_TIMER = 37;
+  private static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
 
   private final String name;
   TargetingPriority attackTargetPriority = TargetingPriority.HIGHEST;
@@ -89,10 +93,11 @@ public class Agent {
 
   /**
    * Copy constructor. References to other agents are cleared:
+   *
    * <ul>
-   *     <li>attackTarget</li>
-   *     <li>restoreTarget</li>
-   *     <li>interceptors</li>
+   *   <li>attackTarget
+   *   <li>restoreTarget
+   *   <li>interceptors
    * </ul>
    */
   public Agent(Agent other) {
@@ -255,7 +260,7 @@ public class Agent {
   }
 
   public int getHealth() {
-    return healthShifted >> 8;
+    return min(healthShifted, maxHealthShifted) >> 8;
   }
 
   public Agent setMaxHealth(int maxHealth) {
@@ -269,7 +274,7 @@ public class Agent {
   }
 
   public int getShields() {
-    return shieldsShifted >> 8;
+    return min(shieldsShifted, maxShieldsShifted) >> 8;
   }
 
   public Agent setMaxShields(int maxShields) {
@@ -400,6 +405,23 @@ public class Agent {
   public Agent setPlagueDamage(int plagueDamage) {
     this.plagueDamagePerFrameShifted = (plagueDamage << 8) / 76;
     return this;
+  }
+
+  public final void consumeEnergy(int amountShifted) {
+    energyShifted = min(energyShifted, maxEnergyShifted) - amountShifted;
+  }
+
+  public final void consumeHealth(int amountShifted) {
+    healthShifted = min(healthShifted, maxHealthShifted) - amountShifted;
+  }
+
+  public final void heal(int amountShifted) {
+    healthShifted += amountShifted;
+  }
+
+  public final void stim() {
+    remainingStimFrames = STIM_TIMER;
+    consumeHealth(STIM_ENERGY_COST_SHIFTED);
   }
 
   public enum TargetingPriority {

@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.ToIntFunction;
 
-import static java.lang.Math.min;
-
 /**
  * Used to simulate 2 groups of agents engaging each other. Either use the default constructor which
  * initialized the default behavior or customize the behaviors. Ie. if you want to simulate one
@@ -221,14 +219,16 @@ public class Simulator {
       agent.vy = 0;
       agent.healedThisFrame = false;
 
-      agent.cooldown = agent.cooldown - frameSkip;
-      agent.shieldsShifted = min(agent.maxShieldsShifted, agent.shieldsShifted + 7 * frameSkip);
+      // Since these calls are potentially made every frame, no boundary checks are done!
+      // Bounds are established when the fields are modified.
+      agent.cooldown -= frameSkip;
+      agent.shieldsShifted += 7 * frameSkip;
       if (agent.plagueDamagePerFrameShifted * frameSkip < agent.healthShifted)
         agent.healthShifted -= agent.plagueDamagePerFrameShifted * frameSkip;
-      agent.remainingStimFrames = agent.remainingStimFrames - frameSkip;
+      agent.remainingStimFrames -= frameSkip;
       if (agent.regeneratesHealth)
-        agent.healthShifted = min(agent.maxHealthShifted, agent.healthShifted + 4 * frameSkip);
-      agent.energyShifted = min(agent.energyShifted + 8 * frameSkip, agent.maxEnergyShifted);
+        agent.healthShifted += 4 * frameSkip;
+      agent.energyShifted += 8 * frameSkip;
     }
   }
 

@@ -11,7 +11,10 @@ public class AttackerBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+      int frameSkip,
+      Agent agent,
+      UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
     if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
       return true;
     }
@@ -90,7 +93,7 @@ public class AttackerBehavior implements Behavior {
     if (agent.canStim
         && agent.remainingStimFrames <= 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
-      AgentUtil.stim(agent);
+      agent.stim();
     }
     dealDamage(agent, selectedWeapon, selectedEnemy);
     switch (selectedWeapon.splashType) {
@@ -116,7 +119,11 @@ public class AttackerBehavior implements Behavior {
   }
 
   private void simCombatMove(
-          int frameSkip, Agent agent, Agent selectedEnemy, int selectedDistanceSquared, Weapon selectedWeapon) {
+      int frameSkip,
+      Agent agent,
+      Agent selectedEnemy,
+      int selectedDistanceSquared,
+      Weapon selectedWeapon) {
     boolean shouldKite =
         agent.isKiter
             && agent.cooldown > 0
