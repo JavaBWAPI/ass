@@ -875,7 +875,6 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isNotEmpty();
     assertThat(simulator.getAgentsB()).isEmpty();
-
   }
 
   @Test
@@ -913,6 +912,23 @@ class SimulatorTest {
 
     // THEN
     assertThat(simulator.getAgentsA()).size().isOne();
+    assertThat(simulator.getAgentsB()).size().isZero();
+  }
+
+  @Test
+  void scourgesVsScouts() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(100));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(120));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(140));
+
+    simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setX(200).setY(100));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isZero();
     assertThat(simulator.getAgentsB()).size().isZero();
   }
 }
