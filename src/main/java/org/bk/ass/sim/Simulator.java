@@ -45,19 +45,7 @@ public class Simulator {
   private final Behavior playerBBehavior;
   private final int frameSkip;
 
-  public Simulator() {
-    this(1);
-  }
-
-  public Simulator(Behavior playerABehavior, Behavior playerBBehavior) {
-    this(1, playerABehavior, playerBBehavior);
-  }
-
-  public Simulator(int frameSkip) {
-    this(frameSkip, new RoleBasedBehavior(), new RoleBasedBehavior());
-  }
-
-  public Simulator(int frameSkip, Behavior playerABehavior, Behavior playerBBehavior) {
+  private Simulator(int frameSkip, Behavior playerABehavior, Behavior playerBBehavior) {
     if (frameSkip < 1) throw new IllegalArgumentException("frameSkip must be >= 1");
     Objects.requireNonNull(playerABehavior, "Behavior of player A must be set");
     Objects.requireNonNull(playerBBehavior, "Behavior of player B must be set");
@@ -226,8 +214,7 @@ public class Simulator {
       if (agent.plagueDamagePerFrameShifted * frameSkip < agent.healthShifted)
         agent.healthShifted -= agent.plagueDamagePerFrameShifted * frameSkip;
       agent.remainingStimFrames -= frameSkip;
-      if (agent.regeneratesHealth)
-        agent.healthShifted += 4 * frameSkip;
+      if (agent.regeneratesHealth) agent.healthShifted += 4 * frameSkip;
       agent.energyShifted += 8 * frameSkip;
     }
   }
@@ -352,6 +339,33 @@ public class Simulator {
      */
     public IntEvaluation subtract(IntEvaluation other) {
       return new IntEvaluation(evalA - other.evalA, evalB - other.evalB);
+    }
+  }
+
+  public static final class SimulatorBuilder {
+    private Behavior playerABehavior = new RoleBasedBehavior();
+    private Behavior playerBBehavior = new RoleBasedBehavior();
+    private int frameSkip = 1;
+
+    public SimulatorBuilder() {}
+
+    public SimulatorBuilder withPlayerABehavior(Behavior playerABehavior) {
+      this.playerABehavior = playerABehavior;
+      return this;
+    }
+
+    public SimulatorBuilder withPlayerBBehavior(Behavior playerBBehavior) {
+      this.playerBBehavior = playerBBehavior;
+      return this;
+    }
+
+    public SimulatorBuilder withFrameSkip(int frameSkip) {
+      this.frameSkip = frameSkip;
+      return this;
+    }
+
+    public Simulator build() {
+      return new Simulator(frameSkip, playerABehavior, playerBBehavior);
     }
   }
 }
