@@ -203,9 +203,9 @@ public class Agent {
         + ", "
         + y
         + "), hp: "
-        + (healthShifted >> 8)
+        + getHealth()
         + ", sh: "
-        + (shieldsShifted >> 8);
+        + getShields();
   }
 
   public Agent setDetected(boolean detected) {
