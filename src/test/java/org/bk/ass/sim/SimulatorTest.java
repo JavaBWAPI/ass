@@ -1,7 +1,7 @@
 package org.bk.ass.sim;
 
 import org.bk.ass.PositionOutOfBoundsException;
-import org.bk.ass.sim.Simulator.SimulatorBuilder;
+import org.bk.ass.sim.Simulator.Builder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SimulatorTest {
 
-  private Simulator simulator = new SimulatorBuilder().build();
+  private Simulator simulator = new Builder().build();
   private BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
 
   @BeforeAll
@@ -108,7 +108,7 @@ class SimulatorTest {
   @Test
   void MMvsMM_FS4() {
     // GIVEN
-    simulator = new SimulatorBuilder().withFrameSkip(4).build();
+    simulator = new Builder().withFrameSkip(4).build();
     simulator.addAgentA(factory.of(UnitType.Terran_Marine));
     simulator.addAgentA(factory.of(UnitType.Terran_Marine));
     simulator.addAgentA(factory.of(UnitType.Terran_Marine));
@@ -657,7 +657,7 @@ class SimulatorTest {
   @Test
   void goonShouldDieWhenRunningAwayFromScout() {
     // GIVEN
-    simulator = new SimulatorBuilder().withPlayerABehavior(new RetreatBehavior()).build();
+    simulator = new Builder().withPlayerABehavior(new RetreatBehavior()).build();
     simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(500));
     simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setX(495));
 
@@ -704,7 +704,7 @@ class SimulatorTest {
   @Test
   void shouldNotAttackStasisedUnitsNorBeAttackedByThem() {
     // GIVEN
-    simulator = new SimulatorBuilder().build();
+    simulator = new Builder().build();
     simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
@@ -719,7 +719,7 @@ class SimulatorTest {
   @Test
   void shouldAttackLockeddownUnitsButDontBeAttackedByThem() {
     // GIVEN
-    simulator = new SimulatorBuilder().build();
+    simulator = new Builder().build();
     simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
@@ -734,7 +734,7 @@ class SimulatorTest {
   @Test
   void shouldNotRepairStasisedUnit() {
     // GIVEN
-    simulator = new SimulatorBuilder().build();
+    simulator = new Builder().build();
     simulator.addAgentA(
         factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true).setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
@@ -749,7 +749,7 @@ class SimulatorTest {
   @Test
   void shouldRepairLockeddownUnit() {
     // GIVEN
-    simulator = new SimulatorBuilder().build();
+    simulator = new Builder().build();
     simulator.addAgentA(
         factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true).setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
@@ -897,7 +897,7 @@ class SimulatorTest {
   @Test
   void lingsVsZealots_FS3() {
     // GIVEN
-    simulator = new SimulatorBuilder().withFrameSkip(3).build();
+    simulator = new Builder().withFrameSkip(3).build();
     simulator.addAgentA(factory.of(UnitType.Protoss_Zealot));
     simulator.addAgentA(factory.of(UnitType.Protoss_Zealot));
 
@@ -908,7 +908,7 @@ class SimulatorTest {
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
 
     // WHEN
-    simulator.simulate(-1);
+    simulator.simulate(250);
 
     // THEN
     assertThat(simulator.getAgentsA()).size().isOne();

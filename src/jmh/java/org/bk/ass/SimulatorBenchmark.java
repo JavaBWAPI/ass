@@ -2,7 +2,7 @@ package org.bk.ass;
 
 import org.bk.ass.sim.BWAPI4JAgentFactory;
 import org.bk.ass.sim.Simulator;
-import org.bk.ass.sim.Simulator.SimulatorBuilder;
+import org.bk.ass.sim.Simulator.Builder;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openjdk.jmh.annotations.*;
@@ -20,8 +20,8 @@ public class SimulatorBenchmark {
 
     @Setup(Level.Invocation)
     public void setup() {
-      simulator = new SimulatorBuilder().build();
-      simulatorFS4 = new SimulatorBuilder().withFrameSkip(4).build();
+      simulator = new Builder().build();
+      simulatorFS4 = new Builder().withFrameSkip(4).build();
 
       for (int i = 0; i < 30; i++) {
         simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));

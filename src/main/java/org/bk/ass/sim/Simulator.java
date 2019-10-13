@@ -123,10 +123,10 @@ public class Simulator {
    * Simulate the given number of frames. If negative, simulation will only stop if one party has no
    * agents left. If units decide to run away, this could be an endless loop - use with care!
    *
-   * @return the actual number of frames simulated, usually the given number of frames
+   * @return the number of frames left after simulating, usually 0
    */
   public int simulate(int frames) {
-    if (frames > 0) frames = (frames + frameSkip - 1) / frameSkip;
+    if (frames > 0) frames += Math.floorMod(frameSkip - frames, frameSkip);
     while (frames != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
       frames -= frameSkip;
       if (!step()) {
@@ -342,24 +342,24 @@ public class Simulator {
     }
   }
 
-  public static final class SimulatorBuilder {
+  public static final class Builder {
     private Behavior playerABehavior = new RoleBasedBehavior();
     private Behavior playerBBehavior = new RoleBasedBehavior();
     private int frameSkip = 1;
 
-    public SimulatorBuilder() {}
+    public Builder() {}
 
-    public SimulatorBuilder withPlayerABehavior(Behavior playerABehavior) {
+    public Builder withPlayerABehavior(Behavior playerABehavior) {
       this.playerABehavior = playerABehavior;
       return this;
     }
 
-    public SimulatorBuilder withPlayerBBehavior(Behavior playerBBehavior) {
+    public Builder withPlayerBBehavior(Behavior playerBBehavior) {
       this.playerBBehavior = playerBBehavior;
       return this;
     }
 
-    public SimulatorBuilder withFrameSkip(int frameSkip) {
+    public Builder withFrameSkip(int frameSkip) {
       this.frameSkip = frameSkip;
       return this;
     }
