@@ -353,4 +353,16 @@ class EvaluatorTest {
     // THEN
     assertThat(result).isGreaterThan(0.9);
   }
+
+  @Test
+  void vsHatcheryIsFreeWin() {
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Zergling));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Zerg_Hatchery));
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isGreaterThan(0.9);
+  }
 }

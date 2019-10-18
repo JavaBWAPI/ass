@@ -299,11 +299,15 @@ public class Simulator {
    */
   public interface Behavior {
 
+    /**
+     * Simulate the given agent. Returns true if the agent was active (including waiting),
+     * false if the agent won't be able to do anything anymore.
+     */
     boolean simUnit(
-        int frameSkip,
-        Agent agent,
-        UnorderedCollection<Agent> allies,
-        UnorderedCollection<Agent> enemies);
+            int frameSkip,
+            Agent agent,
+            UnorderedCollection<Agent> allies,
+            UnorderedCollection<Agent> enemies);
   }
 
   public static class IntEvaluation {
