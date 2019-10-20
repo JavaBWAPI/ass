@@ -1,7 +1,10 @@
 org.bk.ass
+org.bk.ass.buildorder
 org.bk.ass.cluster
 org.bk.ass.collection
 org.bk.ass.grid
 org.bk.ass.info
+org.bk.ass.manage
 org.bk.ass.path
 org.bk.ass.query
+org.bk.ass.sim
