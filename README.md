@@ -47,7 +47,7 @@ Add the maven repo:
 And the dependency:    	
 
       dependencies {
-        implementation 'com.github.Bytekeeper:ass:1.0'
+        implementation 'com.github.Bytekeeper:ass:1.1'
       }
 
 
@@ -67,7 +67,7 @@ And the dependency:
     <dependency>
         <groupId>com.github.Bytekeeper</groupId>
         <artifactId>ass</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
 
 ### JAR file
@@ -84,6 +84,22 @@ The main class is `Simulator`. You can add `Agents` for player A or player B her
 After doing that, you can simulate a number of frames (default: 96). Next, you
 retrieve the result and check if it's to your liking (some of your units survived?).
 
+```java
+BWMirrorAgentFactory factory = new BWMirrorAgentFactory(game);
+Simulator simulator = new Builder().build(); // You can also customize the simulator
+
+simulator.addAgentA(factory.of(someOfMyUnit));
+simulator.addAgentB(factory.of(someEnemy));
+
+simulator.simulate(240); // Simulate 24 seconds
+
+if (simulatior.getAgentsA().isEmpty()) {
+// Uh oh
+}  else {
+// Hurray
+}
+```
+
 ## Features
 Simulates:
 * Medics
@@ -97,12 +113,12 @@ Simulates:
 * Cloaked units
 * Splash (Radial, Line and "Bounce" aka Tanks, Lurkers and Mutas)
 * Stim, Armor, Weapon, Range and Speed upgrades
-* `master`: Effects like plague, lockdown, stasis, dark swarm
-* `master`: Frame skipping to improve simulation performance at cost of precision
+* Effects like plague, lockdown, stasis, dark swarm
+* Frame skipping to improve simulation performance at cost of precision
 
 ## Limitations
 * Elevation is deemed "constant" within the simulation
-* Visibility is ignored (`master`: visibility is "constant" within the simulation)
+* Visibility is ignored (visibility is "constant" within the simulation)
 * Spellcasters are doing nothing
 * Distance mechanism does not match BW's "boxed" distances
 * Instant acceleration 
@@ -160,7 +176,7 @@ An implementation of the algorithm described here: https://zerowidth.com/2013/05
 
 Generally much faster that a normal A* while still being optimal.
 
-## `Master`-only
+## Resource management classes
 * GMS class to manage gas, minerals and supply in one value type.
   * Can be used to manage existing resources vs cost of units, tech or upgrades
 
