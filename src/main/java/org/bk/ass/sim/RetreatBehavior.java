@@ -22,6 +22,7 @@ public class RetreatBehavior implements Behavior {
     for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       Weapon wpn = enemy.weaponVs(agent);
+      // Enemy could be dead already, but skipping it generally doesn't make a difference and it will be gone next frame.
       if (wpn.damageShifted != 0) {
         int distanceSq = distanceSquared(agent, enemy);
         if (distanceSq >= wpn.minRangeSquared && distanceSq < selectedDistanceSquared) {

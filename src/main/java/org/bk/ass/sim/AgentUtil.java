@@ -127,6 +127,7 @@ public class AgentUtil {
     for (int i = enemies.size() - 1; i >= 0 && remainingBounces > 0; i--) {
       Agent enemy = enemies.get(i);
       if (enemy != lastTarget
+              && enemy.healthShifted > 0
               && abs(enemy.x - lastTarget.x) <= 96
               && abs(enemy.y - lastTarget.y) <= 96) {
         lastTarget = enemy;
