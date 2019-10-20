@@ -2,7 +2,7 @@ plugins {
     java
     id("maven")
     id("me.champeau.gradle.jmh") version "0.4.8"
-    id("com.github.ben-manes.versions") version "0.22.0"
+    id("com.github.ben-manes.versions") version "0.27.0"
 }
 
 group = "org.bk"
@@ -22,7 +22,7 @@ dependencies {
     implementation(fileTree("lib").include("*.jar"))
     implementation("com.github.JavaBWAPI:JBWAPI:0.8.2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.13.2")
     testImplementation("io.jenetics:jenetics:5.0.1")
 }

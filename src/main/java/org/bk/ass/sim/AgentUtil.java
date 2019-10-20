@@ -126,11 +126,9 @@ public class AgentUtil {
     int damage = weapon.damageShifted / 3;
     for (int i = enemies.size() - 1; i >= 0 && remainingBounces > 0; i--) {
       Agent enemy = enemies.get(i);
-      if (enemy == lastTarget) {
-        continue;
-      }
-
-      if (abs(enemy.x - lastTarget.x) <= 96 && abs(enemy.y - lastTarget.y) <= 96) {
+      if (enemy != lastTarget
+              && abs(enemy.x - lastTarget.x) <= 96
+              && abs(enemy.y - lastTarget.y) <= 96) {
         lastTarget = enemy;
         applyDamage(enemy, weapon.damageType, damage, weapon.hits);
         damage /= 3;

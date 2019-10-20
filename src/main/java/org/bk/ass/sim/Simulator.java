@@ -207,7 +207,7 @@ public class Simulator {
       agent.vy = 0;
       agent.healedThisFrame = false;
 
-      // Since these calls are potentially made every frame, no boundary checks are done!
+      // Since these calls are potentially made every frame, no boundary checks are done for performance reasons!
       // Bounds are established when the fields are modified.
       agent.cooldown -= frameSkip;
       agent.shieldsShifted += 7 * frameSkip;

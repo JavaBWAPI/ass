@@ -112,7 +112,7 @@ public class AttackerBehavior implements Behavior {
             && selectedEnemy.speed < agent.speed;
     float distance = (float) sqrt(selectedDistanceSquared);
     if (shouldKite) {
-      if (distance + agent.speed <= selectedWeapon.maxRange) {
+      if (distance + agent.speed * frameSkip <= selectedWeapon.maxRange) {
         moveAwayFrom(frameSkip, agent, selectedEnemy, distance);
       }
     } else {

@@ -28,7 +28,7 @@ public class RetreatBehavior implements Behavior {
           selectedDistanceSquared = distanceSq;
           selectedEnemy = enemy;
 
-          // If we can hit it this frame, we're done searching
+          // If the enemy can hit us this frame, we're done searching
           if (selectedDistanceSquared <= wpn.maxRangeSquared) {
             break;
           }
