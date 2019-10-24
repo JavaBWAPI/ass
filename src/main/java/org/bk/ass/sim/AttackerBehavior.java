@@ -3,6 +3,7 @@ package org.bk.ass.sim;
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 import static org.bk.ass.sim.AgentUtil.*;
 import static org.bk.ass.sim.RetreatBehavior.simFlee;
@@ -96,8 +97,130 @@ public class AttackerBehavior implements Behavior {
       agent.stim();
     }
 
-    AgentUtil.attack(agent, selectedWeapon, selectedEnemy, allies, enemies);
+    attack(agent, selectedWeapon, selectedEnemy, allies, enemies);
   }
+
+  public static void attack(Agent agent, Weapon weapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+    dealDamage(agent, weapon, selectedEnemy);
+    switch (weapon.splashType) {
+      case BOUNCE:
+        dealBounceDamage(weapon, selectedEnemy, enemies);
+        break;
+      case RADIAL_SPLASH:
+        dealRadialSplashDamage(weapon, selectedEnemy, allies, enemies);
+        break;
+      case RADIAL_ENEMY_SPLASH:
+        dealRadialSplashDamage(weapon, selectedEnemy, enemies);
+        break;
+      case LINE_SPLASH:
+        dealLineSplashDamage(agent, weapon, selectedEnemy, enemies);
+        break;
+      default:
+        // No splash
+    }
+    agent.cooldown = agent.maxCooldown;
+    if (agent.remainingStimFrames > 0) {
+      agent.cooldown /= 2;
+    }
+  }
+
+  /**
+   * Deal splash damage to enemies and allies
+   */
+  public static void dealRadialSplashDamage(
+          Weapon weapon,
+          Agent mainTarget,
+          UnorderedCollection<Agent> allies,
+          UnorderedCollection<Agent> enemies) {
+    for (int i = allies.size() - 1; i >= 0; i--) {
+      Agent ally = allies.get(i);
+      applySplashDamage(weapon, mainTarget, ally);
+    }
+    for (int i = enemies.size() - 1; i >= 0; i--) {
+      Agent enemy = enemies.get(i);
+      applySplashDamage(weapon, mainTarget, enemy);
+    }
+  }
+
+  private static void applySplashDamage(Weapon weapon, Agent mainTarget, Agent splashTarget) {
+    if (splashTarget == mainTarget || splashTarget.isFlyer != mainTarget.isFlyer) {
+      return;
+    }
+
+    int distanceSquared = distanceSquared(splashTarget, mainTarget);
+    if (distanceSquared <= weapon.innerSplashRadiusSquared) {
+      applyDamage(splashTarget, weapon.damageType, weapon.damageShifted, weapon.hits);
+    } else if (!splashTarget.burrowed) {
+      if (distanceSquared <= weapon.medianSplashRadiusSquared) {
+        applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
+      } else if (distanceSquared <= weapon.outerSplashRadiusSquared) {
+        applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 4, weapon.hits);
+      }
+    }
+  }
+
+  /**
+   * Deal splash damage to enemies only
+   */
+  public static void dealRadialSplashDamage(
+          Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
+    for (int i = enemies.size() - 1; i >= 0; i--) {
+      Agent enemy = enemies.get(i);
+      applySplashDamage(weapon, mainTarget, enemy);
+    }
+  }
+
+  public static void dealLineSplashDamage(
+          Agent source, Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
+    int dx = mainTarget.x - source.x;
+    int dy = mainTarget.y - source.y;
+    // Same spot, chose "random" direction
+    if (dx == 0 && dy == 0) {
+      dx = 1;
+    }
+    int dxDistSq = dx * dx + dy * dy;
+    int rangeWithSplashSquared =
+            weapon.maxRangeSquared
+                    + 2 * weapon.maxRange * weapon.innerSplashRadius
+                    + weapon.innerSplashRadiusSquared;
+    for (int i = enemies.size() - 1; i >= 0; i--) {
+      Agent enemy = enemies.get(i);
+      if (enemy == mainTarget || enemy.isFlyer != mainTarget.isFlyer) {
+        continue;
+      }
+      int enemyDistSq = distanceSquared(enemy, source);
+      if (enemyDistSq <= rangeWithSplashSquared) {
+        int dot = (enemy.x - source.x) * dx + (enemy.y - source.y) * dy;
+        if (dot >= 0) {
+          int projdx = source.x + dot * dx / dxDistSq - enemy.x;
+          int projdy = source.y + dot * dy / dxDistSq - enemy.y;
+          int projDistSq = projdx * projdx + projdy * projdy;
+          if (projDistSq <= weapon.innerSplashRadiusSquared) {
+            applyDamage(enemy, weapon.damageType, weapon.damageShifted, weapon.hits);
+          }
+        }
+      }
+    }
+  }
+
+  public static void dealBounceDamage(
+          Weapon weapon, Agent lastTarget, UnorderedCollection<Agent> enemies) {
+    int remainingBounces = 2;
+    int damage = weapon.damageShifted / 3;
+    for (int i = enemies.size() - 1; i >= 0 && remainingBounces > 0; i--) {
+      Agent enemy = enemies.get(i);
+      if (enemy != lastTarget
+              && enemy.healthShifted > 0
+              && abs(enemy.x - lastTarget.x) <= 96
+              && abs(enemy.y - lastTarget.y) <= 96) {
+        lastTarget = enemy;
+        applyDamage(enemy, weapon.damageType, damage, weapon.hits);
+        damage /= 3;
+        remainingBounces--;
+      }
+    }
+  }
+
 
   private void simCombatMove(
       int frameSkip,
