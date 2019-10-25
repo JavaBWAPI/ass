@@ -1,7 +1,6 @@
 package org.bk.ass.sim;
 
-import org.bk.ass.collection.UnorderedCollection;
-
+import java.util.Collection;
 import java.util.SplittableRandom;
 
 import static java.lang.Math.*;
@@ -45,99 +44,6 @@ public class AgentUtil {
     return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
   }
 
-  /** Deal splash damage to enemies and allies */
-  public static void dealRadialSplashDamage(
-      Weapon weapon,
-      Agent mainTarget,
-      UnorderedCollection<Agent> allies,
-      UnorderedCollection<Agent> enemies) {
-    for (int i = allies.size() - 1; i >= 0; i--) {
-      Agent ally = allies.get(i);
-      applySplashDamage(weapon, mainTarget, ally);
-    }
-    for (int i = enemies.size() - 1; i >= 0; i--) {
-      Agent enemy = enemies.get(i);
-      applySplashDamage(weapon, mainTarget, enemy);
-    }
-  }
-
-  private static void applySplashDamage(Weapon weapon, Agent mainTarget, Agent splashTarget) {
-    if (splashTarget == mainTarget || splashTarget.isFlyer != mainTarget.isFlyer) {
-      return;
-    }
-
-    int distanceSquared = distanceSquared(splashTarget, mainTarget);
-    if (distanceSquared <= weapon.innerSplashRadiusSquared) {
-      applyDamage(splashTarget, weapon.damageType, weapon.damageShifted, weapon.hits);
-    } else if (!splashTarget.burrowed) {
-      if (distanceSquared <= weapon.medianSplashRadiusSquared) {
-        applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 2, weapon.hits);
-      } else if (distanceSquared <= weapon.outerSplashRadiusSquared) {
-        applyDamage(splashTarget, weapon.damageType, weapon.damageShifted / 4, weapon.hits);
-      }
-    }
-  }
-
-  /** Deal splash damage to enemies only */
-  public static void dealRadialSplashDamage(
-      Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
-    for (int i = enemies.size() - 1; i >= 0; i--) {
-      Agent enemy = enemies.get(i);
-      applySplashDamage(weapon, mainTarget, enemy);
-    }
-  }
-
-  public static void dealLineSplashDamage(
-      Agent source, Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
-    int dx = mainTarget.x - source.x;
-    int dy = mainTarget.y - source.y;
-    // Same spot, chose "random" direction
-    if (dx == 0 && dy == 0) {
-      dx = 1;
-    }
-    int dxDistSq = dx * dx + dy * dy;
-    int rangeWithSplashSquared =
-        weapon.maxRangeSquared
-            + 2 * weapon.maxRange * weapon.innerSplashRadius
-            + weapon.innerSplashRadiusSquared;
-    for (int i = enemies.size() - 1; i >= 0; i--) {
-      Agent enemy = enemies.get(i);
-      if (enemy == mainTarget || enemy.isFlyer != mainTarget.isFlyer) {
-        continue;
-      }
-      int enemyDistSq = distanceSquared(enemy, source);
-      if (enemyDistSq <= rangeWithSplashSquared) {
-        int dot = (enemy.x - source.x) * dx + (enemy.y - source.y) * dy;
-        if (dot >= 0) {
-          int projdx = source.x + dot * dx / dxDistSq - enemy.x;
-          int projdy = source.y + dot * dy / dxDistSq - enemy.y;
-          int projDistSq = projdx * projdx + projdy * projdy;
-          if (projDistSq <= weapon.innerSplashRadiusSquared) {
-            applyDamage(enemy, weapon.damageType, weapon.damageShifted, weapon.hits);
-          }
-        }
-      }
-    }
-  }
-
-  public static void dealBounceDamage(
-      Weapon weapon, Agent lastTarget, UnorderedCollection<Agent> enemies) {
-    int remainingBounces = 2;
-    int damage = weapon.damageShifted / 3;
-    for (int i = enemies.size() - 1; i >= 0 && remainingBounces > 0; i--) {
-      Agent enemy = enemies.get(i);
-      if (enemy != lastTarget
-              && enemy.healthShifted > 0
-              && abs(enemy.x - lastTarget.x) <= 96
-              && abs(enemy.y - lastTarget.y) <= 96) {
-        lastTarget = enemy;
-        applyDamage(enemy, weapon.damageType, damage, weapon.hits);
-        damage /= 3;
-        remainingBounces--;
-      }
-    }
-  }
-
   public static void dealDamage(Agent agent, Weapon wpn, Agent target) {
     int remainingDamage = wpn.damageShifted;
 
@@ -156,7 +62,7 @@ public class AgentUtil {
     applyDamage(target, wpn.damageType, remainingDamage, wpn.hits);
   }
 
-  private static void applyDamage(Agent target, DamageType damageType, int damage, int hits) {
+  public static void applyDamage(Agent target, DamageType damageType, int damage, int hits) {
     int shields = min(target.maxShieldsShifted, target.shieldsShifted) - damage + target.shieldUpgrades;
     if (shields > 0) {
       target.shieldsShifted = shields;
@@ -194,27 +100,18 @@ public class AgentUtil {
     return damageShifted;
   }
 
-  public static void attack(Agent agent, Weapon selectedWeapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    dealDamage(agent, selectedWeapon, selectedEnemy);
-    switch (selectedWeapon.splashType) {
-      case BOUNCE:
-        dealBounceDamage(selectedWeapon, selectedEnemy, enemies);
-        break;
-      case RADIAL_SPLASH:
-        dealRadialSplashDamage(selectedWeapon, selectedEnemy, allies, enemies);
-        break;
-      case RADIAL_ENEMY_SPLASH:
-        dealRadialSplashDamage(selectedWeapon, selectedEnemy, enemies);
-        break;
-      case LINE_SPLASH:
-        dealLineSplashDamage(agent, selectedWeapon, selectedEnemy, enemies);
-        break;
-      default:
-        // No splash
-    }
-    agent.cooldown = agent.maxCooldown;
-    if (agent.remainingStimFrames > 0) {
-      agent.cooldown /= 2;
+  /**
+   * Sets random positions for the given agents within the given rectangle.
+   * The positions are <em>stable</em>: Calling this with the same arguments twice will not change any position
+   * on the second invocation. More precisely, any {@link Agent} with position i in the collection will always
+   * get the same position. Be sure to use different rectangles for different {@link Agent} collections, to
+   * prevent them from getting assigned the same positions.
+   */
+  public static void randomizePositions(Collection<Agent> agents, int ax, int ay, int bx, int by) {
+    SplittableRandom posRnd = new SplittableRandom(1337L);
+    for (Agent agent : agents) {
+      agent.x = posRnd.nextInt(ax, bx - ax + 1);
+      agent.y = posRnd.nextInt(ay, by - ay + 1);
     }
   }
 }

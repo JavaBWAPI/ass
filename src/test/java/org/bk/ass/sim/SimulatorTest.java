@@ -931,4 +931,82 @@ class SimulatorTest {
     assertThat(simulator.getAgentsA()).size().isZero();
     assertThat(simulator.getAgentsB()).size().isZero();
   }
+
+
+  @Test
+  void approxReaverVs12Zergling() {
+    // GIVEN
+    approxSim();
+
+    simulator.addAgentA(factory.of(UnitType.Protoss_Reaver));
+
+    for (int i = 0; i < 12; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    }
+    AgentUtil.randomizePositions(simulator.getAgentsA(), 0, 0, 32, 32);
+    AgentUtil.randomizePositions(simulator.getAgentsB(), 32, 0, 80, 32);
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).hasSizeLessThan(3);
+  }
+
+  @Test
+  void approxLingsVsZealots() {
+    // GIVEN
+    approxSim();
+
+    simulator.addAgentA(factory.of(UnitType.Protoss_Zealot));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Zealot));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSizeLessThan(2);
+    assertThat(simulator.getAgentsB()).hasSizeLessThan(2);
+  }
+
+  private void approxSim() {
+    simulator =
+            new Builder()
+                    .withFrameSkip(37)
+                    .withPlayerABehavior(new ApproxAttackBehavior())
+                    .withPlayerBBehavior(new ApproxAttackBehavior())
+                    .build();
+  }
+
+  @Test
+  void _6ZerglingVsSiegedTankAndMarine() {
+    // GIVEN
+    approxSim();
+    simulator.reset();
+    simulator.addAgentA(factory.of(UnitType.Terran_Marine));
+    simulator.addAgentA(factory.of(UnitType.Terran_Siege_Tank_Siege_Mode));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+
+    AgentUtil.randomizePositions(simulator.getAgentsA(), 0, 0, 32, 32);
+    AgentUtil.randomizePositions(simulator.getAgentsB(), 32, 0, 64, 64);
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSizeLessThan(2);
+    assertThat(simulator.getAgentsB()).hasSizeLessThan(4);
+  }
 }
