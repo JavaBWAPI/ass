@@ -1,10 +1,10 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.max;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static java.lang.Math.max;
 
 /**
  * Used to get a rough guess for combat outcome. Doesn't provide as much detail as the {@link
@@ -37,7 +37,9 @@ public class Evaluator {
     List<Agent> finalAgentsB = new ArrayList<>();
     agentsB.forEach(a -> a.onDeathHandler.accept(a, finalAgentsB));
     finalAgentsA.addAll(agentsA);
+    finalAgentsA.forEach(Agent::updateSpeed);
     finalAgentsB.addAll(agentsB);
+    finalAgentsB.forEach(Agent::updateSpeed);
     double damageToA = new DamageBoard(finalAgentsB).sumDamageTo(finalAgentsA);
     double damageToB = new DamageBoard(finalAgentsA).sumDamageTo(finalAgentsB);
 

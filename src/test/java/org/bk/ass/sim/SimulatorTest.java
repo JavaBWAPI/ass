@@ -1,5 +1,8 @@
 package org.bk.ass.sim;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.bk.ass.PositionOutOfBoundsException;
 import org.bk.ass.sim.Simulator.Builder;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openbw.bwapi4j.type.WeaponType;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SimulatorTest {
 
@@ -419,8 +419,8 @@ class SimulatorTest {
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(130).setY(30))
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(150).setY(50));
 
-    for (int i = 0; i < 10; i++) {
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(16 * i + 92).setY(20));
+    for (int i = 0; i < 12; i++) {
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(16 * i + 76).setY(20));
     }
 
     // WHEN
