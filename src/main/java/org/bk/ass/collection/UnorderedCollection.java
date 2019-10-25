@@ -134,7 +134,8 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
 
     @Override
     public void remove() {
-      UnorderedCollection.this.removeAt(index - 1);
+      index--;
+      UnorderedCollection.this.removeAt(index);
     }
 
     @Override

@@ -31,6 +31,7 @@ class SimulatorTest {
     simulator.addAgentB(factory.of(UnitType.Terran_Marine).setCanStim(true));
     simulator.addAgentB(factory.of(UnitType.Terran_Marine).setCanStim(true));
     simulator.addAgentB(factory.of(UnitType.Terran_Medic));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
 
     // WHEN
     simulator.simulate(-1);
@@ -418,8 +419,8 @@ class SimulatorTest {
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(130).setY(30))
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(150).setY(50));
 
-    for (int i = 0; i < 12; i++) {
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
+    for (int i = 0; i < 10; i++) {
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(16 * i + 92).setY(20));
     }
 
     // WHEN
@@ -509,7 +510,7 @@ class SimulatorTest {
     for (int i = 0; i < 6; i++) {
       simulator.addAgentB(
           factory
-              .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false)
+              .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false, false)
               .setX(1000 + i * 8)
               .setY(1200));
     }
@@ -530,7 +531,7 @@ class SimulatorTest {
     }
     for (int i = 0; i < 10; i++) {
       simulator.addAgentB(
-          factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200 + i * 8));
+          factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false, false).setX(200 + i * 8));
     }
 
     // WHEN
@@ -780,19 +781,19 @@ class SimulatorTest {
   @Test
   void InterceptorsShouldDieIfCarrierDies() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
     Agent carrier = factory.of(UnitType.Protoss_Carrier);
     carrier.setInterceptors(simulator.getAgentsA());
     simulator.addAgentA(carrier.setX(500));
 
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(10));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(30));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(50));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(70));
 
     // WHEN
     simulator.simulate(-1);
@@ -932,7 +933,6 @@ class SimulatorTest {
     assertThat(simulator.getAgentsB()).size().isZero();
   }
 
-
   @Test
   void approxReaverVs12Zergling() {
     // GIVEN
@@ -977,11 +977,11 @@ class SimulatorTest {
 
   private void approxSim() {
     simulator =
-            new Builder()
-                    .withFrameSkip(37)
-                    .withPlayerABehavior(new ApproxAttackBehavior())
-                    .withPlayerBBehavior(new ApproxAttackBehavior())
-                    .build();
+        new Builder()
+            .withFrameSkip(37)
+            .withPlayerABehavior(new ApproxAttackBehavior())
+            .withPlayerBBehavior(new ApproxAttackBehavior())
+            .build();
   }
 
   @Test

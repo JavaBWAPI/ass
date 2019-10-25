@@ -14,7 +14,9 @@ public class Agent {
       (carrier, agents) -> agents.removeAll(carrier.interceptors);
   // Retrieved from OpenBW
   private static final int STIM_TIMER = 37;
-  private static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
+  private static final int STIM_HEALTH_COST_SHIFTED = 10 << 8;
+  private static final int ENSNARE_TIMER = 75;
+  private static final int ENSNARE_ENERGY_COST_SHIFTED = 75 << 8;
 
   private final String name;
   TargetingPriority attackTargetPriority = TargetingPriority.HIGHEST;
@@ -25,8 +27,11 @@ public class Agent {
   int elevationLevel = -2;
   int x;
   int y;
+  boolean speedUpgrade;
+  float baseSpeed;
   int speedSquared;
   float speed;
+  private boolean scout;
 
   // Velocity (pixel per frame) for this frame to apply
   int vx;
@@ -35,6 +40,9 @@ public class Agent {
   int healthShifted;
   int maxHealthShifted;
   boolean healedThisFrame;
+
+  int stimTimer;
+  int ensnareTimer;
 
   int hpConstructionRate;
 
@@ -45,10 +53,11 @@ public class Agent {
   int maxEnergyShifted;
 
   int cooldown;
-  int maxCooldown;
+  boolean cooldownUpgrade;
+
   // Number of frames a move would break the attack
+  int stopFrameTimer;
   int stopFrames;
-  int remainingStimFrames;
   boolean canStim;
   int plagueDamagePerFrameShifted;
 
@@ -122,9 +131,8 @@ public class Agent {
     this.energyShifted = other.energyShifted;
     this.maxEnergyShifted = other.maxEnergyShifted;
     this.cooldown = other.cooldown;
-    this.maxCooldown = other.maxCooldown;
     this.stopFrames = other.stopFrames;
-    this.remainingStimFrames = other.remainingStimFrames;
+    this.stimTimer = other.stimTimer;
     this.canStim = other.canStim;
     this.plagueDamagePerFrameShifted = other.plagueDamagePerFrameShifted;
     this.regeneratesHealth = other.regeneratesHealth;
@@ -180,8 +188,13 @@ public class Agent {
     return this;
   }
 
-  public Agent setRemainingStimFrames(int remainingStimFrames) {
-    this.remainingStimFrames = remainingStimFrames;
+  public Agent setStimTimer(int stimTimer) {
+    this.stimTimer = stimTimer;
+    return this;
+  }
+
+  public Agent setEnsnareTimer(int ensnareTimer) {
+    this.ensnareTimer = ensnareTimer;
     return this;
   }
 
@@ -248,10 +261,40 @@ public class Agent {
     return this;
   }
 
-  public Agent setSpeed(float speed) {
-    this.speedSquared = Math.round(speed * speed);
-    this.speed = speed;
+  public Agent setBaseSpeed(float speed) {
+    this.baseSpeed = speed;
     return this;
+  }
+
+  public Agent setSpeedUpgrade(boolean speedUpgrade) {
+    this.speedUpgrade = speedUpgrade;
+    return this;
+  }
+
+  public Agent setCooldownUpgrade(boolean cooldownUpgrade) {
+    this.cooldownUpgrade = cooldownUpgrade;
+    return this;
+  }
+
+  void updateSpeed() {
+    speed = baseSpeed;
+    int mod = 0;
+    if (stimTimer > 0) mod++;
+    if (speedUpgrade) mod++;
+    if (ensnareTimer > 0) mod--;
+    if (mod < 0) speed /= 2f;
+    if (mod > 0) {
+      if (scout) {
+        speed = 6 + 2 / 3f;
+      } else {
+        speed *= 1.5f;
+        float minSpeed = 3 + 1 / 3f;
+        if (speed < minSpeed) {
+          speed = minSpeed;
+        }
+      }
+    }
+    this.speedSquared = Math.round(speed * speed);
   }
 
   public Agent setHealth(int health) {
@@ -284,11 +327,6 @@ public class Agent {
 
   public Agent setCooldown(int cooldown) {
     this.cooldown = cooldown;
-    return this;
-  }
-
-  public Agent setMaxCooldown(int maxCooldown) {
-    this.maxCooldown = maxCooldown;
     return this;
   }
 
@@ -415,13 +453,23 @@ public class Agent {
     healthShifted = min(healthShifted, maxHealthShifted) - amountShifted;
   }
 
+  public Agent setScout(boolean scout) {
+    this.scout = scout;
+    return this;
+  }
+
   public final void heal(int amountShifted) {
     healthShifted += amountShifted;
   }
 
   public final void stim() {
-    remainingStimFrames = STIM_TIMER;
-    consumeHealth(STIM_ENERGY_COST_SHIFTED);
+    stimTimer = STIM_TIMER;
+    consumeHealth(STIM_HEALTH_COST_SHIFTED);
+  }
+
+  public final void ensnare() {
+    ensnareTimer = ENSNARE_TIMER;
+    consumeEnergy(ENSNARE_ENERGY_COST_SHIFTED);
   }
 
   public enum TargetingPriority {

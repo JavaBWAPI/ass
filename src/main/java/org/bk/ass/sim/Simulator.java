@@ -213,7 +213,8 @@ public class Simulator {
       agent.shieldsShifted += 7 * frameSkip;
       if (agent.plagueDamagePerFrameShifted * frameSkip < agent.healthShifted)
         agent.healthShifted -= agent.plagueDamagePerFrameShifted * frameSkip;
-      agent.remainingStimFrames -= frameSkip;
+      agent.stimTimer -= frameSkip;
+      agent.ensnareTimer -= frameSkip;
       if (agent.regeneratesHealth) agent.healthShifted += 4 * frameSkip;
       agent.energyShifted += 8 * frameSkip;
     }

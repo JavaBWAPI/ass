@@ -3,8 +3,7 @@ package org.bk.ass.sim;
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.sqrt;
+import static java.lang.Math.*;
 import static org.bk.ass.sim.AgentUtil.*;
 import static org.bk.ass.sim.RetreatBehavior.simFlee;
 
@@ -16,7 +15,8 @@ public class AttackerBehavior implements Behavior {
       Agent agent,
       UnorderedCollection<Agent> allies,
       UnorderedCollection<Agent> enemies) {
-    if (agent.cooldown > agent.maxCooldown - agent.stopFrames) {
+    if (agent.stopFrameTimer > 0) {
+      agent.stopFrameTimer -= frameSkip;
       return true;
     }
 
@@ -92,7 +92,7 @@ public class AttackerBehavior implements Behavior {
       Agent selectedEnemy,
       Weapon selectedWeapon) {
     if (agent.canStim
-        && agent.remainingStimFrames <= 0
+        && agent.stimTimer <= 0
         && agent.healthShifted >= agent.maxHealthShifted / 2) {
       agent.stim();
     }
@@ -101,6 +101,7 @@ public class AttackerBehavior implements Behavior {
   }
 
   public static void attack(Agent agent, Weapon weapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+    agent.stopFrameTimer = agent.stopFrames;
     dealDamage(agent, weapon, selectedEnemy);
     switch (weapon.splashType) {
       case BOUNCE:
@@ -118,8 +119,15 @@ public class AttackerBehavior implements Behavior {
       default:
         // No splash
     }
-    agent.cooldown = agent.maxCooldown;
-    if (agent.remainingStimFrames > 0) {
+    agent.cooldown = weapon.cooldown;
+    int mod = 0;
+    if (agent.stimTimer > 0) mod++;
+    if (agent.cooldownUpgrade) mod++;
+    if (agent.ensnareTimer > 0) mod--;
+    if (mod < 0) {
+      agent.cooldown = max(5, agent.cooldown * 5 / 4);
+    }
+    if (mod > 0) {
       agent.cooldown /= 2;
     }
   }

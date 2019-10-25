@@ -18,6 +18,7 @@ public class AgentUtil {
   }
 
   public static void moveToward(int frames, Agent agent, Agent target, float distance) {
+    agent.updateSpeed();
     float travelled = frames * agent.speed;
     if (distance <= travelled) {
       agent.vx = target.x - agent.x;
@@ -29,6 +30,7 @@ public class AgentUtil {
   }
 
   public static void moveAwayFrom(int frames, Agent agent, Agent target, float distance) {
+    agent.updateSpeed();
     float travelled = frames * agent.speed;
     if (distance == 0) {
       double a = rnd.nextDouble(Math.PI * 2);

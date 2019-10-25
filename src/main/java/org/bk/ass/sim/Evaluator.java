@@ -52,12 +52,14 @@ public class Evaluator {
       damageToB = 0;
     }
     double evalA =
-            damageToA / (finalAgentsA.stream()
+        damageToA
+            / (finalAgentsA.stream()
                     .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
                     .sum()
                 + EPS);
     double evalB =
-            damageToB / (finalAgentsB.stream()
+        damageToB
+            / (finalAgentsB.stream()
                     .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
                     .sum()
                 + EPS);
@@ -139,13 +141,26 @@ public class Evaluator {
     private double calculateDamage(Agent attacker, Weapon weapon) {
       double rangeFactor = weapon.maxRange * parameters.rangeScale;
       double speedFactor = attacker.burrowedAttacker ? 0.0 : attacker.speed * parameters.speedScale;
-      double radialSplashFactor = weapon.splashType == SplashType.RADIAL_ENEMY_SPLASH || weapon.splashType == SplashType.RADIAL_SPLASH ? parameters.radialSplashScale * weapon.innerSplashRadius : 0.0;
-      double lineSplashFactor = weapon.splashType == SplashType.LINE_SPLASH ? parameters.lineSplashScale * weapon.innerSplashRadius : 0.0;
-      double bounceSplashFactor = weapon.splashType == SplashType.BOUNCE ? parameters.bounceSplashFactor : 0.0;
+      double radialSplashFactor =
+          weapon.splashType == SplashType.RADIAL_ENEMY_SPLASH
+                  || weapon.splashType == SplashType.RADIAL_SPLASH
+              ? parameters.radialSplashScale * weapon.innerSplashRadius
+              : 0.0;
+      double lineSplashFactor =
+          weapon.splashType == SplashType.LINE_SPLASH
+              ? parameters.lineSplashScale * weapon.innerSplashRadius
+              : 0.0;
+      double bounceSplashFactor =
+          weapon.splashType == SplashType.BOUNCE ? parameters.bounceSplashFactor : 0.0;
 
       return weapon.damageShifted
-              * (1.0 + rangeFactor + speedFactor + radialSplashFactor + lineSplashFactor + bounceSplashFactor)
-          / attacker.maxCooldown;
+          * (1.0
+              + rangeFactor
+              + speedFactor
+              + radialSplashFactor
+              + lineSplashFactor
+              + bounceSplashFactor)
+          / max(attacker.groundWeapon.cooldown, attacker.airWeapon.cooldown);
     }
 
     double sumDamageTo(Collection<Agent> targets) {
@@ -227,7 +242,16 @@ public class Evaluator {
     }
 
     public Parameters() {
-      this(new double[]{2.0608350462547205, 8.19938619214691, 0.19223277374228906, 7.706789576045348, 6.154650149331842, 5.884458141154542, 0.8991451082849068});
+      this(
+          new double[] {
+            2.0608350462547205,
+            8.19938619214691,
+            0.19223277374228906,
+            7.706789576045348,
+            6.154650149331842,
+            5.884458141154542,
+            0.8991451082849068
+          });
     }
   }
 }

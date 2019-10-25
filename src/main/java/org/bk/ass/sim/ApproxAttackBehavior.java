@@ -17,7 +17,7 @@ public class ApproxAttackBehavior implements Behavior {
                     && enemy.detected
                     && !enemy.isStasised) {
                 if (agent.canStim
-                        && agent.remainingStimFrames <= 0
+                        && agent.stimTimer <= 0
                         && agent.healthShifted >= agent.maxHealthShifted / 2) {
                     agent.stim();
                 }
@@ -48,9 +48,9 @@ public class ApproxAttackBehavior implements Behavior {
                 // No splash
         }
 
-        if (agent.remainingStimFrames <= 0)
-            agent.cooldown += agent.maxCooldown;
+        if (agent.stimTimer <= 0)
+            agent.cooldown += weapon.cooldown;
         else
-            agent.cooldown += agent.maxCooldown / 2;
+            agent.cooldown += weapon.cooldown / 2;
     }
 }
