@@ -1,13 +1,13 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 public class Agent {
   static final BiConsumer<Agent, Collection<Agent>> CARRIER_DEATH_HANDLER =
@@ -118,21 +118,27 @@ public class Agent {
     this.elevationLevel = other.elevationLevel;
     this.x = other.x;
     this.y = other.y;
+    this.speedUpgrade = other.speedUpgrade;
+    this.baseSpeed = other.baseSpeed;
     this.speedSquared = other.speedSquared;
     this.speed = other.speed;
+    this.scout = other.scout;
     this.vx = other.vx;
     this.vy = other.vy;
     this.healthShifted = other.healthShifted;
     this.maxHealthShifted = other.maxHealthShifted;
     this.healedThisFrame = other.healedThisFrame;
+    this.stimTimer = other.stimTimer;
+    this.ensnareTimer = other.ensnareTimer;
     this.hpConstructionRate = other.hpConstructionRate;
     this.shieldsShifted = other.shieldsShifted;
     this.maxShieldsShifted = other.maxShieldsShifted;
     this.energyShifted = other.energyShifted;
     this.maxEnergyShifted = other.maxEnergyShifted;
     this.cooldown = other.cooldown;
+    this.cooldownUpgrade = other.cooldownUpgrade;
+    this.stopFrameTimer = other.stopFrameTimer;
     this.stopFrames = other.stopFrames;
-    this.stimTimer = other.stimTimer;
     this.canStim = other.canStim;
     this.plagueDamagePerFrameShifted = other.plagueDamagePerFrameShifted;
     this.regeneratesHealth = other.regeneratesHealth;
@@ -154,9 +160,6 @@ public class Agent {
     this.airWeapon = other.airWeapon;
     this.groundWeapon = other.groundWeapon;
     this.onDeathHandler = other.onDeathHandler;
-    this.attackTarget = null;
-    this.restoreTarget = null;
-    this.interceptors = Collections.emptyList();
   }
 
   public Agent setUserObject(Object userObject) {
