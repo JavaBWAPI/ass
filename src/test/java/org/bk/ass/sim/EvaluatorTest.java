@@ -1,19 +1,18 @@
 package org.bk.ass.sim;
 
-import io.jenetics.util.IntRange;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.openbw.bwapi4j.test.BWDataProvider;
-import org.openbw.bwapi4j.type.UnitType;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.jenetics.util.IntRange;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.openbw.bwapi4j.test.BWDataProvider;
+import org.openbw.bwapi4j.type.UnitType;
 
 /**
  * The most interesting tests are those where the outcome is not a landslide. But of course some
@@ -364,5 +363,20 @@ class EvaluatorTest {
 
     // THEN
     assertThat(result).isGreaterThan(0.9);
+  }
+
+  @Test
+  void vsSomeUnitsAndHatch() {
+    List<Agent> a = IntRange.of(0, 8).stream()
+        .mapToObj(unused -> factory.of(UnitType.Zerg_Zergling)).collect(Collectors.toList());
+    List<Agent> b = Stream.concat(
+        IntRange.of(0, 3).stream().mapToObj(unused -> factory.of(UnitType.Zerg_Zergling)),
+        Stream.of(factory.of(UnitType.Zerg_Lair), factory.of(UnitType.Zerg_Overlord)))
+        .collect(Collectors.toList());
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isGreaterThan(0.8);
   }
 }

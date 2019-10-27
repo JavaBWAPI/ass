@@ -29,9 +29,6 @@ public class Evaluator {
    *     obliterated.
    */
   public double evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
-    if (agentsA.isEmpty() && agentsB.isEmpty()) return 0.5;
-    if (agentsA.isEmpty()) return 0.0;
-    if (agentsB.isEmpty()) return 1.0;
     List<Agent> finalAgentsA = new ArrayList<>();
     agentsA.forEach(a -> a.onDeathHandler.accept(a, finalAgentsA));
     List<Agent> finalAgentsB = new ArrayList<>();
@@ -54,23 +51,23 @@ public class Evaluator {
       damageToB = 0;
     }
     double evalA =
-        damageToA
-            / (finalAgentsA.stream()
-                    .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-                    .sum()
-                + EPS);
+        finalAgentsA.stream()
+            .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
+            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+            .sum()
+            / (damageToA + EPS);
     double evalB =
-        damageToB
-            / (finalAgentsB.stream()
-                    .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-                    .sum()
-                + EPS);
-    // eval is a rough estimate on how many units where lost.
-    // Directly comparing is bad since one might have lost more agents than he had.
-    // So we just multiply with the enemy count and compare that instead.
-    evalB *= finalAgentsA.size();
-    evalA *= finalAgentsB.size();
-    return (evalB + EPS / 2) / (evalA + evalB + EPS);
+        finalAgentsB.stream()
+            .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
+            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+            .sum()
+            / (damageToB + EPS);
+
+    // eval is a rough factor on how many units survived
+    // Since we summed damages above we'll multiply by unit counts to even the odds
+    evalA *= finalAgentsA.size();
+    evalB *= finalAgentsB.size();
+    return (evalA + EPS) / (evalA + evalB + 2 * EPS);
   }
 
   private int regeneration(Collection<Agent> agents) {
