@@ -342,7 +342,7 @@ class EvaluatorTest {
   }
 
   @Test
-  void vsNothingIsFreeWin() {
+  void vsNothingIsUseless() {
     List<Agent> a = IntRange.of(0, 4).stream().mapToObj(unused -> factory.of(UnitType.Terran_Marine)).collect(Collectors.toList());
     List<Agent> b = Collections.emptyList();
 
@@ -350,7 +350,7 @@ class EvaluatorTest {
     double result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result).isGreaterThan(0.9);
+    assertThat(result).isEqualTo(0.5);
   }
 
   @Test
@@ -378,5 +378,17 @@ class EvaluatorTest {
 
     // THEN
     assertThat(result).isGreaterThan(0.8);
+  }
+
+  @Test
+  void lingVsOverlordIsUseless() {
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Zergling));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Zerg_Overlord));
+
+    // WHEN
+    double result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isEqualTo(0.5);
   }
 }

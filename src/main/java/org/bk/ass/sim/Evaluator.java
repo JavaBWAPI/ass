@@ -55,13 +55,13 @@ public class Evaluator {
             .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
             .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
             .sum()
-            / (damageToA + EPS);
+            * damageToB;
     double evalB =
         finalAgentsB.stream()
             .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
             .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
             .sum()
-            / (damageToB + EPS);
+            * damageToA;
 
     // eval is a rough factor on how many units survived
     // Since we summed damages above we'll multiply by unit counts to even the odds
