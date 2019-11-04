@@ -97,6 +97,9 @@ public class StableDBScanner<U> {
         if (q.marked) {
           continue;
         }
+        if (q.cluster != null) {
+          q.cluster.elements.remove(q);
+        }
         setCluster(q, currentCluster);
         List<WrappedElement<U>> qn = elementsWithinRadius(q);
         if (qn.size() >= minPoints) {
