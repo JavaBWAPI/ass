@@ -1,12 +1,18 @@
 package org.bk.ass.cluster;
 
-import org.bk.ass.collection.UnorderedCollection;
-import org.bk.ass.query.PositionQueries;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.bk.ass.collection.UnorderedCollection;
+import org.bk.ass.query.PositionQueries;
 
 /**
  * DBScan which processes the DB in chunks. Element clusters are generally stable: After an
@@ -88,13 +94,9 @@ public class StableDBScanner<U> {
     while ((!remainingDbEntries.isEmpty() || !horizon.isEmpty()) && maxMarkedElements != 0) {
       while (!horizon.isEmpty() && maxMarkedElements-- != 0) {
         WrappedElement<U> q = horizon.removeAt(0);
-        if (q.cluster == null) {
-          setCluster(q, currentCluster);
-        }
         if (q.marked) {
           continue;
         }
-        q.cluster.elements.remove(q);
         setCluster(q, currentCluster);
         List<WrappedElement<U>> qn = elementsWithinRadius(q);
         if (qn.size() >= minPoints) {
