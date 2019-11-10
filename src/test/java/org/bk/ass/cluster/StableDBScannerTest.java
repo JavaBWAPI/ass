@@ -152,6 +152,26 @@ class StableDBScannerTest {
   }
 
   @Test
+  void mergeWithNewEntries() {
+    // GIVEN
+    Map<String, List<String>> radius = new HashMap<>();
+    radius.put("a", singletonList("a"));
+
+    StableDBScanner<String> sut = new StableDBScanner<>(singletonList("a"), 2, radius::get);
+    sut.scan(-1);
+    Collection<Cluster<String>> firstRun = sut.getClusters();
+
+    radius.put("a", Arrays.asList("a", "b"));
+    radius.put("b", Arrays.asList("a", "b"));
+
+    // WHEN
+    sut.scan(-1);
+
+    // THEN
+    assertThat(sut.getClusters()).hasSize(1).containsAnyElementsOf(firstRun);
+  }
+
+  @Test
   void doNotFailIfElementNotPartOfAnyRadius() {
     // GIVEN
     StableDBScanner<String> sut =
@@ -197,6 +217,30 @@ class StableDBScannerTest {
     // THEN
     for (PositionAndId positionAndId : db) {
       assertThat(clusters.stream().filter(it -> it.elements.contains(positionAndId))).hasSize(1);
+    }
+  }
+
+  @Test
+  void shuffledExampleClusterTest600() {
+    // GIVEN
+    List<PositionAndId> db = new ArrayList<>();
+    for (int i = 0; i < EXAMPLE_POSITIONS.length; i++) {
+      db.add(new PositionAndId(i, EXAMPLE_POSITIONS[i].x, EXAMPLE_POSITIONS[i].y));
+    }
+    PositionQueries<PositionAndId> positionQueries = new PositionQueries<>(db,
+        PositionAndId::toPosition);
+
+    StableDBScanner<PositionAndId> sut =
+        new StableDBScanner<>(db, 3, positionAndId -> positionQueries.inRadius(positionAndId, 600));
+    Collection<Cluster<PositionAndId>> clusters = sut.scan(-1).getClusters();
+
+    for (int i = 0; i < 1000; i++) {
+      // WHEN
+      Collections.shuffle(db);
+      Collection<Cluster<PositionAndId>> newClusters = sut.scan(-1).getClusters();
+
+      // THEN
+      assertThat(newClusters).isEqualTo(clusters);
     }
   }
 

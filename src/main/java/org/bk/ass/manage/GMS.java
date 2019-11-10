@@ -1,13 +1,14 @@
 package org.bk.ass.manage;
 
+import static java.lang.Integer.max;
+
 import bwapi.TechType;
 import bwapi.UnitType;
 import bwapi.UpgradeType;
 
-import static java.lang.Integer.max;
-
 /** Representing gas + minerals + supply */
 public final class GMS {
+  public static final GMS ZERO = new GMS(0, 0, 0);
   public final int gas;
   public final int minerals;
   public final int supply;
