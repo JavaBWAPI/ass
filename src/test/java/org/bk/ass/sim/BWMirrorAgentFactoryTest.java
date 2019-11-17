@@ -20,7 +20,7 @@ class BWMirrorAgentFactoryTest {
     Agent agent = sut.of(type);
 
     // THEN
-    assertThat(agent.sleepFrames).isEqualTo(Integer.MAX_VALUE);
+    assertThat(agent.sleepTimer).isEqualTo(Integer.MAX_VALUE);
   }
 
   @Test
@@ -29,7 +29,7 @@ class BWMirrorAgentFactoryTest {
     Agent agent = sut.of(UnitType.Terran_Bunker);
 
     // THEN
-    assertThat(agent.sleepFrames).isZero();
+    assertThat(agent.sleepTimer).isZero();
 
   }
 

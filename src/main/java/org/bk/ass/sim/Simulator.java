@@ -164,15 +164,15 @@ public class Simulator {
     for (int i = playerA.size() - 1; i >= 0; i--) {
       Agent agent = playerA.get(i);
       simRunning |=
-          agent.isStasised
-              || agent.sleepFrames > 0
+          agent.isStasised()
+              || agent.sleepTimer > 0
               || playerABehavior.simUnit(frameSkip, agent, playerA, playerB);
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
       Agent agent = playerB.get(i);
       simRunning |=
-          agent.isStasised
-              || agent.sleepFrames > 0
+          agent.isStasised()
+              || agent.sleepTimer > 0
               || playerBBehavior.simUnit(frameSkip, agent, playerB, playerA);
     }
     removeDead(playerA);
@@ -205,7 +205,8 @@ public class Simulator {
       agent.vx = 0;
       agent.vy = 0;
       agent.healedThisFrame = false;
-      agent.sleepFrames -= frameSkip;
+      agent.sleepTimer -= frameSkip;
+      agent.stasisTimer -= frameSkip;
 
       // Since these calls are potentially made every frame, no boundary checks are done for
       // performance reasons!

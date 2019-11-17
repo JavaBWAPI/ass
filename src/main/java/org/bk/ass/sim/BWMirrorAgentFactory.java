@@ -233,8 +233,8 @@ public class BWMirrorAgentFactory {
         // By default set unit as user object
         .setUserObject(unit)
         .setBurrowed(unit.isBurrowed())
-        .setStasised(unit.isStasised())
-        .setLockeddown(unit.isLockedDown())
+        .setStasisTimer(unit.getStasisTimer())
+        .setLockDownTimer(unit.getLockdownTimer())
         .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0)
         .setEnsnareTimer(unit.getEnsnareTimer());
   }

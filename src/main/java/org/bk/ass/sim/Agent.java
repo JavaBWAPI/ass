@@ -58,7 +58,7 @@ public class Agent {
   boolean cooldownUpgrade;
 
   // Number of frames to sleep (ie. to prevent a move to break the attack)
-  int sleepFrames;
+  int sleepTimer;
   int stopFrames;
   boolean canStim;
   int plagueDamagePerFrameShifted;
@@ -80,7 +80,7 @@ public class Agent {
   // Visible to the other force
   boolean detected;
 
-  boolean isStasised;
+  int stasisTimer;
   // Lockdown or no damage and no movement
 
   UnitSize size;
@@ -139,7 +139,7 @@ public class Agent {
     this.maxEnergyShifted = other.maxEnergyShifted;
     this.cooldown = other.cooldown;
     this.cooldownUpgrade = other.cooldownUpgrade;
-    this.sleepFrames = other.sleepFrames;
+    this.sleepTimer = other.sleepTimer;
     this.stopFrames = other.stopFrames;
     this.canStim = other.canStim;
     this.plagueDamagePerFrameShifted = other.plagueDamagePerFrameShifted;
@@ -155,7 +155,7 @@ public class Agent {
     this.burrowed = other.burrowed;
     this.burrowedAttacker = other.burrowedAttacker;
     this.detected = other.detected;
-    this.isStasised = other.isStasised;
+    this.stasisTimer = other.stasisTimer;
     this.size = other.size;
     this.isMelee = other.isMelee;
     this.airWeapon = other.airWeapon;
@@ -203,8 +203,12 @@ public class Agent {
    * down" in that time.
    */
   public Agent setSleepTimer(int sleepTimer) {
-    this.sleepFrames = sleepTimer;
+    this.sleepTimer = sleepTimer;
     return this;
+  }
+
+  public int getSleepTimer() {
+    return sleepTimer;
   }
 
   public Agent setEnsnareTimer(int ensnareTimer) {
@@ -212,9 +216,13 @@ public class Agent {
     return this;
   }
 
-  public Agent setStasised(boolean stasised) {
-    isStasised = stasised;
+  public Agent setStasisTimer(int stasisTimer) {
+    this.stasisTimer = stasisTimer;
     return this;
+  }
+
+  final boolean isStasised() {
+    return stasisTimer > 0;
   }
 
   /**
@@ -222,8 +230,8 @@ public class Agent {
    *
    * @see #setPassive(boolean)
    */
-  public Agent setLockeddown(boolean lockeddown) {
-    sleepFrames = lockeddown ? Integer.MAX_VALUE : 0;
+  public Agent setLockDownTimer(int lockDownTimer) {
+    sleepTimer = lockDownTimer;
     return this;
   }
 
@@ -232,7 +240,7 @@ public class Agent {
    * be attacked and destroyed.
    */
   public Agent setPassive(boolean passive) {
-    sleepFrames = passive ? Integer.MAX_VALUE : 0;
+    sleepTimer = passive ? Integer.MAX_VALUE : 0;
     return this;
   }
 

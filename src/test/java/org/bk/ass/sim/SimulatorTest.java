@@ -706,7 +706,7 @@ class SimulatorTest {
   void shouldNotAttackStasisedUnitsNorBeAttackedByThem() {
     // GIVEN
     simulator = new Builder().build();
-    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setStasisTimer(Integer.MAX_VALUE));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
     // WHEN
@@ -721,7 +721,7 @@ class SimulatorTest {
   void shouldAttackLockeddownUnitsButDontBeAttackedByThem() {
     // GIVEN
     simulator = new Builder().build();
-    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true));
+    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setLockDownTimer(Integer.MAX_VALUE));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
     // WHEN
@@ -737,7 +737,7 @@ class SimulatorTest {
     // GIVEN
     simulator = new Builder().build();
     simulator.addAgentA(
-        factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true).setHealth(97));
+        factory.of(UnitType.Terran_Goliath).setX(500).setStasisTimer(Integer.MAX_VALUE).setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN
@@ -752,7 +752,7 @@ class SimulatorTest {
     // GIVEN
     simulator = new Builder().build();
     simulator.addAgentA(
-        factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true).setHealth(97));
+        factory.of(UnitType.Terran_Goliath).setX(500).setLockDownTimer(Integer.MAX_VALUE).setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN

@@ -1,9 +1,11 @@
 package org.bk.ass.sim;
 
+import static org.bk.ass.sim.AttackerBehavior.dealBounceDamage;
+import static org.bk.ass.sim.AttackerBehavior.dealLineSplashDamage;
+import static org.bk.ass.sim.AttackerBehavior.dealRadialSplashDamage;
+
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
-
-import static org.bk.ass.sim.AttackerBehavior.*;
 
 public class ApproxAttackBehavior implements Behavior {
     @Override
@@ -15,7 +17,7 @@ public class ApproxAttackBehavior implements Behavior {
             if (enemy.healthShifted > 0
                     && wpn.damageShifted != 0
                     && enemy.detected
-                    && !enemy.isStasised) {
+                    && !enemy.isStasised()) {
                 if (agent.canStim
                         && agent.stimTimer <= 0
                         && agent.healthShifted >= agent.maxHealthShifted / 2) {

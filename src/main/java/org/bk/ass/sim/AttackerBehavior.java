@@ -45,7 +45,7 @@ public class AttackerBehavior implements Behavior {
         if (enemy.healthShifted > 0
             && wpn.damageShifted != 0
             && enemy.detected
-            && !enemy.isStasised
+            && !enemy.isStasised()
             && prioCmp >= 0) {
           int distanceSq = distanceSquared(agent, enemy);
           if (distanceSq >= wpn.minRangeSquared
@@ -102,7 +102,7 @@ public class AttackerBehavior implements Behavior {
   }
 
   public static void attack(Agent agent, Weapon weapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    agent.sleepFrames = agent.stopFrames;
+    agent.sleepTimer = agent.stopFrames;
     dealDamage(agent, weapon, selectedEnemy);
     switch (weapon.splashType) {
       case BOUNCE:
