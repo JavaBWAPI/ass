@@ -1,5 +1,6 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.max;
 import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
 
 import bwapi.ExplosionType;
@@ -214,15 +215,15 @@ public class BWMirrorAgentFactory {
       energy = unit.getEnergy();
     }
 
-    return fromUnitType(
-            unit.getType(),
-            groundWeaponUpgrades,
-            airWeaponUpgrades,
-            groundWeaponRangeUpgrade,
-            airWeaponRangeUpgrade,
-            speedUpgrade,
-            energyUpgrade,
-            cooldownUpgrade)
+    Agent agent = fromUnitType(
+        unit.getType(),
+        groundWeaponUpgrades,
+        airWeaponUpgrades,
+        groundWeaponRangeUpgrade,
+        airWeaponRangeUpgrade,
+        speedUpgrade,
+        energyUpgrade,
+        cooldownUpgrade)
         .setHealth(unit.getHitPoints())
         .setShields(unit.getShields())
         .setEnergy(energy)
@@ -237,6 +238,11 @@ public class BWMirrorAgentFactory {
         .setLockDownTimer(unit.getLockdownTimer())
         .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0)
         .setEnsnareTimer(unit.getEnsnareTimer());
+    agent.setSleepTimer(max(agent.getSleepTimer(), unit.getRemainingBuildTime()));
+    if (!unit.isPowered()) {
+      agent.setPassive(true);
+    }
+    return agent;
   }
 
   public Agent of(Unit unit) {
