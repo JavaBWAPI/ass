@@ -166,14 +166,13 @@ public class BWAPI4JAgentFactory {
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
             .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
-    if (!unitType.canAttack() && !unitType.canMove()) {
-      agent.setPassive(true);
-    }
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerDeathHandler);
     } else if (unitType == UnitType.Protoss_Carrier) {
       agent.setOnDeathHandler(CARRIER_DEATH_HANDLER);
+    } else if (!unitType.canAttack() && !unitType.canMove()) {
+      agent.setPassive(true);
     }
     return agent;
   }
