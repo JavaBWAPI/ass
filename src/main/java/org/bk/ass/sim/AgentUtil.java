@@ -1,9 +1,12 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.sin;
+
 import java.util.Collection;
 import java.util.SplittableRandom;
-
-import static java.lang.Math.*;
 
 public class AgentUtil {
   private static final SplittableRandom rnd = new SplittableRandom();
@@ -61,6 +64,7 @@ public class AgentUtil {
       remainingDamage = remainingDamage * 255 / 256;
     }
 
+    agent.attackCounter++;
     applyDamage(target, wpn.damageType, remainingDamage, wpn.hits);
   }
 

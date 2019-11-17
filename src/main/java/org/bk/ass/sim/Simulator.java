@@ -164,15 +164,15 @@ public class Simulator {
     for (int i = playerA.size() - 1; i >= 0; i--) {
       Agent agent = playerA.get(i);
       simRunning |=
-          agent.isLockeddown
-              || agent.isStasised
+          agent.isStasised
+              || agent.sleepFrames > 0
               || playerABehavior.simUnit(frameSkip, agent, playerA, playerB);
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
       Agent agent = playerB.get(i);
       simRunning |=
-          agent.isLockeddown
-              || agent.isStasised
+          agent.isStasised
+              || agent.sleepFrames > 0
               || playerBBehavior.simUnit(frameSkip, agent, playerB, playerA);
     }
     removeDead(playerA);
@@ -205,8 +205,10 @@ public class Simulator {
       agent.vx = 0;
       agent.vy = 0;
       agent.healedThisFrame = false;
+      agent.sleepFrames -= frameSkip;
 
-      // Since these calls are potentially made every frame, no boundary checks are done for performance reasons!
+      // Since these calls are potentially made every frame, no boundary checks are done for
+      // performance reasons!
       // Bounds are established when the fields are modified.
       agent.cooldown -= frameSkip;
       agent.shieldsShifted += 7 * frameSkip;
@@ -281,15 +283,12 @@ public class Simulator {
         UnorderedCollection<Agent> enemies) {
       if (agent.isSuicider) {
         return suiciderSimulator.simUnit(frameSkip, agent, allies, enemies);
-      }
-      if (agent.isHealer) {
+      } else if (agent.isHealer) {
         return healerSimulator.simUnit(frameSkip, agent, allies, enemies);
-      }
-      if (agent.isRepairer && repairerSimulator.simUnit(frameSkip, agent, allies, enemies)) {
+      } else if (agent.isRepairer && repairerSimulator.simUnit(frameSkip, agent, allies, enemies)) {
         return true;
         // Otherwise FIGHT, you puny SCV!
-      }
-      return attackerSimulator.simUnit(frameSkip, agent, allies, enemies);
+      } else return attackerSimulator.simUnit(frameSkip, agent, allies, enemies);
     }
   }
 
@@ -300,14 +299,14 @@ public class Simulator {
   public interface Behavior {
 
     /**
-     * Simulate the given agent. Returns true if the agent was active (including waiting),
-     * false if the agent won't be able to do anything anymore.
+     * Simulate the given agent. Returns true if the agent was active (including waiting), false if
+     * the agent won't be able to do anything anymore.
      */
     boolean simUnit(
-            int frameSkip,
-            Agent agent,
-            UnorderedCollection<Agent> allies,
-            UnorderedCollection<Agent> enemies);
+        int frameSkip,
+        Agent agent,
+        UnorderedCollection<Agent> allies,
+        UnorderedCollection<Agent> enemies);
   }
 
   public static final class Builder {

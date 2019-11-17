@@ -35,4 +35,9 @@ public class IntEvaluation {
   public IntEvaluation subtract(IntEvaluation other) {
     return new IntEvaluation(evalA - other.evalA, evalB - other.evalB);
   }
+
+  @Override
+  public String toString() {
+    return "A: " + evalA + ", B: " + evalB;
+  }
 }

@@ -1,16 +1,25 @@
 package org.bk.ass.sim;
 
-import org.bk.ass.info.BWAPI4JUnitInfo;
-import org.openbw.bwapi4j.BWMap;
-import org.openbw.bwapi4j.Player;
-import org.openbw.bwapi4j.type.*;
-import org.openbw.bwapi4j.unit.*;
+import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.function.BiConsumer;
-
-import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
+import org.bk.ass.info.BWAPI4JUnitInfo;
+import org.openbw.bwapi4j.BWMap;
+import org.openbw.bwapi4j.Player;
+import org.openbw.bwapi4j.type.ExplosionType;
+import org.openbw.bwapi4j.type.Race;
+import org.openbw.bwapi4j.type.TechType;
+import org.openbw.bwapi4j.type.UnitSizeType;
+import org.openbw.bwapi4j.type.UnitType;
+import org.openbw.bwapi4j.type.UpgradeType;
+import org.openbw.bwapi4j.type.WeaponType;
+import org.openbw.bwapi4j.unit.Burrowable;
+import org.openbw.bwapi4j.unit.Firebat;
+import org.openbw.bwapi4j.unit.Marine;
+import org.openbw.bwapi4j.unit.PlayerUnit;
+import org.openbw.bwapi4j.unit.SpellCaster;
 
 public class BWAPI4JAgentFactory {
 
@@ -157,6 +166,9 @@ public class BWAPI4JAgentFactory {
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
             .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+    if (!unitType.canAttack() && !unitType.canMove()) {
+      agent.setPassive(true);
+    }
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerDeathHandler);

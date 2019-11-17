@@ -1,11 +1,17 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.sqrt;
+import static org.bk.ass.sim.AgentUtil.applyDamage;
+import static org.bk.ass.sim.AgentUtil.dealDamage;
+import static org.bk.ass.sim.AgentUtil.distanceSquared;
+import static org.bk.ass.sim.AgentUtil.moveAwayFrom;
+import static org.bk.ass.sim.AgentUtil.moveToward;
+import static org.bk.ass.sim.RetreatBehavior.simFlee;
+
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
-
-import static java.lang.Math.*;
-import static org.bk.ass.sim.AgentUtil.*;
-import static org.bk.ass.sim.RetreatBehavior.simFlee;
 
 public class AttackerBehavior implements Behavior {
 
@@ -15,11 +21,6 @@ public class AttackerBehavior implements Behavior {
       Agent agent,
       UnorderedCollection<Agent> allies,
       UnorderedCollection<Agent> enemies) {
-    if (agent.stopFrameTimer > 0) {
-      agent.stopFrameTimer -= frameSkip;
-      return true;
-    }
-
     Agent selectedEnemy = null;
     Weapon selectedWeapon = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
@@ -101,7 +102,7 @@ public class AttackerBehavior implements Behavior {
   }
 
   public static void attack(Agent agent, Weapon weapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    agent.stopFrameTimer = agent.stopFrames;
+    agent.sleepFrames = agent.stopFrames;
     dealDamage(agent, weapon, selectedEnemy);
     switch (weapon.splashType) {
       case BOUNCE:

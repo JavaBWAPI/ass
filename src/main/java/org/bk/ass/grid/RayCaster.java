@@ -2,7 +2,7 @@ package org.bk.ass.grid;
 
 import static java.lang.Math.abs;
 
-import java.util.function.Predicate;
+import org.bk.ass.grid.SearchPredicate.Result;
 
 /**
  * Allows tracing rays through a grid.
@@ -11,7 +11,7 @@ import java.util.function.Predicate;
  */
 public class RayCaster<T> {
 
-  private static final Predicate ALWAYS_STOP = x -> true;
+  private static final SearchPredicate ACCEPT_FIRST = x -> SearchPredicate.Result.ACCEPT;
   private final Grid<T> grid;
 
   public RayCaster(Grid<T> grid) {
@@ -20,7 +20,7 @@ public class RayCaster<T> {
 
   /** Trace a line through the grid and return the first hit, or null if none. */
   public Hit<T> trace(int ax, int ay, int bx, int by) {
-    return trace(ax, ay, bx, by, ALWAYS_STOP);
+    return trace(ax, ay, bx, by, ACCEPT_FIRST);
   }
 
   /**
@@ -28,7 +28,7 @@ public class RayCaster<T> {
    * none is accepted or found, returns null.<br>
    * The predicate can be used to capture multiple hits.
    */
-  public Hit<T> trace(int ax, int ay, int bx, int by, Predicate<Hit<T>> stopPredicate) {
+  public Hit<T> trace(int ax, int ay, int bx, int by, SearchPredicate<Hit<T>> stopPredicate) {
     int deltaX = abs(bx - ax);
     int deltaY = -abs(by - ay);
     int x = ax;
@@ -36,17 +36,21 @@ public class RayCaster<T> {
     int err = 2 * (deltaX + deltaY);
     int sx = ax < bx ? 1 : -1;
     int sy = ay < by ? 1 : -1;
+    Hit<T> best = null;
 
     while (true) {
       T value = grid.get(x, y);
       if (value != null && !value.equals(Boolean.FALSE)) {
         Hit<T> hit = new Hit<>(x, y, value);
-        if (stopPredicate.test(hit)) {
-          return hit;
+        Result result = stopPredicate.accept(hit);
+        if (result == Result.STOP) return best;
+        if (result == Result.ACCEPT) return hit;
+        if (result == Result.ACCEPT_CONTINUE) {
+          best = hit;
         }
       }
       if (x == bx && y == by) {
-        return null;
+        return best;
       }
       int e2 = 2 * err;
       if (e2 >= deltaY) {

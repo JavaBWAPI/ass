@@ -1,17 +1,17 @@
 package org.bk.ass.sim;
 
+import static org.bk.ass.sim.AgentUtil.dealDamage;
+import static org.bk.ass.sim.AgentUtil.distanceSquared;
+import static org.bk.ass.sim.AgentUtil.moveToward;
+
 import org.bk.ass.collection.UnorderedCollection;
 import org.bk.ass.sim.Simulator.Behavior;
-
-import static org.bk.ass.sim.AgentUtil.*;
 
 public class SuiciderBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
           int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    // Don't check for lockdown - I believe there are no suiciders which can be locked down
-    if (agent.isStasised) return false;
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = enemies.size() - 1; i >= 0; i--) {

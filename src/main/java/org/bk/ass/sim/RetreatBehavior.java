@@ -1,11 +1,11 @@
 package org.bk.ass.sim;
 
-import org.bk.ass.collection.UnorderedCollection;
-import org.bk.ass.sim.Simulator.Behavior;
-
 import static java.lang.Math.sqrt;
 import static org.bk.ass.sim.AgentUtil.distanceSquared;
 import static org.bk.ass.sim.AgentUtil.moveAwayFrom;
+
+import org.bk.ass.collection.UnorderedCollection;
+import org.bk.ass.sim.Simulator.Behavior;
 
 public class RetreatBehavior implements Behavior {
 
@@ -16,7 +16,7 @@ public class RetreatBehavior implements Behavior {
   }
 
   static boolean simFlee(int frames, Agent agent, UnorderedCollection<Agent> enemies) {
-    if (agent.burrowed || agent.isStasised || agent.isLockeddown) return false;
+    if (agent.burrowed) return false;
     Agent selectedEnemy = null;
     int selectedDistanceSquared = Integer.MAX_VALUE;
     for (int i = enemies.size() - 1; i >= 0; i--) {

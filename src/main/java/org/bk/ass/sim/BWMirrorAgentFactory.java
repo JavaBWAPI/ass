@@ -1,14 +1,22 @@
 package org.bk.ass.sim;
 
-import bwapi.*;
-import org.bk.ass.info.BWMirrorUnitInfo;
+import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
 
+import bwapi.ExplosionType;
+import bwapi.Game;
+import bwapi.Player;
+import bwapi.Race;
+import bwapi.TechType;
+import bwapi.Unit;
+import bwapi.UnitSizeType;
+import bwapi.UnitType;
+import bwapi.UpgradeType;
+import bwapi.WeaponType;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
-
-import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
+import org.bk.ass.info.BWMirrorUnitInfo;
 
 /**
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for
@@ -161,6 +169,9 @@ public class BWMirrorAgentFactory {
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
             .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+    if (!unitType.canAttack() && !unitType.canMove()) {
+      agent.setPassive(true);
+    }
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerReplacer);

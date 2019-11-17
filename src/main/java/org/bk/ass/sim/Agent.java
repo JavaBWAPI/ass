@@ -52,11 +52,13 @@ public class Agent {
   int energyShifted;
   int maxEnergyShifted;
 
+  int attackCounter;
+
   int cooldown;
   boolean cooldownUpgrade;
 
-  // Number of frames a move would break the attack
-  int stopFrameTimer;
+  // Number of frames to sleep (ie. to prevent a move to break the attack)
+  int sleepFrames;
   int stopFrames;
   boolean canStim;
   int plagueDamagePerFrameShifted;
@@ -79,7 +81,7 @@ public class Agent {
   boolean detected;
 
   boolean isStasised;
-  boolean isLockeddown;
+  // Lockdown or no damage and no movement
 
   UnitSize size;
 
@@ -137,7 +139,7 @@ public class Agent {
     this.maxEnergyShifted = other.maxEnergyShifted;
     this.cooldown = other.cooldown;
     this.cooldownUpgrade = other.cooldownUpgrade;
-    this.stopFrameTimer = other.stopFrameTimer;
+    this.sleepFrames = other.sleepFrames;
     this.stopFrames = other.stopFrames;
     this.canStim = other.canStim;
     this.plagueDamagePerFrameShifted = other.plagueDamagePerFrameShifted;
@@ -154,12 +156,12 @@ public class Agent {
     this.burrowedAttacker = other.burrowedAttacker;
     this.detected = other.detected;
     this.isStasised = other.isStasised;
-    this.isLockeddown = other.isLockeddown;
     this.size = other.size;
     this.isMelee = other.isMelee;
     this.airWeapon = other.airWeapon;
     this.groundWeapon = other.groundWeapon;
     this.onDeathHandler = other.onDeathHandler;
+    this.attackCounter = other.attackCounter;
   }
 
   public Agent setUserObject(Object userObject) {
@@ -196,6 +198,15 @@ public class Agent {
     return this;
   }
 
+  /**
+   * Set the unit to sleep for some frames, it can still be attacked but is essentially "locked
+   * down" in that time.
+   */
+  public Agent setSleepTimer(int sleepTimer) {
+    this.sleepFrames = sleepTimer;
+    return this;
+  }
+
   public Agent setEnsnareTimer(int ensnareTimer) {
     this.ensnareTimer = ensnareTimer;
     return this;
@@ -206,22 +217,28 @@ public class Agent {
     return this;
   }
 
+  /**
+   * Marks this agent as being under lockdown. This is an alias for {@link #setPassive(boolean)}.
+   *
+   * @see #setPassive(boolean)
+   */
   public Agent setLockeddown(boolean lockeddown) {
-    isLockeddown = lockeddown;
+    sleepFrames = lockeddown ? Integer.MAX_VALUE : 0;
+    return this;
+  }
+
+  /**
+   * Makes this agent passive in a simulation. It will not damage other units or move. It can still
+   * be attacked and destroyed.
+   */
+  public Agent setPassive(boolean passive) {
+    sleepFrames = passive ? Integer.MAX_VALUE : 0;
     return this;
   }
 
   @Override
   public String toString() {
-    return name
-        + " ("
-        + x
-        + ", "
-        + y
-        + "), hp: "
-        + getHealth()
-        + ", sh: "
-        + getShields();
+    return name + " (" + x + ", " + y + "), hp: " + getHealth() + ", sh: " + getShields();
   }
 
   public Agent setDetected(boolean detected) {
@@ -398,6 +415,15 @@ public class Agent {
     return this;
   }
 
+  /** Returns the number of times this agent has started an attack in simulations. */
+  public int getAttackCounter() {
+    return attackCounter;
+  }
+
+  public void resetAttackCounter() {
+    attackCounter = 0;
+  }
+
   /**
    * Sets the agents target to attack. Might be overridden by behavior. Ie. if the target is out of
    * range in a simulation frame.
@@ -438,6 +464,9 @@ public class Agent {
 
   /** Has to be called *after* max health has been set */
   public Agent setHpConstructionRate(int buildTime) {
+    if (buildTime == 0) {
+      return this;
+    }
     this.hpConstructionRate =
         max(1, (maxHealthShifted - maxHealthShifted / 10 + buildTime - 1) / buildTime);
     return this;
