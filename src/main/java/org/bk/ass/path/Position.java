@@ -1,5 +1,7 @@
 package org.bk.ass.path;
 
+import bwapi.WalkPosition;
+
 public class Position {
   public final int x;
   public final int y;
@@ -7,6 +9,14 @@ public class Position {
   public Position(int x, int y) {
     this.x = x;
     this.y = y;
+  }
+
+  public static Position of(WalkPosition p) {
+    return new Position(p.x, p.y);
+  }
+
+  public static Position of(org.openbw.bwapi4j.WalkPosition p) {
+    return new Position(p.getX(), p.getY());
   }
 
   @Override

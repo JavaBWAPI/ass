@@ -23,7 +23,7 @@ abstract class AbstractPathFinder {
     if (maxLength <= 0) {
       throw new IllegalArgumentException("maxLength must be > 0");
     }
-    this.maxLength = maxLength;
+    this.maxLength = maxLength * 10f;
     this.target = Objects.requireNonNull(target);
     this.map = Objects.requireNonNull(map);
     nodes = new Node[map.getHeight() * map.getWidth()];
