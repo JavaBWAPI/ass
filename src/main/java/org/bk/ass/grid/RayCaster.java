@@ -11,7 +11,20 @@ import org.bk.ass.grid.SearchPredicate.Result;
  */
 public class RayCaster<T> {
 
-  private static final SearchPredicate ACCEPT_FIRST = x -> SearchPredicate.Result.ACCEPT;
+  private final SearchPredicate<Hit<T>> acceptLast =
+      x -> {
+        if (x == null || Boolean.FALSE.equals(x.value)) {
+          return Result.STOP;
+        }
+        return Result.ACCEPT_CONTINUE;
+      };
+
+  public final SearchPredicate<Hit<T>> findFirst = x -> {
+    if (x == null || Boolean.FALSE.equals(x.value)) {
+      return Result.CONTINUE;
+    }
+    return Result.ACCEPT;
+  };
   private final Grid<T> grid;
 
   public RayCaster(Grid<T> grid) {
@@ -20,7 +33,7 @@ public class RayCaster<T> {
 
   /** Trace a line through the grid and return the first hit, or null if none. */
   public Hit<T> trace(int ax, int ay, int bx, int by) {
-    return trace(ax, ay, bx, by, ACCEPT_FIRST);
+    return trace(ax, ay, bx, by, acceptLast);
   }
 
   /**
@@ -33,21 +46,23 @@ public class RayCaster<T> {
     int deltaY = -abs(by - ay);
     int x = ax;
     int y = ay;
-    int err = 2 * (deltaX + deltaY);
+    int err = deltaX + deltaY;
     int sx = ax < bx ? 1 : -1;
     int sy = ay < by ? 1 : -1;
     Hit<T> best = null;
 
     while (true) {
       T value = grid.get(x, y);
-      if (value != null && !value.equals(Boolean.FALSE)) {
-        Hit<T> hit = new Hit<>(x, y, value);
-        Result result = stopPredicate.accept(hit);
-        if (result == Result.STOP) return best;
-        if (result == Result.ACCEPT) return hit;
-        if (result == Result.ACCEPT_CONTINUE) {
-          best = hit;
-        }
+      Hit<T> hit = new Hit<>(x, y, value);
+      Result result = stopPredicate.accept(hit);
+      if (result == Result.STOP) {
+        return best;
+      }
+      if (result == Result.ACCEPT) {
+        return hit;
+      }
+      if (result == Result.ACCEPT_CONTINUE) {
+        best = hit;
       }
       if (x == bx && y == by) {
         return best;

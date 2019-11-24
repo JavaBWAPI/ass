@@ -70,4 +70,42 @@ public final class Grids {
       }
     };
   }
+
+  public static Grid<Boolean> fromWalkability(Game game) {
+    return new Grid<Boolean>() {
+      @Override
+      public int getWidth() {
+        return game.mapWidth() * 4;
+      }
+
+      @Override
+      public int getHeight() {
+        return game.mapHeight() * 4;
+      }
+
+      @Override
+      public Boolean get(int x, int y) {
+        return game.isWalkable(x, y);
+      }
+    };
+  }
+
+  public static Grid<Boolean> fromWalkability(BWMap map) {
+    return new Grid<Boolean>() {
+      @Override
+      public int getWidth() {
+        return map.mapWidth() * 4;
+      }
+
+      @Override
+      public int getHeight() {
+        return map.mapHeight() * 4;
+      }
+
+      @Override
+      public Boolean get(int x, int y) {
+        return map.isWalkable(x, y);
+      }
+    };
+  }
 }

@@ -41,10 +41,17 @@ class RayCasterTest {
       };
 
   private static final boolean[][] TR_TO_BL =
-      new boolean[][]{
-          {false, false, true},
-          {false, true, false},
-          {true, false, false},
+      new boolean[][] {
+        {false, false, true},
+        {false, true, false},
+        {true, false, false},
+      };
+
+  private static final boolean[][] TR_AND_BR =
+      new boolean[][] {
+        {false, false, false},
+        {false, false, false},
+        {true, false, true},
       };
 
   @Test
@@ -53,7 +60,7 @@ class RayCasterTest {
     RayCaster<Boolean> sut = new RayCaster<>(Grids.fromBooleanArray(BOTTOM_RIGHT));
 
     // WHEN
-    Hit hit = sut.trace(0, 0, 2, 2);
+    Hit hit = sut.trace(0, 0, 2, 2, sut.findFirst);
 
     // THEN
     assertThat(hit).extracting(h -> new Position(h.x, h.y)).isEqualTo(new Position(2, 2));
@@ -65,7 +72,7 @@ class RayCasterTest {
     RayCaster<Boolean> sut = new RayCaster<>(Grids.fromBooleanArray(TOP_LEFT));
 
     // WHEN
-    Hit hit = sut.trace(2, 2, 0, 0);
+    Hit hit = sut.trace(2, 2, 0, 0, sut.findFirst);
 
     // THEN
     assertThat(hit).extracting(h -> new Position(h.x, h.y)).isEqualTo(new Position(0, 0));
@@ -89,7 +96,7 @@ class RayCasterTest {
     RayCaster<Boolean> sut = new RayCaster<>(Grids.fromBooleanArray(MID_MID));
 
     // WHEN
-    Hit hit = sut.trace(0, 1, 2, 1);
+    Hit hit = sut.trace(0, 1, 2, 1, sut.findFirst);
 
     // THEN
     assertThat(hit).extracting(h -> new Position(h.x, h.y)).isEqualTo(new Position(1, 1));
@@ -109,8 +116,11 @@ class RayCasterTest {
             2,
             2,
             x -> {
-              capturedHits.add(x);
-              return Result.CONTINUE;
+              if (x.value) {
+                capturedHits.add(x);
+                return Result.CONTINUE;
+              }
+              return Result.STOP;
             });
 
     // THEN
@@ -198,5 +208,17 @@ class RayCasterTest {
 
     // THEN
     assertThat(hit).extracting(h -> new Position(h.x, h.y)).isEqualTo(new Position(1, 1));
+  }
+
+  @Test
+  void shouldOnlyReturnFirstHit() {
+    // GIVEN
+    RayCaster<Boolean> sut = new RayCaster<>(Grids.fromBooleanArray(TR_AND_BR));
+
+    // WHEN
+    Hit hit = sut.trace(2, 0, 2, 2);
+
+    // THEN
+    assertThat(hit).extracting(h -> new Position(h.x, h.y)).isEqualTo(new Position(2, 0));
   }
 }
