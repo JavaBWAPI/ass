@@ -1,7 +1,7 @@
 plugins {
     java
     id("maven")
-    id("me.champeau.gradle.jmh") version "0.5.0"
+    id("me.champeau.gradle.jmh") version "0.4.8"
     id("com.github.ben-manes.versions") version "0.27.0"
 }
 
@@ -24,7 +24,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("org.assertj:assertj-core:3.14.0")
-    testImplementation("io.jenetics:jenetics:5.0.1")
+    testImplementation("io.jenetics:jenetics:5.1.0")
 }
 
 configure<JavaPluginConvention> {
