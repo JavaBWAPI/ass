@@ -1,7 +1,7 @@
 plugins {
     java
     id("maven")
-    id("me.champeau.gradle.jmh") version "0.4.8"
+    id("me.champeau.gradle.jmh") version "0.5.0"
     id("com.github.ben-manes.versions") version "0.27.0"
 }
 
@@ -32,7 +32,7 @@ configure<JavaPluginConvention> {
 }
 
 configurations.testImplementation.get().extendsFrom(configurations.implementation.get())
-configurations.jmhCompile.get().extendsFrom(configurations.implementation.get())
+//configurations.jmhImplementation.get().extendsFrom(configurations.implementation.get())
 
 tasks {
     check {
@@ -51,4 +51,5 @@ tasks {
 
 jmh {
     resultFormat = "JSON"
+    duplicateClassesStrategy = org.gradle.api.file.DuplicatesStrategy.EXCLUDE
 }
