@@ -5,6 +5,7 @@ import static java.lang.Math.max;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.SplittableRandom;
 
 /**
  * Used to get a rough guess for combat outcome. Doesn't provide as much detail as the {@link
@@ -15,6 +16,7 @@ import java.util.List;
 public class Evaluator {
   private static final double EPS = 1E-10;
   private final Parameters parameters;
+  private SplittableRandom prng = new SplittableRandom();
 
   public Evaluator(Parameters parameters) {
     this.parameters = parameters;
@@ -26,7 +28,7 @@ public class Evaluator {
 
   /**
    * @return A result in the [0..1] range: 0 if agents of A are obliterated, 1 if agents of B are
-   *     obliterated.
+   *     obliterated. Exactly 0.5 means no damage will be done by either side.
    */
   public double evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
     List<Agent> finalAgentsA = new ArrayList<>();
@@ -65,8 +67,17 @@ public class Evaluator {
 
     // eval is a rough factor on how many units survived
     // Since we summed damages above we'll multiply by unit counts to even the odds
-    evalA *= finalAgentsA.size();
-    evalB *= finalAgentsB.size();
+    double skewA;
+    double skewB;
+    if (prng.nextBoolean()) {
+      skewA = prng.nextDouble(0.001, 0.002);
+      skewB = 0;
+    } else {
+      skewA = 0;
+      skewB = prng.nextDouble(0.001, 0.002);
+    }
+    evalA *= finalAgentsA.size() + skewA;
+    evalB *= finalAgentsB.size() + skewB;
     return (evalA + EPS) / (evalA + evalB + 2 * EPS);
   }
 
