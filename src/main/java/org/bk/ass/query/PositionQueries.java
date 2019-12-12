@@ -1,12 +1,17 @@
 package org.bk.ass.query;
 
-import org.bk.ass.path.Position;
+import static org.bk.ass.query.Distances.EUCLIDEAN_DISTANCE;
 
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static org.bk.ass.query.Distances.EUCLIDEAN_DISTANCE;
+import org.bk.ass.path.Position;
 
 /**
  * Collection with fast 2D lookups.
@@ -41,7 +46,7 @@ public class PositionQueries<U> extends AbstractCollection<U> {
    * returns any one of them.
    */
   public U nearest(int x, int y) {
-    return new NearestSearcher(x, y).search();
+    return new NearestSearcher(x, y, Integer.MAX_VALUE).search();
   }
 
   /**
@@ -50,7 +55,24 @@ public class PositionQueries<U> extends AbstractCollection<U> {
    * be called often, make sure it is fast!</em>
    */
   public U nearest(int x, int y, Predicate<U> criteria) {
-    return new NearestSearcher(x, y, criteria).search();
+    return new NearestSearcher(x, y, Integer.MAX_VALUE, criteria).search();
+  }
+
+  /**
+   * Returns the element nearest to the given position. If multiple elements have the same distance,
+   * returns any one of them.
+   */
+  public U nearest(int x, int y, int maxRadius) {
+    return new NearestSearcher(x, y, maxRadius).search();
+  }
+
+  /**
+   * Returns the nearest element to the given position, matching the given criteria. If multiple
+   * matching elements have the same distance, returns any one of them. <em>The given criteria might
+   * be called often, make sure it is fast!</em>
+   */
+  public U nearest(int x, int y, int maxRadius, Predicate<U> criteria) {
+    return new NearestSearcher(x, y, maxRadius, criteria).search();
   }
 
   /** Returns all elements in the given rectangular area, including those on the border. */
@@ -183,17 +205,18 @@ public class PositionQueries<U> extends AbstractCollection<U> {
   class NearestSearcher {
     private Predicate<U> criteria;
     private Object best;
-    private int bestDst = Integer.MAX_VALUE;
+    private int bestDst;
     private int x;
     private int y;
 
-    NearestSearcher(int x, int y) {
+    NearestSearcher(int x, int y, int maxRadius) {
       this.x = x;
       this.y = y;
+      this.bestDst = maxRadius;
     }
 
-    NearestSearcher(int x, int y, Predicate<U> criteria) {
-      this(x, y);
+    NearestSearcher(int x, int y, int maxRadius, Predicate<U> criteria) {
+      this(x, y, maxRadius);
       this.criteria = criteria;
     }
 
