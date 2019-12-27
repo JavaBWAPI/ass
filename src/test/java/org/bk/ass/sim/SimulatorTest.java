@@ -706,7 +706,8 @@ class SimulatorTest {
   void shouldNotAttackStasisedUnitsNorBeAttackedByThem() {
     // GIVEN
     simulator = new Builder().build();
-    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setStasisTimer(Integer.MAX_VALUE));
+    simulator.addAgentA(
+        factory.of(UnitType.Terran_Goliath).setX(500).setStasisTimer(Integer.MAX_VALUE));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
     // WHEN
@@ -721,7 +722,8 @@ class SimulatorTest {
   void shouldAttackLockeddownUnitsButDontBeAttackedByThem() {
     // GIVEN
     simulator = new Builder().build();
-    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setLockDownTimer(Integer.MAX_VALUE));
+    simulator.addAgentA(
+        factory.of(UnitType.Terran_Goliath).setX(500).setLockDownTimer(Integer.MAX_VALUE));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
     // WHEN
@@ -737,7 +739,11 @@ class SimulatorTest {
     // GIVEN
     simulator = new Builder().build();
     simulator.addAgentA(
-        factory.of(UnitType.Terran_Goliath).setX(500).setStasisTimer(Integer.MAX_VALUE).setHealth(97));
+        factory
+            .of(UnitType.Terran_Goliath)
+            .setX(500)
+            .setStasisTimer(Integer.MAX_VALUE)
+            .setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN
@@ -752,7 +758,11 @@ class SimulatorTest {
     // GIVEN
     simulator = new Builder().build();
     simulator.addAgentA(
-        factory.of(UnitType.Terran_Goliath).setX(500).setLockDownTimer(Integer.MAX_VALUE).setHealth(97));
+        factory
+            .of(UnitType.Terran_Goliath)
+            .setX(500)
+            .setLockDownTimer(Integer.MAX_VALUE)
+            .setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN
@@ -781,11 +791,31 @@ class SimulatorTest {
   @Test
   void InterceptorsShouldDieIfCarrierDies() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500).setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
     Agent carrier = factory.of(UnitType.Protoss_Carrier);
     carrier.setInterceptors(simulator.getAgentsA());
     simulator.addAgentA(carrier.setX(500));
@@ -1008,5 +1038,21 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).hasSizeLessThan(2);
     assertThat(simulator.getAgentsB()).hasSizeLessThan(4);
+  }
+
+  @Test
+  void shouldDieWhenRunningAwayWithSpeedPenalty() {
+    // GIVEN
+    simulator = new Builder().withPlayerABehavior(new RetreatBehavior()).build();
+    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(120).setY(100).setSpeedFactor(0.9f));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(100).setY(100));
+
+    // WHEN
+    int simulate = simulator.simulate(100);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isZero();
+    assertThat(simulator.getAgentsB()).size().isOne();
   }
 }

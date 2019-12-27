@@ -23,7 +23,7 @@ import org.bk.ass.info.BWMirrorUnitInfo;
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for
  * that, when using this factory!
  */
-public class BWMirrorAgentFactory {
+public class JBWAPIAgentFactory {
 
   private static final Set<UnitType> SUICIDERS =
       EnumSet.of(
@@ -48,11 +48,11 @@ public class BWMirrorAgentFactory {
 
   private final Game game;
 
-  public BWMirrorAgentFactory(Game game) {
+  public JBWAPIAgentFactory(Game game) {
     this.game = game;
   }
 
-  public BWMirrorAgentFactory() {
+  public JBWAPIAgentFactory() {
     this(null);
   }
 

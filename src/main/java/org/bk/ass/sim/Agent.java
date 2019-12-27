@@ -31,6 +31,7 @@ public class Agent {
   float baseSpeed;
   int speedSquared;
   float speed;
+  private float speedFactor = 1;
   private boolean scout;
 
   // Velocity (pixel per frame) for this frame to apply
@@ -200,7 +201,7 @@ public class Agent {
 
   /**
    * Set the unit to sleep for some frames, it can still be attacked but is essentially "locked
-   * down" in that time.
+   * down" in that time. <em>Note: This will override lockdown.</em>
    */
   public Agent setSleepTimer(int sleepTimer) {
     this.sleepTimer = sleepTimer;
@@ -231,7 +232,7 @@ public class Agent {
    * @see #setPassive(boolean)
    */
   public Agent setLockDownTimer(int lockDownTimer) {
-    sleepTimer = lockDownTimer;
+    sleepTimer = max(sleepTimer, lockDownTimer);
     return this;
   }
 
@@ -240,7 +241,7 @@ public class Agent {
    * be attacked and destroyed.
    */
   public Agent setPassive(boolean passive) {
-    sleepTimer = passive ? Integer.MAX_VALUE : 0;
+    sleepTimer = passive ? Integer.MAX_VALUE : sleepTimer;
     return this;
   }
 
@@ -299,6 +300,15 @@ public class Agent {
     return this;
   }
 
+  /**
+   * Multiply the calculated speed by this factor. A potential use is to slow down units running
+   * away a bit to compensate for obstacles.
+   */
+  public Agent setSpeedFactor(float speedFactor) {
+    this.speedFactor = speedFactor;
+    return this;
+  }
+
   public Agent setCooldownUpgrade(boolean cooldownUpgrade) {
     this.cooldownUpgrade = cooldownUpgrade;
     return this;
@@ -322,6 +332,7 @@ public class Agent {
         }
       }
     }
+    speed *= speedFactor;
     this.speedSquared = Math.round(speed * speed);
   }
 

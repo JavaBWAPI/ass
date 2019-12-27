@@ -3,7 +3,7 @@ package org.bk.ass;
 import bwapi.UnitType;
 import org.bk.ass.sim.AgentUtil;
 import org.bk.ass.sim.ApproxAttackBehavior;
-import org.bk.ass.sim.BWMirrorAgentFactory;
+import org.bk.ass.sim.JBWAPIAgentFactory;
 import org.bk.ass.sim.Simulator;
 import org.bk.ass.sim.Simulator.Builder;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -24,7 +24,7 @@ public class SimulatorBenchmark {
     Simulator simulator;
     Simulator simulatorFS4;
     Simulator approxSim;
-    BWMirrorAgentFactory factory = new BWMirrorAgentFactory(null);
+    JBWAPIAgentFactory factory = new JBWAPIAgentFactory(null);
 
     @Setup(Level.Invocation)
     public void setup() {

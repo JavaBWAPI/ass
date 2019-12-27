@@ -22,9 +22,10 @@ dependencies {
     implementation(fileTree("lib").include("*.jar"))
     implementation("com.github.JavaBWAPI:JBwapi:1.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
-    testImplementation("org.assertj:assertj-core:3.14.0")
-    testImplementation("io.jenetics:jenetics:5.1.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.+")
+    testImplementation("org.assertj:assertj-core:3.+")
+    testImplementation("io.jenetics:jenetics:5.+")
+    testImplementation("org.mockito:mockito-core:3.+")
 }
 
 configure<JavaPluginConvention> {
@@ -32,7 +33,6 @@ configure<JavaPluginConvention> {
 }
 
 configurations.testImplementation.get().extendsFrom(configurations.implementation.get())
-//configurations.jmhImplementation.get().extendsFrom(configurations.implementation.get())
 
 tasks {
     check {

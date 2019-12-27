@@ -4,8 +4,9 @@ import bwapi.UnitType;
 import java.util.ArrayList;
 import java.util.List;
 import org.bk.ass.sim.Agent;
-import org.bk.ass.sim.BWMirrorAgentFactory;
 import org.bk.ass.sim.Evaluator;
+import org.bk.ass.sim.Evaluator.EvaluationResult;
+import org.bk.ass.sim.JBWAPIAgentFactory;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -21,7 +22,7 @@ public class EvaluatorBenchmark {
   public static class MyState {
 
     Evaluator evaluator = new Evaluator();
-    BWMirrorAgentFactory factory = new BWMirrorAgentFactory(null);
+    JBWAPIAgentFactory factory = new JBWAPIAgentFactory(null);
     private List<Agent> agentsA = new ArrayList<>();
     private List<Agent> agentsB = new ArrayList<>();
 
@@ -37,7 +38,7 @@ public class EvaluatorBenchmark {
   }
 
   @Benchmark
-  public double _7MutasVs8Hydras(MyState state) {
+  public EvaluationResult _7MutasVs8Hydras(MyState state) {
     return state.evaluator.evaluate(state.agentsA, state.agentsB);
   }
 }

@@ -15,6 +15,7 @@ import java.util.SplittableRandom;
  */
 public class Evaluator {
   private static final double EPS = 1E-10;
+  public static final EvaluationResult EVAL_NO_COMBAT = new EvaluationResult(0.5);
   private final Parameters parameters;
   private SplittableRandom prng = new SplittableRandom();
 
@@ -30,7 +31,7 @@ public class Evaluator {
    * @return A result in the [0..1] range: 0 if agents of A are obliterated, 1 if agents of B are
    *     obliterated. Exactly 0.5 means no damage will be done by either side.
    */
-  public double evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
+  public EvaluationResult evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
     List<Agent> finalAgentsA = new ArrayList<>();
     agentsA.forEach(a -> a.onDeathHandler.accept(a, finalAgentsA));
     List<Agent> finalAgentsB = new ArrayList<>();
@@ -64,23 +65,43 @@ public class Evaluator {
             .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
             .sum()
             * damageToA;
+    if (evalA == 0 && evalB == 0) {
+      return EVAL_NO_COMBAT;
+    }
 
     // eval is a rough factor on how many units survived
     // Since we summed damages above we'll multiply by unit counts to even the odds
     double skewA;
     double skewB;
+    double skew = prng.nextDouble(0.00001, 0.00002);
     if (prng.nextBoolean()) {
-      skewA = prng.nextDouble(0.001, 0.002);
+      skewA = skew;
       skewB = 0;
     } else {
       skewA = 0;
-      skewB = prng.nextDouble(0.001, 0.002);
+      skewB = skew;
     }
     evalA *= finalAgentsA.size() + skewA;
     evalB *= finalAgentsB.size() + skewB;
-    return (evalA + EPS) / (evalA + evalB + 2 * EPS);
+    return new EvaluationResult((evalA + EPS) / (evalA + evalB + 2 * EPS));
   }
 
+//  EvalWithAgents optimizeEval(Collection<Agent> agentsA, Collection<Agent> agentsB) {
+//    double evalToBeat = evaluate(agentsA, agentsB);
+//    List<Agent> agentsToBeat = new ArrayList<>(agentsA);
+//    for (Agent a : agentsA) {
+//      agentsToBeat.remove(a);
+//      double eval = evaluate(agentsToBeat, agentsB);
+//      if (eval >= evalToBeat) {
+//        evalToBeat = eval;
+//      } else {
+//        agentsToBeat.add(a);
+//      }
+//    }
+//
+//    return new EvalWithAgents(evalToBeat, agentsToBeat);
+//  }
+//
   private int regeneration(Collection<Agent> agents) {
     // Subtract 1 to prevent counting selfheal
     int healables = (int) (agents.stream().filter(it -> it.isOrganic).count() - 1);
@@ -230,6 +251,25 @@ public class Evaluator {
       return damage;
     }
   }
+
+  public static class EvaluationResult {
+    public final double value;
+
+    public EvaluationResult(double value) {
+      this.value = value;
+    }
+  }
+
+//  static class EvalWithAgents {
+//
+//    public final double eval;
+//    public final List<Agent> agents;
+//
+//    public EvalWithAgents(double eval, List<Agent> agents) {
+//      this.eval = eval;
+//      this.agents = Collections.unmodifiableList(agents);
+//    }
+//  }
 
   public static class Parameters {
 
