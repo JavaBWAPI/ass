@@ -2,6 +2,7 @@ package org.bk.ass.manage;
 
 import static java.lang.Integer.max;
 
+import bwapi.Player;
 import bwapi.TechType;
 import bwapi.UnitType;
 import bwapi.UpgradeType;
@@ -17,6 +18,10 @@ public final class GMS {
     this.gas = gas;
     this.minerals = minerals;
     this.supply = supply;
+  }
+
+  public static GMS available(Player player) {
+    return new GMS(player.gas(), player.minerals(), player.supplyTotal() - player.supplyUsed());
   }
 
   public static GMS unitCost(UnitType unitType) {
@@ -35,11 +40,11 @@ public final class GMS {
     return new GMS(techType.gasPrice(), techType.mineralPrice(), 0);
   }
 
-  public static GMS researchCost(UpgradeType upgradeType, int level) {
+  public static GMS upgradeCost(UpgradeType upgradeType, int level) {
     return new GMS(upgradeType.gasPrice(level), upgradeType.mineralPrice(level), 0);
   }
 
-  public static GMS researchCost(org.openbw.bwapi4j.type.UpgradeType upgradeType, int level) {
+  public static GMS upgradeCost(org.openbw.bwapi4j.type.UpgradeType upgradeType, int level) {
     return new GMS(upgradeType.gasPrice(level), upgradeType.mineralPrice(level), 0);
   }
 

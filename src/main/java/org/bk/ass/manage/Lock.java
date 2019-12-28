@@ -9,25 +9,36 @@ import java.util.function.Supplier;
  * @param <T> the type of resource
  */
 public class Lock<T> {
+
+  static final int DEFAULT_HYSTERESIS = 48;
   private boolean satisfied;
   private boolean satisfiedLater;
-  private boolean changed;
-  private T item;
+  T item;
   private Predicate<T> criteria = unused -> true;
-  private final Reservation<T> reservation;
+  final Reservation<T> reservation;
   private final Supplier<T> selector;
-  private int futureFrame;
+  private int futureFrames;
+  private int hysteresisFrames = DEFAULT_HYSTERESIS;
 
   public Lock(Reservation<T> reservation, Supplier<T> selector) {
     this.reservation = reservation;
     this.selector = selector;
   }
 
-  public void setFutureFrame(int futureFrame) {
-    this.futureFrame = futureFrame;
+  public void setFutureFrames(int futureFrames) {
+    this.futureFrames = futureFrames;
+  }
+
+  public void setHysteresisFrames(int hysteresisFrames) {
+    this.hysteresisFrames = hysteresisFrames;
+  }
+
+  public void setCriteria(Predicate<T> criteria) {
+    this.criteria = criteria;
   }
 
   public T getItem() {
+    if (!satisfied) throw new IllegalStateException("Item is not locked!");
     return item;
   }
 
@@ -39,41 +50,39 @@ public class Lock<T> {
     return satisfiedLater;
   }
 
-  public boolean isChanged() {
-    return changed;
-  }
-
   public void reacquire() {
-    reset();
+    release();
     acquire();
   }
 
   public void release() {
     if (item != null) reservation.release(item);
-    item = null;
-    changed = true;
+    reset();
   }
 
   public void reset() {
     item = null;
-    changed = false;
     satisfied = false;
+    satisfiedLater = false;
   }
 
-  public void acquire() {
-    changed = false;
-    if (item != null && criteria.test(item) && reservation.tryReserve(item)) {
-      satisfied = true;
-      satisfiedLater = true;
-      return;
-    }
-    item = selector.get();
-    satisfied = item != null && criteria.test(item);
+  public boolean acquire() {
+    if (item == null || !criteria.test(item)) item = null;
+    if (item == null) item = selector.get();
+    return checkLockSatisfied();
+  }
+
+  boolean checkLockSatisfied() {
+    satisfied = item != null && criteria.test(item) && reservation.reserve(item);
     if (satisfied) {
-      changed = true;
       satisfiedLater = true;
-      boolean reserved = reservation.tryReserve(item);
-      if (!reserved) throw new IllegalStateException("Could not reserve item that was selected!");
-    } else satisfiedLater = reservation.canBeReservedLater(item, futureFrame);
+      return true;
+    } else {
+      satisfiedLater =
+          item != null
+              && reservation.itemAvailableInFuture(
+                  item, futureFrames + (satisfiedLater ? hysteresisFrames : 0));
+      return false;
+    }
   }
 }
