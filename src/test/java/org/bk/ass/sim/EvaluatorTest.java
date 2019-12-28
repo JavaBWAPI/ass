@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.bk.ass.sim.Evaluator.EvalWithAgents;
 import org.bk.ass.sim.Evaluator.EvaluationResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -407,69 +408,69 @@ class EvaluatorTest {
     EvaluationResult result = evaluator.evaluate(a, b);
 
     // THEN
-    assertThat(result.value).isEqualTo(0.5);
+    assertThat(result).isEqualTo(EVAL_NO_COMBAT);
   }
 
-  //  @Test
-  //  void optimizeAwayZergVsOverlord() {
-  //    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Zergling));
-  //    List<Agent> b = Collections.singletonList(factory.of(UnitType.Zerg_Overlord));
-  //
-  //    // WHEN
-  //    EvalWithAgents result = evaluator.optimizeEval(a, b);
-  //
-  //    // THEN
-  //    assertThat(result.value).extracting(it -> it.agents).asList().isEmpty();
-  //  }
-  //
-  //  @Test
-  //  void optimizeAwayLingsInMutaVsZealots() {
-  //    Agent mutalisk = factory.of(UnitType.Zerg_Mutalisk);
-  //    List<Agent> a = Arrays.asList(
-  //        factory.of(UnitType.Zerg_Zergling),
-  //        mutalisk);
-  //    List<Agent> b = Collections.singletonList(
-  //        factory.of(UnitType.Protoss_Zealot));
-  //
-  //    // WHEN
-  //    EvalWithAgents result = evaluator.optimizeEval(a, b);
-  //
-  //    // THEN
-  //    assertThat(result.value).extracting(it -> it.agents).asList().containsOnly(mutalisk);
-  //  }
-  //
-  //  @Test
-  //  void dontOptimizeAwayTwoLingsInMutaVsZealots() {
-  //    List<Agent> a = Arrays.asList(
-  //        factory.of(UnitType.Zerg_Zergling),
-  //        factory.of(UnitType.Zerg_Zergling),
-  //        factory.of(UnitType.Zerg_Mutalisk));
-  //    List<Agent> b = Collections.singletonList(
-  //        factory.of(UnitType.Protoss_Zealot));
-  //
-  //    // WHEN
-  //    EvalWithAgents result = evaluator.optimizeEval(a, b);
-  //
-  //    // THEN
-  //    assertThat(result.value).extracting(it -> it.agents).asList().containsAll(a);
-  //  }
-  //
-  //  @Test
-  //  void dontOptimizeAwayTwoLingsInMutaVsZealots2() {
-  //    Agent muta = factory.of(UnitType.Zerg_Mutalisk);
-  //    List<Agent> a = Arrays.asList(
-  //        factory.of(UnitType.Zerg_Zergling),
-  //        factory.of(UnitType.Zerg_Zergling),
-  //        muta);
-  //    List<Agent> b = Arrays.asList(
-  //        factory.of(UnitType.Protoss_Zealot),
-  //        factory.of(UnitType.Protoss_Zealot),
-  //        factory.of(UnitType.Protoss_Zealot));
-  //
-  //    // WHEN
-  //    EvalWithAgents result = evaluator.optimizeEval(a, b);
-  //
-  //    // THEN
-  //    assertThat(result.value).extracting(it -> it.agents).asList().containsOnly(muta);
-  //  }
+  @Test
+  void optimizeAwayZergVsOverlord() {
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Zergling));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Zerg_Overlord));
+
+    // WHEN
+    EvalWithAgents result = evaluator.optimizeEval(a, b);
+
+    // THEN
+    assertThat(result.agents).isEmpty();
+  }
+
+  @Test
+  void optimizeAwayLingsInMutaVsZealots() {
+    Agent mutalisk = factory.of(UnitType.Zerg_Mutalisk);
+    List<Agent> a = Arrays.asList(factory.of(UnitType.Zerg_Zergling), mutalisk);
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Protoss_Zealot));
+
+    // WHEN
+    EvalWithAgents result = evaluator.optimizeEval(a, b);
+
+    // THEN
+    assertThat(result.agents).asList().containsOnly(mutalisk);
+  }
+
+  @Test
+  void dontOptimizeAwayTwoLingsInMutaVsZealots() {
+    List<Agent> a =
+        Arrays.asList(
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Mutalisk));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Protoss_Zealot));
+
+    // WHEN
+    EvalWithAgents result = evaluator.optimizeEval(a, b);
+
+    // THEN
+    assertThat(result.agents).asList().containsAll(a);
+  }
+
+  @Test
+  void optimizeAwayLingsVsZealotsWithEnoughMutas() {
+    List<Agent> a =
+        Arrays.asList(
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk),
+            factory.of(UnitType.Zerg_Mutalisk));
+    List<Agent> b =
+        Arrays.asList(
+            factory.of(UnitType.Protoss_Zealot),
+            factory.of(UnitType.Protoss_Zealot),
+            factory.of(UnitType.Protoss_Zealot));
+
+    // WHEN
+    EvalWithAgents result = evaluator.optimizeEval(a, b);
+
+    // THEN
+    assertThat(result.agents).allMatch(it -> it.isFlyer);
+  }
 }

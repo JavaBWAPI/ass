@@ -4,6 +4,7 @@ import static java.lang.Math.max;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.SplittableRandom;
 
@@ -55,15 +56,15 @@ public class Evaluator {
     }
     double evalA =
         finalAgentsA.stream()
-            .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
-            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-            .sum()
+                .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
+                .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+                .sum()
             * damageToB;
     double evalB =
         finalAgentsB.stream()
-            .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
-            .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
-            .sum()
+                .filter(it -> it.groundWeapon.damageShifted > 0 || it.airWeapon.damageShifted > 0)
+                .mapToDouble(a -> a.getHealth() + a.getShields() * parameters.shieldScale)
+                .sum()
             * damageToA;
     if (evalA == 0 && evalB == 0) {
       return EVAL_NO_COMBAT;
@@ -86,22 +87,22 @@ public class Evaluator {
     return new EvaluationResult((evalA + EPS) / (evalA + evalB + 2 * EPS));
   }
 
-//  EvalWithAgents optimizeEval(Collection<Agent> agentsA, Collection<Agent> agentsB) {
-//    double evalToBeat = evaluate(agentsA, agentsB);
-//    List<Agent> agentsToBeat = new ArrayList<>(agentsA);
-//    for (Agent a : agentsA) {
-//      agentsToBeat.remove(a);
-//      double eval = evaluate(agentsToBeat, agentsB);
-//      if (eval >= evalToBeat) {
-//        evalToBeat = eval;
-//      } else {
-//        agentsToBeat.add(a);
-//      }
-//    }
-//
-//    return new EvalWithAgents(evalToBeat, agentsToBeat);
-//  }
-//
+  public EvalWithAgents optimizeEval(Collection<Agent> agentsA, Collection<Agent> agentsB) {
+    double evalToBeat = evaluate(agentsA, agentsB).value;
+    List<Agent> agentsToBeat = new ArrayList<>(agentsA);
+    for (Agent a : agentsA) {
+      agentsToBeat.remove(a);
+      double eval = evaluate(agentsToBeat, agentsB).value;
+      if (eval > evalToBeat) {
+        evalToBeat = eval;
+      } else {
+        agentsToBeat.add(a);
+      }
+    }
+
+    return new EvalWithAgents(evalToBeat, agentsToBeat);
+  }
+
   private int regeneration(Collection<Agent> agents) {
     // Subtract 1 to prevent counting selfheal
     int healables = (int) (agents.stream().filter(it -> it.isOrganic).count() - 1);
@@ -260,16 +261,16 @@ public class Evaluator {
     }
   }
 
-//  static class EvalWithAgents {
-//
-//    public final double eval;
-//    public final List<Agent> agents;
-//
-//    public EvalWithAgents(double eval, List<Agent> agents) {
-//      this.eval = eval;
-//      this.agents = Collections.unmodifiableList(agents);
-//    }
-//  }
+  public static class EvalWithAgents {
+
+    public final double eval;
+    public final List<Agent> agents;
+
+    public EvalWithAgents(double eval, List<Agent> agents) {
+      this.eval = eval;
+      this.agents = Collections.unmodifiableList(agents);
+    }
+  }
 
   public static class Parameters {
 
