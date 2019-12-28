@@ -88,19 +88,19 @@ public class Evaluator {
   }
 
   public EvalWithAgents optimizeEval(Collection<Agent> agentsA, Collection<Agent> agentsB) {
-    double evalToBeat = evaluate(agentsA, agentsB).value;
+    EvaluationResult evalToBeat = evaluate(agentsA, agentsB);
     List<Agent> agentsToBeat = new ArrayList<>(agentsA);
     for (Agent a : agentsA) {
       agentsToBeat.remove(a);
-      double eval = evaluate(agentsToBeat, agentsB).value;
-      if (eval > evalToBeat) {
+      EvaluationResult eval = evaluate(agentsToBeat, agentsB);
+      if (eval.value > evalToBeat.value || eval.value == evalToBeat.value && evalToBeat == EVAL_NO_COMBAT) {
         evalToBeat = eval;
       } else {
         agentsToBeat.add(a);
       }
     }
 
-    return new EvalWithAgents(evalToBeat, agentsToBeat);
+    return new EvalWithAgents(evalToBeat.value, agentsToBeat);
   }
 
   private int regeneration(Collection<Agent> agents) {
