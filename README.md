@@ -174,9 +174,17 @@ A utility class to make 2D-position based queries:
 ## Jump Path Search
 An implementation of the algorithm described here: https://zerowidth.com/2013/05/05/jump-point-search-explained.html
 
-Generally much faster that a normal A* while still being optimal.
+Generally much faster that a standard A* while still being optimal.
 
 ## Resource management classes
 * GMS class to manage gas, minerals and supply in one value type.
   * Can be used to manage existing resources vs cost of units, tech or upgrades
 
+## Unit and resource locking
+Helps in managing resources and units with specific tasks:
+* Locks on resources can be used to determine if something can be bought now or even if it can be afforded later
+* Locks on units helps for things like building: Find a worker and keep it until its job is done
+
+## Grids
+Used for pathing. In addition to JPS, it's also possible to "cast rays" in a grid. This is mostly used
+for direct reachability checks (ie. can unit A reach position B without obstacle).  
