@@ -1,7 +1,6 @@
 package org.bk.ass.manage;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,15 +76,14 @@ class LockTest {
           @Override
           public void release(Lock<String> lock, String item) {}
         };
-    Lock<String> sut = new Lock<>(reservation, () -> null);
-    sut.acquire();
+    Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
 
-    assertThatThrownBy(
-            () -> {
-              // WHEN
-              sut.getItem();
-            }) // THEN
-        .isInstanceOf(IllegalStateException.class);
+    // WHEN
+    boolean satisfied = sut.acquire();
+
+    // THEN
+    assertThat(satisfied).isFalse();
+    assertThat(sut.getItem()).isNotEmpty();
   }
 
   @Test

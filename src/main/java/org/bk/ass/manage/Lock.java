@@ -66,12 +66,10 @@ public class Lock<T> {
   }
 
   /**
-   * Returns the currently locked item.
+   * Returns the currently reserved item. To verify that it is locked, call {@link #isSatisfied()} before!
    *
-   * @throws IllegalStateException if the current item is not locked.
    */
   public T getItem() {
-    if (!satisfied) throw new IllegalStateException("Item is not locked!");
     return item;
   }
 
