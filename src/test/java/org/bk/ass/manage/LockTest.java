@@ -17,12 +17,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return true;
           }
 
           @Override
-          public void release(String item) {}
+          public void release(Lock<String> lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
 
@@ -43,12 +43,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return true;
           }
 
           @Override
-          public void release(String item) {
+          public void release(Lock<String> lock, String item) {
             released.set(true);
           }
         };
@@ -70,12 +70,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return false;
           }
 
           @Override
-          public void release(String item) {}
+          public void release(Lock<String> lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> null);
     sut.acquire();
@@ -94,12 +94,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return true;
           }
 
           @Override
-          public void release(String item) {}
+          public void release(Lock<String> lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
     sut.acquire();
@@ -119,13 +119,13 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             reserveCalls.incrementAndGet();
             return false;
           }
 
           @Override
-          public void release(String item) {}
+          public void release(Lock<String> lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
     sut.acquire();
@@ -144,17 +144,17 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return true;
           }
 
           @Override
-          public boolean itemAvailableInFuture(String item, int futureFrames) {
+          public boolean itemAvailableInFuture(Lock<String> lock, String item, int futureFrames) {
             return true;
           }
 
           @Override
-          public void release(String item) {}
+          public void release(Lock<String> lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> null);
 
@@ -168,48 +168,23 @@ class LockTest {
   }
 
   @Test
-  void shouldReleaseOnReacquire() {
+  void shouldNotReleaseOnReacquire() {
     // GIVEN
     AtomicBoolean released = new AtomicBoolean();
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return true;
           }
 
           @Override
-          public void release(String item) {
+          public void release(Lock<String> lock, String item) {
             released.set(true);
           }
         };
     Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
     sut.acquire();
-
-    // WHEN
-    sut.reacquire();
-
-    // THEN
-    assertThat(released).isTrue();
-  }
-
-  @Test
-  void shouldNotReleaseOnReacquireIfNotAcquiredBefore() {
-    // GIVEN
-    AtomicBoolean released = new AtomicBoolean();
-    Reservation<String> reservation =
-        new Reservation<String>() {
-          @Override
-          public boolean reserve(String item) {
-            return true;
-          }
-
-          @Override
-          public void release(String item) {
-            released.set(true);
-          }
-        };
-    Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
 
     // WHEN
     sut.reacquire();
@@ -225,18 +200,18 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(String item) {
+          public boolean reserve(Lock<String> lock, String item) {
             return false;
           }
 
           @Override
-          public boolean itemAvailableInFuture(String item, int futureFrames) {
+          public boolean itemAvailableInFuture(Lock<String> lock, String item, int futureFrames) {
             frames.set(futureFrames);
             return true;
           }
 
           @Override
-          public void release(String item) {}
+          public void release(Lock<String> lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
     sut.acquire();
@@ -254,12 +229,12 @@ class LockTest {
     Reservation<Integer> reservation =
         new Reservation<Integer>() {
           @Override
-          public boolean reserve(Integer item) {
+          public boolean reserve(Lock<Integer> lock, Integer item) {
             return false;
           }
 
           @Override
-          public void release(Integer item) {}
+          public void release(Lock<Integer> lock, Integer item) {}
         };
     Lock<Integer> sut = new Lock<>(reservation, value::incrementAndGet);
     sut.acquire();
@@ -277,12 +252,12 @@ class LockTest {
     Reservation<Integer> reservation =
         new Reservation<Integer>() {
           @Override
-          public boolean reserve(Integer item) {
+          public boolean reserve(Lock<Integer> lock, Integer item) {
             return true;
           }
 
           @Override
-          public void release(Integer item) {}
+          public void release(Lock<Integer> lock, Integer item) {}
         };
     Lock<Integer> sut = new Lock<>(reservation, value::incrementAndGet);
     sut.setCriteria(val -> val == 2);

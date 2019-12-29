@@ -12,19 +12,19 @@ public interface Reservation<T> {
    * reserved but is not yet available. (Ie. resources might be "blocked" for later use, but not yet
    * spendable.)
    */
-  boolean reserve(T item);
+  boolean reserve(Lock<T> lock, T item);
 
   /**
    * Returns true if the given item will be available in futureFrames frames. The given item will
    * already be reserved when this is called! If used for {@link GMS}, you should re-add the given
    * {@link GMS} before checking for sufficient resources.
    */
-  default boolean itemAvailableInFuture(T item, int futureFrames) {
+  default boolean itemAvailableInFuture(Lock<T> lock, T item, int futureFrames) {
     return false;
   }
 
   /**
    * Releases the given item.
    */
-  void release(T item);
+  void release(Lock<T> lock, T item);
 }

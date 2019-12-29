@@ -4,6 +4,10 @@ import bwapi.TechType;
 import bwapi.UnitType;
 import bwapi.UpgradeType;
 
+/**
+ * Utility class to create cost locks for units, tech and upgrades. A common reservation is shared,
+ * which allows for a simpler resource management.
+ */
 public class CostLocks {
 
   private final Reservation<GMS> reservation;

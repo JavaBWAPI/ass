@@ -17,12 +17,12 @@ class ListLockTest {
     Reservation<List<String>> reservation =
         new Reservation<List<String>>() {
           @Override
-          public boolean reserve(List<String> item) {
+          public boolean reserve(Lock<List<String>> lock, List<String> item) {
             return true;
           }
 
           @Override
-          public void release(List<String> item) {}
+          public void release(Lock<List<String>> lock, List<String> item) {}
         };
     ListLock<String> sut = new ListLock<>(reservation, () -> new ArrayList<>(Arrays.asList("a", "b")));
     sut.acquire();
@@ -40,12 +40,12 @@ class ListLockTest {
     Reservation<List<String>> reservation =
         new Reservation<List<String>>() {
           @Override
-          public boolean reserve(List<String> item) {
+          public boolean reserve(Lock<List<String>> lock, List<String> item) {
             return true;
           }
 
           @Override
-          public void release(List<String> item) {}
+          public void release(Lock<List<String>> lock, List<String> item) {}
         };
     ListLock<String> sut = new ListLock<>(reservation, Collections::emptyList);
     sut.acquire();
@@ -64,12 +64,12 @@ class ListLockTest {
     Reservation<List<String>> reservation =
         new Reservation<List<String>>() {
           @Override
-          public boolean reserve(List<String> item) {
+          public boolean reserve(Lock<List<String>> lock, List<String> item) {
             return true;
           }
 
           @Override
-          public void release(List<String> item) {}
+          public void release(Lock<List<String>> lock, List<String> item) {}
         };
     ListLock<String> sut = new ListLock<>(reservation, () -> new ArrayList<>(Arrays.asList("a", "b")));
     sut.setCriteria(x -> x.contains("a"));
