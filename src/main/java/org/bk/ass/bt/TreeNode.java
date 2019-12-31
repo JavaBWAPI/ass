@@ -1,13 +1,13 @@
 package org.bk.ass.bt;
 
 public abstract class TreeNode {
-  protected NodeStatus status;
+  NodeStatus status;
 
   public void init() {
+    status = NodeStatus.INITIAL;
   }
 
-  public void close() {
-  }
+  public void close() {}
 
   public abstract void exec();
 
@@ -33,5 +33,10 @@ public abstract class TreeNode {
 
   public void reset() {
     status = NodeStatus.INITIAL;
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "{" + "status=" + status + '}';
   }
 }

@@ -2,7 +2,7 @@ package org.bk.ass.bt;
 
 public class Sequence extends CompoundNode {
 
-  protected Sequence(TreeNode... children) {
+  public Sequence(TreeNode... children) {
     super(children);
   }
 

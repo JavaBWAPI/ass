@@ -11,7 +11,7 @@ class GMSTest {
     GMS sut = new GMS(-1, -1, -1);
 
     // WHEN
-    boolean greaterOrEqual = sut.greaterOrEqual(GMS.ZERO);
+    boolean greaterOrEqual = sut.canAfford(GMS.ZERO);
 
     // THEN
     assertThat(greaterOrEqual).isTrue();
@@ -23,7 +23,7 @@ class GMSTest {
     GMS sut = new GMS(1, 1, 1);
 
     // WHEN
-    boolean greaterOrEqual = sut.greaterOrEqual(new GMS(0, 2, 0));
+    boolean greaterOrEqual = sut.canAfford(new GMS(0, 2, 0));
 
     // THEN
     assertThat(greaterOrEqual).isFalse();
@@ -35,7 +35,7 @@ class GMSTest {
     GMS sut = new GMS(1, 1, 1);
 
     // WHEN
-    boolean greaterOrEqual = sut.greaterOrEqual(new GMS(2, 0, 0));
+    boolean greaterOrEqual = sut.canAfford(new GMS(2, 0, 0));
 
     // THEN
     assertThat(greaterOrEqual).isFalse();
@@ -47,7 +47,7 @@ class GMSTest {
     GMS sut = new GMS(1, 1, 1);
 
     // WHEN
-    boolean greaterOrEqual = sut.greaterOrEqual(new GMS(0, 0, 2));
+    boolean greaterOrEqual = sut.canAfford(new GMS(0, 0, 2));
 
     // THEN
     assertThat(greaterOrEqual).isFalse();

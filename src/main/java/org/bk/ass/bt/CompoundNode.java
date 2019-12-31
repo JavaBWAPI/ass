@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class CompoundNode extends TreeNode {
-  protected static final Comparator<TreeNode> UTILITY_COMPARATOR = Comparator.comparing(TreeNode::getUtility).reversed();
+  protected static final Comparator<TreeNode> UTILITY_COMPARATOR =
+      Comparator.comparing(TreeNode::getUtility).reversed();
   protected final List<TreeNode> children;
 
   protected CompoundNode(TreeNode... children) {
@@ -27,14 +28,17 @@ public abstract class CompoundNode extends TreeNode {
 
   @Override
   public double getUtility() {
-    return children.stream()
-        .mapToDouble(TreeNode::getUtility).max()
-        .orElseGet(super::getUtility);
+    return children.stream().mapToDouble(TreeNode::getUtility).max().orElseGet(super::getUtility);
   }
 
   @Override
   public void reset() {
     super.reset();
     children.forEach(TreeNode::reset);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "{" + "children=" + children + ", status=" + status + '}';
   }
 }

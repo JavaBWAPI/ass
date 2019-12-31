@@ -6,10 +6,10 @@ public class Parallel extends CompoundNode {
 
   public enum Policy {
     SEQUENCE,
-    SELECTOR;
+    SELECTOR
   }
 
-  protected Parallel(Policy policy, TreeNode... children) {
+  public Parallel(Policy policy, TreeNode... children) {
     super(children);
     this.policy = policy;
   }

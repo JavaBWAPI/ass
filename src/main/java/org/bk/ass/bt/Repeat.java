@@ -20,6 +20,14 @@ public class Repeat extends Decorator {
     this.policy = policy;
   }
 
+  public Repeat(TreeNode delegate) {
+    this(Policy.SEQUENCE, delegate);
+  }
+
+  public Repeat(int limit, TreeNode delegate) {
+    this(Policy.SEQUENCE, limit, delegate);
+  }
+
   public Repeat(Policy policy, int limit, TreeNode delegate) {
     super(delegate);
     Objects.requireNonNull(policy, "policy must be set");

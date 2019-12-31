@@ -65,7 +65,7 @@ public final class GMS {
    * If planning ahead is used, components could already be negative. But if the cost (ie. supply)
    * is 0, it might still be possible to purchase it immediately.
    */
-  public boolean greaterOrEqual(GMS gms) {
+  public boolean canAfford(GMS gms) {
     return max(0, gas) >= gms.gas
         && max(0, minerals) >= gms.minerals
         && max(0, supply) >= gms.supply;

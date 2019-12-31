@@ -5,4 +5,12 @@ public enum NodeStatus {
   RUNNING,
   SUCCESS,
   FAILURE;
+
+  public TreeNode after(Runnable block) {
+    return new LambdaNode(
+        () -> {
+          block.run();
+          return NodeStatus.this;
+        });
+  }
 }
