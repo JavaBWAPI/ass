@@ -93,7 +93,8 @@ public class Evaluator {
     for (Agent a : agentsA) {
       agentsToBeat.remove(a);
       EvaluationResult eval = evaluate(agentsToBeat, agentsB);
-      if (eval.value > evalToBeat.value || eval.value == evalToBeat.value && evalToBeat == EVAL_NO_COMBAT) {
+      if (eval.value > evalToBeat.value
+          || eval.value == evalToBeat.value && evalToBeat == EVAL_NO_COMBAT) {
         evalToBeat = eval;
       } else {
         agentsToBeat.add(a);
@@ -295,13 +296,13 @@ public class Evaluator {
     public Parameters() {
       this(
           new double[] {
-            2.0608350462547205,
-            8.19938619214691,
-            0.19223277374228906,
-            7.706789576045348,
-            6.154650149331842,
-            5.884458141154542,
-            0.8991451082849068
+            3.6326962940790546,
+            6.831398819548727,
+            0.22335278133755543,
+            2.9421377239626465,
+            8.546407556172563,
+            9.522322351571518,
+            3.0851183828490942
           });
     }
   }

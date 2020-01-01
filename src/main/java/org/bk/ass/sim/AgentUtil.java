@@ -116,8 +116,8 @@ public class AgentUtil {
   public static void randomizePositions(Collection<Agent> agents, int ax, int ay, int bx, int by) {
     SplittableRandom posRnd = new SplittableRandom(1337L);
     for (Agent agent : agents) {
-      agent.x = posRnd.nextInt(ax, bx - ax + 1);
-      agent.y = posRnd.nextInt(ay, by - ay + 1);
+      agent.x = posRnd.nextInt(ax, bx + 1);
+      agent.y = posRnd.nextInt(ay, by + 1);
     }
   }
 }

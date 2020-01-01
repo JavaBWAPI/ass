@@ -473,4 +473,40 @@ class EvaluatorTest {
     // THEN
     assertThat(result.agents).allMatch(it -> it.isFlyer);
   }
+
+  @Test
+  void _5firebatsVs9ZZealotsAreDead() {
+    // GIVEN
+    List<Agent> a =
+        IntRange.of(0, 5).stream()
+            .mapToObj(unused -> factory.of(UnitType.Terran_Firebat))
+            .collect(Collectors.toList());
+    List<Agent> b =
+            IntRange.of(0, 9).stream().mapToObj(unused -> factory.of(UnitType.Protoss_Zealot))
+            .collect(Collectors.toList());
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result.value).isLessThan(0.2);
+  }
+
+  @Test
+  void _9firebatsVs9ZZealotsAreEvenlyMatched() {
+    // GIVEN
+    List<Agent> a =
+        IntRange.of(0, 9).stream()
+            .mapToObj(unused -> factory.of(UnitType.Terran_Firebat))
+            .collect(Collectors.toList());
+    List<Agent> b =
+            IntRange.of(0, 9).stream().mapToObj(unused -> factory.of(UnitType.Protoss_Zealot))
+            .collect(Collectors.toList());
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result.value).isBetween(0.4, 0.6);
+  }
 }
