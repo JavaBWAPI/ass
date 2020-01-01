@@ -17,10 +17,15 @@ public abstract class BehaviorTree extends TreeNode {
   }
 
   @Override
-  public final void exec() {
+  public void exec(ExecutionContext executionContext) {
     checkInitWasCalled();
-    root.exec();
+    root.exec(executionContext);
     status = root.getStatus();
+  }
+
+  @Override
+  public final void exec() {
+    exec(ExecutionContext.NOOP);
   }
 
   private TreeNode checkInitWasCalled() {
