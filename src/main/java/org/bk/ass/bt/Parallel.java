@@ -1,5 +1,7 @@
 package org.bk.ass.bt;
 
+import org.bk.ass.StopWatch;
+
 public class Parallel extends CompoundNode {
 
   private Policy policy;
@@ -15,24 +17,26 @@ public class Parallel extends CompoundNode {
   }
 
   @Override
-  public void exec() {
+  public void exec(ExecutionContext context) {
     if (policy == Policy.SELECTOR) {
       children.sort(UTILITY_COMPARATOR);
       status = NodeStatus.FAILURE;
-      execChildren(NodeStatus.SUCCESS);
+      execChildren(context, NodeStatus.SUCCESS);
     } else if (policy == Policy.SEQUENCE) {
       status = NodeStatus.SUCCESS;
-      execChildren(NodeStatus.FAILURE);
+      execChildren(context, NodeStatus.FAILURE);
     }
   }
 
-  private void execChildren(NodeStatus statusToStop) {
+  private void execChildren(ExecutionContext context, NodeStatus statusToStop) {
+    StopWatch stopWatch = new StopWatch();
     for (TreeNode child : children) {
-      child.exec();
+      execChild(child, context);
       if (child.getStatus() == statusToStop) {
         status = child.getStatus();
         break;
       } else if (child.getStatus() == NodeStatus.RUNNING) status = NodeStatus.RUNNING;
     }
+    stopWatch.registerWith(context, this);
   }
 }

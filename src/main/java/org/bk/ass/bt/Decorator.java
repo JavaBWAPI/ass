@@ -21,9 +21,16 @@ public abstract class Decorator extends TreeNode {
   }
 
   @Override
-  public void exec() {
-    delegate.exec();
+  public void exec(ExecutionContext executionContext) {
+    executionContext.push(delegate);
+    delegate.exec(executionContext);
+    executionContext.pop();
     updateStatusFromDelegate(delegate.getStatus());
+  }
+
+  @Override
+  public void exec() {
+    exec(ExecutionContext.NOOP);
   }
 
   protected void updateStatusFromDelegate(NodeStatus status) {
@@ -39,5 +46,10 @@ public abstract class Decorator extends TreeNode {
   public void reset() {
     super.reset();
     delegate.reset();
+  }
+
+  @Override
+  public String toString() {
+    return name + "{" + "delegate=" + delegate + ", status=" + status + '}';
   }
 }

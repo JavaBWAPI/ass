@@ -14,6 +14,19 @@ public abstract class CompoundNode extends TreeNode {
     this.children = new ArrayList<>(Arrays.asList(children));
   }
 
+  public abstract void exec(ExecutionContext context);
+
+  @Override
+  public void exec() {
+    exec(ExecutionContext.NOOP);
+  }
+
+  protected void execChild(TreeNode child, ExecutionContext context) {
+    context.push(child);
+    child.exec(context);
+    context.pop();
+  }
+
   @Override
   public void init() {
     super.init();
@@ -39,6 +52,6 @@ public abstract class CompoundNode extends TreeNode {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "{" + "children=" + children + ", status=" + status + '}';
+    return name + "{" + "children=" + children + ", status=" + status + '}';
   }
 }

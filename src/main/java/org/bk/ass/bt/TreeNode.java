@@ -1,6 +1,7 @@
 package org.bk.ass.bt;
 
 public abstract class TreeNode {
+  String name = getClass().getSimpleName();
   NodeStatus status;
 
   public void init() {
@@ -8,6 +9,10 @@ public abstract class TreeNode {
   }
 
   public void close() {}
+
+  public void exec(ExecutionContext executionContext) {
+    exec();
+  }
 
   public abstract void exec();
 
@@ -35,8 +40,17 @@ public abstract class TreeNode {
     status = NodeStatus.INITIAL;
   }
 
+  public TreeNode withName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  public String getName() {
+    return name;
+  }
+
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "{" + "status=" + status + '}';
+    return name + "{" + "status=" + status + '}';
   }
 }

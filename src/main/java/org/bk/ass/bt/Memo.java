@@ -7,8 +7,8 @@ public class Memo extends Decorator {
   }
 
   @Override
-  public void exec() {
+  public void exec(ExecutionContext context) {
     if (status == NodeStatus.SUCCESS || status == NodeStatus.FAILURE) return;
-    super.exec();
+    super.exec(context);
   }
 }
