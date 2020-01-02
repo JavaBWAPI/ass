@@ -28,8 +28,8 @@ public abstract class BehaviorTree extends TreeNode {
     exec(ExecutionContext.NOOP);
   }
 
-  private TreeNode checkInitWasCalled() {
-    return requireNonNull(root, "init() must be called before using the behavior tree");
+  private void checkInitWasCalled() {
+    requireNonNull(root, "init() must be called before using the behavior tree");
   }
 
   @Override

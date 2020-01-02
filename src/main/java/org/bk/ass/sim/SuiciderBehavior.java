@@ -11,16 +11,21 @@ public class SuiciderBehavior implements Behavior {
 
   @Override
   public boolean simUnit(
-          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+      int frameSkip,
+      Agent agent,
+      UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
     Agent selectedEnemy = null;
-    int selectedDistanceSquared = Integer.MAX_VALUE;
+    int selectedDistanceSquared =
+        agent.groundSeekRangeSquared > 0 ? agent.groundSeekRangeSquared + 1 : Integer.MAX_VALUE;
     for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       Weapon wpn = agent.weaponVs(enemy);
       if (enemy.healthShifted >= 1 && wpn.damageShifted != 0 && enemy.detected) {
-        int distance = distanceSquared(agent, enemy);
-        if (distance < selectedDistanceSquared) {
-          selectedDistanceSquared = distance;
+        int distanceSq = distanceSquared(agent, enemy);
+        if (distanceSq < selectedDistanceSquared
+            && (agent.groundSeekRangeSquared == 0 || enemy.seekableTarget)) {
+          selectedDistanceSquared = distanceSq;
           selectedEnemy = enemy;
 
           // If we can hit it this frame, we're done searching

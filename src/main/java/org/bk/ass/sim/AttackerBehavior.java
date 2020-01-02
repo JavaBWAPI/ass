@@ -101,7 +101,12 @@ public class AttackerBehavior implements Behavior {
     attack(agent, selectedWeapon, selectedEnemy, allies, enemies);
   }
 
-  public static void attack(Agent agent, Weapon weapon, Agent selectedEnemy, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
+  public static void attack(
+      Agent agent,
+      Weapon weapon,
+      Agent selectedEnemy,
+      UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
     agent.sleepTimer = agent.stopFrames;
     dealDamage(agent, weapon, selectedEnemy);
     switch (weapon.splashType) {
@@ -133,14 +138,12 @@ public class AttackerBehavior implements Behavior {
     }
   }
 
-  /**
-   * Deal splash damage to enemies and allies
-   */
+  /** Deal splash damage to enemies and allies */
   public static void dealRadialSplashDamage(
-          Weapon weapon,
-          Agent mainTarget,
-          UnorderedCollection<Agent> allies,
-          UnorderedCollection<Agent> enemies) {
+      Weapon weapon,
+      Agent mainTarget,
+      UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
     for (int i = allies.size() - 1; i >= 0; i--) {
       Agent ally = allies.get(i);
       applySplashDamage(weapon, mainTarget, ally);
@@ -168,11 +171,9 @@ public class AttackerBehavior implements Behavior {
     }
   }
 
-  /**
-   * Deal splash damage to enemies only
-   */
+  /** Deal splash damage to enemies only */
   public static void dealRadialSplashDamage(
-          Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
+      Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
     for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       applySplashDamage(weapon, mainTarget, enemy);
@@ -180,7 +181,7 @@ public class AttackerBehavior implements Behavior {
   }
 
   public static void dealLineSplashDamage(
-          Agent source, Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
+      Agent source, Weapon weapon, Agent mainTarget, UnorderedCollection<Agent> enemies) {
     int dx = mainTarget.x - source.x;
     int dy = mainTarget.y - source.y;
     // Same spot, chose "random" direction
@@ -189,9 +190,9 @@ public class AttackerBehavior implements Behavior {
     }
     int dxDistSq = dx * dx + dy * dy;
     int rangeWithSplashSquared =
-            weapon.maxRangeSquared
-                    + 2 * weapon.maxRange * weapon.innerSplashRadius
-                    + weapon.innerSplashRadiusSquared;
+        weapon.maxRangeSquared
+            + 2 * weapon.maxRange * weapon.innerSplashRadius
+            + weapon.innerSplashRadiusSquared;
     for (int i = enemies.size() - 1; i >= 0; i--) {
       Agent enemy = enemies.get(i);
       if (enemy == mainTarget || enemy.isFlyer != mainTarget.isFlyer) {
@@ -213,15 +214,15 @@ public class AttackerBehavior implements Behavior {
   }
 
   public static void dealBounceDamage(
-          Weapon weapon, Agent lastTarget, UnorderedCollection<Agent> enemies) {
+      Weapon weapon, Agent lastTarget, UnorderedCollection<Agent> enemies) {
     int remainingBounces = 2;
     int damage = weapon.damageShifted / 3;
     for (int i = enemies.size() - 1; i >= 0 && remainingBounces > 0; i--) {
       Agent enemy = enemies.get(i);
       if (enemy != lastTarget
-              && enemy.healthShifted > 0
-              && abs(enemy.x - lastTarget.x) <= 96
-              && abs(enemy.y - lastTarget.y) <= 96) {
+          && enemy.healthShifted > 0
+          && abs(enemy.x - lastTarget.x) <= 96
+          && abs(enemy.y - lastTarget.y) <= 96) {
         lastTarget = enemy;
         applyDamage(enemy, weapon.damageType, damage, weapon.hits);
         damage /= 3;
@@ -229,7 +230,6 @@ public class AttackerBehavior implements Behavior {
       }
     }
   }
-
 
   private void simCombatMove(
       int frameSkip,

@@ -169,7 +169,11 @@ public class JBWAPIAgentFactory {
             .setHpConstructionRate(unitType.buildTime())
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
-            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32)
+            .setGroundSeekRange(
+                unitType == UnitType.Terran_Vulture_Spider_Mine ? unitType.seekRange() : 0)
+            .setSeekableTarget(
+                !unitType.isWorker() && !unitType.isBuilding() && !unitType.isFlyer());
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerReplacer);
@@ -215,29 +219,30 @@ public class JBWAPIAgentFactory {
       energy = unit.getEnergy();
     }
 
-    Agent agent = fromUnitType(
-        unit.getType(),
-        groundWeaponUpgrades,
-        airWeaponUpgrades,
-        groundWeaponRangeUpgrade,
-        airWeaponRangeUpgrade,
-        speedUpgrade,
-        energyUpgrade,
-        cooldownUpgrade)
-        .setHealth(unit.getHitPoints())
-        .setShields(unit.getShields())
-        .setEnergy(energy)
-        .setX(unit.getX())
-        .setY(unit.getY())
-        // Should be "adjusted" for own cloaked units
-        .setDetected(unit.isDetected())
-        // By default set unit as user object
-        .setUserObject(unit)
-        .setBurrowed(unit.isBurrowed())
-        .setStasisTimer(unit.getStasisTimer())
-        .setLockDownTimer(unit.getLockdownTimer())
-        .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0)
-        .setEnsnareTimer(unit.getEnsnareTimer());
+    Agent agent =
+        fromUnitType(
+                unit.getType(),
+                groundWeaponUpgrades,
+                airWeaponUpgrades,
+                groundWeaponRangeUpgrade,
+                airWeaponRangeUpgrade,
+                speedUpgrade,
+                energyUpgrade,
+                cooldownUpgrade)
+            .setHealth(unit.getHitPoints())
+            .setShields(unit.getShields())
+            .setEnergy(energy)
+            .setX(unit.getX())
+            .setY(unit.getY())
+            // Should be "adjusted" for own cloaked units
+            .setDetected(unit.isDetected())
+            // By default set unit as user object
+            .setUserObject(unit)
+            .setBurrowed(unit.isBurrowed())
+            .setStasisTimer(unit.getStasisTimer())
+            .setLockDownTimer(unit.getLockdownTimer())
+            .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0)
+            .setEnsnareTimer(unit.getEnsnareTimer());
     agent.setSleepTimer(max(agent.getSleepTimer(), unit.getRemainingBuildTime()));
     if (!unit.isPowered()) {
       agent.setPassive(true);

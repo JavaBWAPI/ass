@@ -165,7 +165,9 @@ public class BWAPI4JAgentFactory {
             .setHpConstructionRate(unitType.buildTime())
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
-            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32)
+            .setGroundSeekRange(unitType == UnitType.Terran_Vulture_Spider_Mine ? unitType.seekRange() : 0)
+            .setSeekableTarget(!unitType.isWorker() && !unitType.isBuilding() && !unitType.isFlyer());
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerDeathHandler);

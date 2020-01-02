@@ -1044,15 +1044,77 @@ class SimulatorTest {
   void shouldDieWhenRunningAwayWithSpeedPenalty() {
     // GIVEN
     simulator = new Builder().withPlayerABehavior(new RetreatBehavior()).build();
-    simulator.addAgentA(factory.of(UnitType.Zerg_Zergling).setX(120).setY(100).setSpeedFactor(0.9f));
+    simulator.addAgentA(
+        factory.of(UnitType.Zerg_Zergling).setX(120).setY(100).setSpeedFactor(0.9f));
 
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(100).setY(100));
 
     // WHEN
-    int simulate = simulator.simulate(100);
+    simulator.simulate(100);
 
     // THEN
     assertThat(simulator.getAgentsA()).size().isZero();
     assertThat(simulator.getAgentsB()).size().isOne();
+  }
+
+  @Test
+  void spiderMineShouldNotAttackBuilding() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony));
+
+    // WHEN
+    simulator.simulate(200);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(1);
+    assertThat(simulator.getAgentsB()).hasSize(1);
+  }
+
+  @Test
+  void spiderMineShouldAttackWithinSeekRange() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void spiderMineShouldNotAttackOutsideOfSeekRange() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(128));
+
+    // WHEN
+    simulator.simulate(200);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .first()
+        .extracting(it -> it.x, it -> it.y)
+        .containsExactly(0, 0);
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void spiderMineShouldNotAttackWorker() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Drone));
+    simulator.addAgentB(factory.of(UnitType.Terran_SCV));
+    simulator.addAgentB(factory.of(UnitType.Protoss_Probe));
+
+    // WHEN
+    simulator.simulate(200);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(1);
+    assertThat(simulator.getAgentsB()).hasSize(3);
   }
 }

@@ -89,6 +89,8 @@ public class Agent {
   boolean isMelee;
   Weapon airWeapon;
   Weapon groundWeapon;
+  boolean seekableTarget;
+  int groundSeekRangeSquared = 0;
 
   Agent attackTarget;
   // Target for healing/repairing
@@ -506,6 +508,16 @@ public class Agent {
 
   public Agent setScout(boolean scout) {
     this.scout = scout;
+    return this;
+  }
+
+  public Agent setGroundSeekRange(int range) {
+    this.groundSeekRangeSquared = range * range;
+    return this;
+  }
+
+  public Agent setSeekableTarget(boolean seekableTarget) {
+    this.seekableTarget = seekableTarget;
     return this;
   }
 
