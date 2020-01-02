@@ -16,7 +16,13 @@ import java.util.SplittableRandom;
  */
 public class Evaluator {
   private static final double EPS = 1E-10;
-  public static final EvaluationResult EVAL_NO_COMBAT = new EvaluationResult(0.5);
+  public static final EvaluationResult EVAL_NO_COMBAT =
+      new EvaluationResult(0.5) {
+        @Override
+        public String toString() {
+          return "EvaluationResult{NO COMBAT}";
+        }
+      };
   private final Parameters parameters;
   private SplittableRandom prng = new SplittableRandom();
 
@@ -133,6 +139,8 @@ public class Evaluator {
     private int groundConcussiveHits;
     private int groundExplosiveHits;
     private int groundNormalHits;
+    private int groundSeekingExplosiveHits;
+    private int groundSeekingExplosiveDamage;
 
     DamageBoard(Collection<Agent> attackers) {
       for (Agent agent : attackers) {
@@ -148,8 +156,13 @@ public class Evaluator {
         groundConcussiveHits += weapon.hits;
         groundConcussiveDamage += (int) damageToApply;
       } else if (weapon.damageType == DamageType.EXPLOSIVE) {
-        groundExplosiveHits += weapon.hits;
-        groundExplosiveDamage += (int) damageToApply;
+        if (agent.groundSeekRangeSquared == 0) {
+          groundExplosiveHits += weapon.hits;
+          groundExplosiveDamage += damageToApply;
+        } else {
+          groundSeekingExplosiveHits += weapon.hits;
+          groundSeekingExplosiveDamage += damageToApply;
+        }
       } else {
         groundNormalHits += weapon.hits;
         groundDamageNormal += (int) damageToApply;
@@ -160,10 +173,10 @@ public class Evaluator {
       Weapon weapon = agent.airWeapon;
       double damageToApply = calculateDamage(agent, weapon);
       if (weapon.damageType == DamageType.CONCUSSIVE) {
-        airConcussiveDamage += (int) damageToApply;
+        airConcussiveDamage += damageToApply;
         airConcussiveHits += weapon.hits;
       } else if (weapon.damageType == DamageType.EXPLOSIVE) {
-        airExplosiveDamage += (int) damageToApply;
+        airExplosiveDamage += damageToApply;
         airExplosiveHits += weapon.hits;
       } else {
         airDamageNormal += (int) damageToApply;
@@ -222,6 +235,11 @@ public class Evaluator {
                   groundExplosiveHits,
                   groundDamageNormal,
                   groundNormalHits);
+          if (target.seekableTarget) {
+            damageSum +=
+                damageTakenBy(
+                    target, 0, 0, groundSeekingExplosiveDamage, groundSeekingExplosiveHits, 0, 0);
+          }
         }
       }
       return damageSum;
@@ -259,6 +277,11 @@ public class Evaluator {
 
     public EvaluationResult(double value) {
       this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return "EvaluationResult{" + "value=" + value + '}';
     }
   }
 

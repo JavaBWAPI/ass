@@ -482,7 +482,8 @@ class EvaluatorTest {
             .mapToObj(unused -> factory.of(UnitType.Terran_Firebat))
             .collect(Collectors.toList());
     List<Agent> b =
-            IntRange.of(0, 9).stream().mapToObj(unused -> factory.of(UnitType.Protoss_Zealot))
+        IntRange.of(0, 9).stream()
+            .mapToObj(unused -> factory.of(UnitType.Protoss_Zealot))
             .collect(Collectors.toList());
 
     // WHEN
@@ -500,7 +501,8 @@ class EvaluatorTest {
             .mapToObj(unused -> factory.of(UnitType.Terran_Firebat))
             .collect(Collectors.toList());
     List<Agent> b =
-            IntRange.of(0, 9).stream().mapToObj(unused -> factory.of(UnitType.Protoss_Zealot))
+        IntRange.of(0, 9).stream()
+            .mapToObj(unused -> factory.of(UnitType.Protoss_Zealot))
             .collect(Collectors.toList());
 
     // WHEN
@@ -508,5 +510,41 @@ class EvaluatorTest {
 
     // THEN
     assertThat(result.value).isBetween(0.4, 0.6);
+  }
+
+  @Test
+  void spiderMinesDontAttackHoveringOrStaticUnits() {
+    List<Agent> a =
+        Collections.singletonList(
+            factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    List<Agent> b =
+        Arrays.asList(
+            factory.of(UnitType.Terran_SCV),
+            factory.of(UnitType.Protoss_Probe),
+            factory.of(UnitType.Zerg_Drone),
+            factory.of(UnitType.Protoss_Scout),
+            factory.of(UnitType.Protoss_Photon_Cannon));
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result).isEqualTo(EVAL_NO_COMBAT);
+  }
+
+  @Test
+  void spiderMinesOnlyAttackGroundMovingUnits() {
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Terran_Vulture_Spider_Mine));
+    List<Agent> b =
+        Arrays.asList(
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Protoss_Zealot),
+            factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result.value).isBetween(0.3, 0.4);
   }
 }
