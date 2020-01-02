@@ -1117,4 +1117,18 @@ class SimulatorTest {
     assertThat(simulator.getAgentsA()).hasSize(1);
     assertThat(simulator.getAgentsB()).hasSize(3);
   }
+
+  @Test
+  void mutaWillLoseVsGoliath() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+    simulator.addAgentB(factory.of(UnitType.Terran_Goliath));
+
+    // WHEN
+    simulator.simulate(300);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).hasSize(1);
+  }
 }
