@@ -27,6 +27,12 @@ public abstract class CompoundNode extends TreeNode {
     context.pop();
   }
 
+  protected void abortRunningChildren() {
+    children.stream()
+        .filter(it -> it.status == NodeStatus.RUNNING)
+        .forEach(TreeNode::abort);
+  }
+
   @Override
   public void init() {
     super.init();
@@ -48,6 +54,12 @@ public abstract class CompoundNode extends TreeNode {
   public void reset() {
     super.reset();
     children.forEach(TreeNode::reset);
+  }
+
+  @Override
+  public void abort() {
+    super.abort();
+    children.forEach(TreeNode::abort);
   }
 
   @Override

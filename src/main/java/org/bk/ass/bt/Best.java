@@ -19,6 +19,9 @@ public class Best extends CompoundNode {
         children.stream().max(Comparator.comparingDouble(TreeNode::getUtility));
     if (bestNode.isPresent()) {
       TreeNode delegate = bestNode.get();
+      children.stream()
+          .filter(it -> it.status == NodeStatus.RUNNING && it != delegate)
+          .forEach(TreeNode::abort);
       execChild(delegate, executionContext);
       status = delegate.getStatus();
     } else success();

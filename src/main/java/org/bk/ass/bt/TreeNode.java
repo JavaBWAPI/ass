@@ -40,6 +40,10 @@ public abstract class TreeNode {
     status = NodeStatus.INITIAL;
   }
 
+  public void abort() {
+    status = NodeStatus.ABORTED;
+  }
+
   public TreeNode withName(String name) {
     this.name = name;
     return this;

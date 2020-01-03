@@ -49,6 +49,12 @@ public abstract class Decorator extends TreeNode {
   }
 
   @Override
+  public void abort() {
+    super.abort();
+    delegate.abort();
+  }
+
+  @Override
   public String toString() {
     return name + "{" + "delegate=" + delegate + ", status=" + status + '}';
   }

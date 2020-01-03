@@ -15,6 +15,7 @@ public class Sequence extends CompoundNode {
       execChild(child, context);
       if (child.getStatus() != NodeStatus.SUCCESS) {
         status = child.getStatus();
+        abortRunningChildren();
         stopWatch.registerWith(context, this);
         return;
       }

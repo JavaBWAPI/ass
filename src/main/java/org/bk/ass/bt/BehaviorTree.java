@@ -49,4 +49,10 @@ public abstract class BehaviorTree extends TreeNode {
     checkInitWasCalled();
     root.reset();
   }
+
+  @Override
+  public void abort() {
+    checkInitWasCalled();
+    root.abort();
+  }
 }

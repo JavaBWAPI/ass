@@ -34,6 +34,7 @@ public class Parallel extends CompoundNode {
       execChild(child, context);
       if (child.getStatus() == statusToStop) {
         status = child.getStatus();
+        abortRunningChildren();
         break;
       } else if (child.getStatus() == NodeStatus.RUNNING) status = NodeStatus.RUNNING;
     }

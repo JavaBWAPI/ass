@@ -16,6 +16,7 @@ public class Selector extends CompoundNode {
       execChild(child, context);
       if (child.getStatus() != NodeStatus.FAILURE) {
         status = child.getStatus();
+        abortRunningChildren();
         stopWatch.registerWith(context, this);
         return;
       }
