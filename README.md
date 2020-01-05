@@ -13,7 +13,7 @@ Additionally, various utilities for path-finding or fast location queries are al
 
 [Appveyor Build Artifact](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts)
 
-[Javadoc](http://docs.bytekeeper.org/)
+[Javadoc](http://ass.bytekeeper.org/)
 
 [JBWAPI](https://github.com/JasperGeurtz/JBWAPI/)
 
