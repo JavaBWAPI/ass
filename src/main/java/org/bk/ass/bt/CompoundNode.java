@@ -14,6 +14,7 @@ public abstract class CompoundNode extends TreeNode {
     this.children = new ArrayList<>(Arrays.asList(children));
   }
 
+  @Override
   public abstract void exec(ExecutionContext context);
 
   @Override
@@ -28,9 +29,7 @@ public abstract class CompoundNode extends TreeNode {
   }
 
   protected void abortRunningChildren() {
-    children.stream()
-        .filter(it -> it.status == NodeStatus.RUNNING)
-        .forEach(TreeNode::abort);
+    children.stream().filter(it -> it.status == NodeStatus.RUNNING).forEach(TreeNode::abort);
   }
 
   @Override
@@ -59,7 +58,7 @@ public abstract class CompoundNode extends TreeNode {
   @Override
   public void abort() {
     super.abort();
-    children.forEach(TreeNode::abort);
+    abortRunningChildren();
   }
 
   @Override

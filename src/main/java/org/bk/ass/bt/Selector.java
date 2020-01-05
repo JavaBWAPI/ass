@@ -14,9 +14,9 @@ public class Selector extends CompoundNode {
     children.sort(UTILITY_COMPARATOR);
     for (TreeNode child : children) {
       execChild(child, context);
-      if (child.getStatus() != NodeStatus.FAILURE) {
+      if (child.status != NodeStatus.FAILURE) {
         status = child.getStatus();
-        abortRunningChildren();
+        if (child.status == NodeStatus.SUCCESS) abortRunningChildren();
         stopWatch.registerWith(context, this);
         return;
       }

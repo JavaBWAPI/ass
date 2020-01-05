@@ -13,9 +13,9 @@ public class Sequence extends CompoundNode {
     StopWatch stopWatch = new StopWatch();
     for (TreeNode child : children) {
       execChild(child, context);
-      if (child.getStatus() != NodeStatus.SUCCESS) {
+      if (child.status != NodeStatus.SUCCESS) {
         status = child.getStatus();
-        abortRunningChildren();
+        if (child.status == NodeStatus.FAILURE) abortRunningChildren();
         stopWatch.registerWith(context, this);
         return;
       }
