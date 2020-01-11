@@ -2,6 +2,11 @@ package org.bk.ass.bt;
 
 import org.bk.ass.StopWatch;
 
+/**
+ * Using a {@link Policy}, a behavior similar to {@link Sequence} or {@link Selector}. But Parallel
+ * will not wait for a {@link NodeStatus#RUNNING} node to complete and just {@link
+ * #exec(ExecutionContext)} the next child node.
+ */
 public class Parallel extends CompoundNode {
 
   private Policy policy;

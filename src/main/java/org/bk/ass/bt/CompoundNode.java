@@ -29,7 +29,11 @@ public abstract class CompoundNode extends TreeNode {
   }
 
   protected void abortRunningChildren() {
-    children.stream().filter(it -> it.status == NodeStatus.RUNNING).forEach(TreeNode::abort);
+    for (TreeNode it : children) {
+      if (it.status == NodeStatus.RUNNING) {
+        it.abort();
+      }
+    }
   }
 
   @Override
@@ -44,9 +48,14 @@ public abstract class CompoundNode extends TreeNode {
     children.forEach(TreeNode::close);
   }
 
+  /**
+   * Will return the highest utility of all children which are still running or not yet executed.
+   */
   @Override
   public double getUtility() {
-    return children.stream().mapToDouble(TreeNode::getUtility).max().orElseGet(super::getUtility);
+    return children.stream()
+        .filter(it -> it.status == NodeStatus.INITIAL || it.status == NodeStatus.RUNNING)
+        .mapToDouble(TreeNode::getUtility).max().orElseGet(super::getUtility);
   }
 
   @Override

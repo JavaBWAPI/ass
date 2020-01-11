@@ -519,7 +519,29 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(3);
+    assertThat(simulator.getAgentsA()).hasSizeLessThanOrEqualTo(3);
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void _8DragoonsWithRangeUpgradeVs6Hydras() {
+    // GIVEN
+    for (int i = 0; i < 8; i++) {
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0, 64, 64, false, false, false).setX(1000 + i * 8).setY(800));
+    }
+    for (int i = 0; i < 6; i++) {
+      simulator.addAgentB(
+          factory
+              .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false, false)
+              .setX(1000 + i * 8)
+              .setY(1200));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(8);
     assertThat(simulator.getAgentsB()).isEmpty();
   }
 

@@ -1,6 +1,7 @@
 package org.bk.ass.bt;
 
 public abstract class TreeNode {
+
   String name = getClass().getSimpleName();
   NodeStatus status;
 
@@ -16,6 +17,11 @@ public abstract class TreeNode {
 
   public abstract void exec();
 
+  /**
+   * Used by {@link CompoundNode}s to determine order of execution. Generally, nodes with {@link
+   * Selector} like behavior will run children in decreasing order of utility. Nodes with {@link
+   * Sequence} like behavior will not change the order of children unless explicitly stated.
+   */
   public double getUtility() {
     return 0;
   }
