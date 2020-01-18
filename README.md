@@ -37,38 +37,45 @@ work but is not thoroughly tested.
 
 Add the maven repo: 
 
-    	allprojects {
-    		repositories {
-    			...
-    			maven { url 'https://jitpack.io' }
-    		}
-    	}
-    	
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
 And the dependency:    	
 
-      dependencies {
-        implementation 'com.github.Bytekeeper:ass:1.1'
-      }
-
+```
+dependencies {
+    implementation 'com.github.Bytekeeper:ass:1.1'
+}
+```
 
 ### Maven
 
 Add the maven repo:
-  
-    <repositories>
-      <repository>
-          <id>jitpack.io</id>
-          <url>https://jitpack.io</url>
-      </repository>
-    </repositories>
+
+```
+<repositories>
+  <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+```
 
 And the dependency:
 
-    <dependency>
-        <groupId>com.github.Bytekeeper</groupId>
-        <artifactId>ass</artifactId>
-        <version>1.1</version>
-    </dependency>
+```
+<dependency>
+    <groupId>com.github.Bytekeeper</groupId>
+    <artifactId>ass</artifactId>
+    <version>1.1</version>
+</dependency>
+```
 
 ### JAR file
 
@@ -172,13 +179,13 @@ A utility class to make 2D-position based queries:
 * nearest queries 
 
 ## Jump Path Search
-An implementation of the algorithm described here: https://zerowidth.com/2013/05/05/jump-point-search-explained.html
+An implementation of the algorithm described here: <https://zerowidth.com/2013/05/05/jump-point-search-explained.html>
 
 Generally much faster that a standard A* while still being optimal.
 
 ## Resource management classes
 * GMS class to manage gas, minerals and supply in one value type.
-  * Can be used to manage existing resources vs cost of units, tech or upgrades
+* Can be used to manage existing resources vs cost of units, tech or upgrades
 
 ## Unit and resource locking
 Helps in managing resources and units with specific tasks:
@@ -187,4 +194,22 @@ Helps in managing resources and units with specific tasks:
 
 ## Grids
 Used for pathing. In addition to JPS, it's also possible to "cast rays" in a grid. This is mostly used
-for direct reachability checks (ie. can unit A reach position B without obstacle).  
+for direct reachability checks (ie. can unit A reach position B without obstacle).
+
+## Observer
+Automatically moves around the camera depending on what's happening on screen, ported from the original SSCAIT twitch stream ObserverModule. Works with both BWMirror/JBWAPI and BWAPI4J.
+
+Original source code can be found here: <https://github.com/Plankton555/SSCAIT-ObserverModule>
+
+Example of how to use:
+
+```java
+BWAPI4JObserver camera = new BWAPI4JObserver(game);
+camera.toggle() // To enable the autofollow
+
+// Inside your bot's onFrame() method
+camera.onFrame();
+
+// Inside your bot's onUnitComplete() method
+camera.moveCameraUnitCompleted(unit);
+```
