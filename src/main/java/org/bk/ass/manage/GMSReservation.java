@@ -5,7 +5,7 @@ import java.util.function.IntFunction;
 /**
  * {@link Reservation} implementation for {@link GMS}. Can be used for tracking the remaining
  * available resources. (Ie. start each frame by {@link #setGms(GMS)} using the current amount of
- * resources, then use {@link GMS-}{@link Lock}s to track reservations.)
+ * resources, then use {@link GMS}-{@link Lock}s to track reservations.)
  */
 public class GMSReservation implements Reservation<GMS> {
 
