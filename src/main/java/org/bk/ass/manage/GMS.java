@@ -6,6 +6,7 @@ import bwapi.Player;
 import bwapi.TechType;
 import bwapi.UnitType;
 import bwapi.UpgradeType;
+import java.util.Objects;
 
 /** Representing gas + minerals + supply */
 public final class GMS {
@@ -56,11 +57,15 @@ public final class GMS {
     return new GMS(gas + gms.gas, minerals + gms.minerals, supply + gms.supply);
   }
 
+  public GMS multiply(int factor) {
+    return new GMS(gas * factor, minerals * factor, supply * factor);
+  }
+
   /**
    * If all components (gas, minerals, supply) of this value are non-negative, returns true if all
    * are &gt;= that of the given value. If a component is negative, returns false if the given
-   * value's component is &gt;= 0. <br>
-   * Usually all components are &gt;= 0 and this can be used to check if a price could be payed
+   * value's component is &gt;= 0. <br> Usually all components are &gt;= 0 and this can be used to
+   * check if a price could be payed
    * <em>now</em>. <br>
    * If planning ahead is used, components could already be negative. But if the cost (ie. supply)
    * is 0, it might still be possible to purchase it immediately.
@@ -74,5 +79,24 @@ public final class GMS {
   @Override
   public String toString() {
     return "gas: " + gas + ", minerals: " + minerals + ", supply: " + supply;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    GMS gms = (GMS) o;
+    return gas == gms.gas &&
+        minerals == gms.minerals &&
+        supply == gms.supply;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(gas, minerals, supply);
   }
 }
