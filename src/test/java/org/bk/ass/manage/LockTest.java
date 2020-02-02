@@ -16,12 +16,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return true;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {}
+          public void release(Object lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
 
@@ -42,12 +42,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return true;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {
+          public void release(Object lock, String item) {
             released.set(true);
           }
         };
@@ -69,12 +69,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return false;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {}
+          public void release(Object lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
 
@@ -92,12 +92,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return true;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {}
+          public void release(Object lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
     sut.acquire();
@@ -117,13 +117,13 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             reserveCalls.incrementAndGet();
             return false;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {}
+          public void release(Object lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
     sut.acquire();
@@ -142,17 +142,17 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return true;
           }
 
           @Override
-          public boolean itemAvailableInFuture(Lock<String> lock, String item, int futureFrames) {
+          public boolean itemAvailableInFuture(Object lock, String item, int futureFrames) {
             return true;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {}
+          public void release(Object lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> null);
 
@@ -172,12 +172,12 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return true;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {
+          public void release(Object lock, String item) {
             released.set(true);
           }
         };
@@ -198,18 +198,18 @@ class LockTest {
     Reservation<String> reservation =
         new Reservation<String>() {
           @Override
-          public boolean reserve(Lock<String> lock, String item) {
+          public boolean reserve(Object lock, String item) {
             return false;
           }
 
           @Override
-          public boolean itemAvailableInFuture(Lock<String> lock, String item, int futureFrames) {
+          public boolean itemAvailableInFuture(Object lock, String item, int futureFrames) {
             frames.set(futureFrames);
             return true;
           }
 
           @Override
-          public void release(Lock<String> lock, String item) {}
+          public void release(Object lock, String item) {}
         };
     Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
     sut.acquire();
@@ -227,12 +227,12 @@ class LockTest {
     Reservation<Integer> reservation =
         new Reservation<Integer>() {
           @Override
-          public boolean reserve(Lock<Integer> lock, Integer item) {
+          public boolean reserve(Object lock, Integer item) {
             return false;
           }
 
           @Override
-          public void release(Lock<Integer> lock, Integer item) {}
+          public void release(Object lock, Integer item) {}
         };
     Lock<Integer> sut = new Lock<>(reservation, value::incrementAndGet);
     sut.acquire();
@@ -250,12 +250,12 @@ class LockTest {
     Reservation<Integer> reservation =
         new Reservation<Integer>() {
           @Override
-          public boolean reserve(Lock<Integer> lock, Integer item) {
+          public boolean reserve(Object lock, Integer item) {
             return true;
           }
 
           @Override
-          public void release(Lock<Integer> lock, Integer item) {}
+          public void release(Object lock, Integer item) {}
         };
     Lock<Integer> sut = new Lock<>(reservation, value::incrementAndGet);
     sut.setCriteria(val -> val == 2);

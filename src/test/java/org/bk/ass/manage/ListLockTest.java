@@ -17,18 +17,18 @@ class ListLockTest {
     Reservation<List<String>> reservation =
         new Reservation<List<String>>() {
           @Override
-          public boolean reserve(Lock<List<String>> lock, List<String> item) {
+          public boolean reserve(Object lock, List<String> item) {
             return true;
           }
 
           @Override
-          public void release(Lock<List<String>> lock, List<String> item) {}
+          public void release(Object lock, List<String> item) {}
         };
     ListLock<String> sut = new ListLock<>(reservation, () -> new ArrayList<>(Arrays.asList("a", "b")));
     sut.acquire();
 
     // WHEN
-    sut.releaseItem(Collections.singletonList("a"));
+    sut.releasePartially(Collections.singletonList("a"));
 
     // THEN
     assertThat(sut.getItem()).containsExactly("b");
@@ -40,12 +40,12 @@ class ListLockTest {
     Reservation<List<String>> reservation =
         new Reservation<List<String>>() {
           @Override
-          public boolean reserve(Lock<List<String>> lock, List<String> item) {
+          public boolean reserve(Object lock, List<String> item) {
             return true;
           }
 
           @Override
-          public void release(Lock<List<String>> lock, List<String> item) {}
+          public void release(Object lock, List<String> item) {}
         };
     ListLock<String> sut = new ListLock<>(reservation, Collections::emptyList);
     sut.acquire();
@@ -53,7 +53,7 @@ class ListLockTest {
     assertThatThrownBy(
             () -> {
               // WHEN
-              sut.releaseItem(Collections.singletonList("a"));
+              sut.releasePartially(Collections.singletonList("a"));
             }) // THEN
         .isInstanceOf(IllegalArgumentException.class);
   }
@@ -64,19 +64,19 @@ class ListLockTest {
     Reservation<List<String>> reservation =
         new Reservation<List<String>>() {
           @Override
-          public boolean reserve(Lock<List<String>> lock, List<String> item) {
+          public boolean reserve(Object lock, List<String> item) {
             return true;
           }
 
           @Override
-          public void release(Lock<List<String>> lock, List<String> item) {}
+          public void release(Object lock, List<String> item) {}
         };
     ListLock<String> sut = new ListLock<>(reservation, () -> new ArrayList<>(Arrays.asList("a", "b")));
     sut.setCriteria(x -> x.contains("a"));
     sut.acquire();
 
     // WHEN
-    boolean stillSatisfied = sut.releaseItem(Collections.singletonList("a"));
+    boolean stillSatisfied = sut.releasePartially(Collections.singletonList("a"));
 
     // THEN
     assertThat(stillSatisfied).isFalse();
