@@ -8,22 +8,25 @@ import java.util.Set;
  *
  * @param <T>
  */
-public class SetReservation<T> implements Reservation<T> {
+public class BlacklistReservation<T> implements Reservation<T> {
 
   private final Set<T> reservedItems = new HashSet<>();
 
-  public void setReservedItems(Set<T> reservedItems) {
+  public void reset() {
     this.reservedItems.clear();
-    this.reservedItems.addAll(reservedItems);
   }
 
   @Override
-  public boolean reserve(Lock<T> lock, T item) {
+  public boolean reserve(Object source, T item) {
     return reservedItems.add(item);
   }
 
   @Override
-  public void release(Lock<T> lock, T item) {
+  public void release(Object source, T item) {
     reservedItems.remove(item);
+  }
+
+  public boolean isAvailable(T item) {
+    return !reservedItems.contains(item);
   }
 }

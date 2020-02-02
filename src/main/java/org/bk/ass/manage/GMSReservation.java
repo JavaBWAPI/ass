@@ -30,20 +30,20 @@ public class GMSReservation implements Reservation<GMS> {
   }
 
   @Override
-  public boolean reserve(Lock<GMS> lock, GMS gmsToReserve) {
+  public boolean reserve(Object source, GMS gmsToReserve) {
     boolean success = gms.canAfford(gmsToReserve);
     gms = gms.subtract(gmsToReserve);
     return success;
   }
 
   @Override
-  public boolean itemAvailableInFuture(Lock<GMS> lock, GMS futureItem, int futureFrames) {
+  public boolean itemAvailableInFuture(Object source, GMS futureItem, int futureFrames) {
     GMS futureGMS = gmsPrediction.apply(futureFrames).add(gms);
     return futureGMS.canAfford(futureItem);
   }
 
   @Override
-  public void release(Lock<GMS> lock, GMS gmsToRelease) {
+  public void release(Object source, GMS gmsToRelease) {
     gms = gms.add(gmsToRelease);
   }
 }

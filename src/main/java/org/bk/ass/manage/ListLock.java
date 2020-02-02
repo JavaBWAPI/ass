@@ -15,13 +15,13 @@ public class ListLock<T> extends Lock<List<T>> {
   }
 
   public boolean releaseItem(T item) {
-    return releaseItem(Collections.singletonList(item));
+    return releasePartially(Collections.singletonList(item));
   }
 
   /**
    * Releases only some of the items in the list.
    */
-  public boolean releaseItem(List<T> partial) {
+  public boolean releasePartially(List<T> partial) {
     int items = item.size();
     item.removeAll(partial);
     if (item.size() + partial.size() != items)
