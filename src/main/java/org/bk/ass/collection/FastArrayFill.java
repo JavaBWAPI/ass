@@ -17,8 +17,8 @@ public class FastArrayFill {
     }
   }
 
-  public static void fillArray(Object[] array, int fromIndex, int toIndex, Object value) {
-    int len = toIndex - fromIndex;
+  public static void fillArray(Object[] array, int fromIndex, int endIndex, Object value) {
+    int len = endIndex - fromIndex;
     array[fromIndex] = value;
     for (int i = 1; i < len; i += i) {
       System.arraycopy(array, fromIndex, array, fromIndex + i, Math.min(len - i, i));

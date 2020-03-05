@@ -85,7 +85,6 @@ public class Agent {
   // Lockdown or no damage and no movement
 
   UnitSize size;
-
   boolean isMelee;
   Weapon airWeapon;
   Weapon groundWeapon;
@@ -451,6 +450,10 @@ public class Agent {
    */
   public void setAttackTarget(Agent attackTarget) {
     this.attackTarget = attackTarget;
+  }
+
+  public void setRestoreTarget(Agent restoreTarget) {
+    this.restoreTarget = restoreTarget;
   }
 
   /** Set this carriers interceptors. These will be killed as well, if the carrier dies. */

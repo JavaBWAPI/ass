@@ -50,7 +50,7 @@ public abstract class TreeNode {
     status = NodeStatus.ABORTED;
   }
 
-  public TreeNode withName(String name) {
+  public final TreeNode withName(String name) {
     this.name = name;
     return this;
   }
