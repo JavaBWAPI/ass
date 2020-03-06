@@ -1,5 +1,8 @@
 package org.bk.ass.bt;
 
+/**
+ * Never fails, but
+ */
 public class Succeeder extends Decorator {
 
   public Succeeder(TreeNode delegate) {
@@ -8,6 +11,10 @@ public class Succeeder extends Decorator {
 
   @Override
   protected void updateStatusFromDelegate(NodeStatus status) {
-    success();
+    if (status != NodeStatus.RUNNING) {
+      success();
+    } else {
+      running();
+    }
   }
 }

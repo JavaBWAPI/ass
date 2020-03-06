@@ -1,6 +1,5 @@
 package org.bk.ass.sim;
 
-import static org.bk.ass.sim.AgentUtil.dealDamage;
 import static org.bk.ass.sim.AgentUtil.distanceSquared;
 import static org.bk.ass.sim.AgentUtil.moveToward;
 
@@ -43,7 +42,7 @@ public class SuiciderBehavior implements Behavior {
     moveToward(frameSkip, agent, selectedEnemy, (float) Math.sqrt(selectedDistanceSquared));
 
     if (selectedDistanceSquared <= agent.speedSquared) {
-      dealDamage(agent, agent.weaponVs(selectedEnemy), selectedEnemy);
+      AttackerBehavior.attack(agent, agent.weaponVs(selectedEnemy), selectedEnemy, allies, enemies);
       agent.healthShifted = 0;
     }
     return true;

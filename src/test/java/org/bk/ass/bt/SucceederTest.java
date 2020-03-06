@@ -38,7 +38,7 @@ class SucceederTest {
     sut.exec();
 
     /// THEN
-    assertThat(sut.getStatus()).isEqualTo(NodeStatus.SUCCESS);
+    assertThat(sut.getStatus()).isEqualTo(NodeStatus.RUNNING);
   }
 
 }

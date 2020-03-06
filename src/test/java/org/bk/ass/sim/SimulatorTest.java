@@ -1082,7 +1082,7 @@ class SimulatorTest {
   @Test
   void spiderMineShouldNotAttackBuilding() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
     simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony));
 
     // WHEN
@@ -1096,7 +1096,7 @@ class SimulatorTest {
   @Test
   void spiderMineShouldAttackWithinSeekRange() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
 
     // WHEN
@@ -1110,7 +1110,7 @@ class SimulatorTest {
   @Test
   void spiderMineShouldNotAttackOutsideOfSeekRange() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(128));
 
     // WHEN
@@ -1125,9 +1125,23 @@ class SimulatorTest {
   }
 
   @Test
+  void spiderMineShouldDoSplashDamage() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(16));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(16));
+
+    // WHEN
+    simulator.simulate(20);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
   void spiderMineShouldNotAttackWorker() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false));
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
     simulator.addAgentB(factory.of(UnitType.Zerg_Drone));
     simulator.addAgentB(factory.of(UnitType.Terran_SCV));
     simulator.addAgentB(factory.of(UnitType.Protoss_Probe));
