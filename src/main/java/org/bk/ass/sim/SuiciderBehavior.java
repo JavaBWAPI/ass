@@ -39,6 +39,8 @@ public class SuiciderBehavior implements Behavior {
       return false;
     }
 
+    // Spider mines are detected once they home in
+    agent.detected = true;
     moveToward(frameSkip, agent, selectedEnemy, (float) Math.sqrt(selectedDistanceSquared));
 
     if (selectedDistanceSquared <= agent.speedSquared) {

@@ -1139,6 +1139,23 @@ class SimulatorTest {
   }
 
   @Test
+  void hydrasShouldTakeCareOfSpiderMines() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+
+    // WHEN
+    simulator.simulate(20);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
   void spiderMineShouldNotAttackWorker() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));

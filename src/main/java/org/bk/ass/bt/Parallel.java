@@ -9,11 +9,16 @@ import org.bk.ass.StopWatch;
  */
 public class Parallel extends CompoundNode {
 
-  private Policy policy;
+  private final Policy policy;
 
   public enum Policy {
     SEQUENCE,
     SELECTOR
+  }
+
+  public Parallel(TreeNode... children) {
+    super(children);
+    policy = Policy.SEQUENCE;
   }
 
   public Parallel(Policy policy, TreeNode... children) {

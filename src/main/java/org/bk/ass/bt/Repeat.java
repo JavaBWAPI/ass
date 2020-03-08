@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Repeat extends Decorator {
   private final int initialLimit;
   private int remaining;
-  private Policy policy;
+  private final Policy policy;
 
   public enum Policy {
     SEQUENCE,
