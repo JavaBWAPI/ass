@@ -2,7 +2,11 @@ package org.bk.ass.bt;
 
 import java.util.Objects;
 
+/**
+ * Base class for nodes that delegate execution and modify the delegate or the status.
+ */
 public abstract class Decorator extends TreeNode {
+
   private final TreeNode delegate;
 
   public Decorator(TreeNode delegate) {

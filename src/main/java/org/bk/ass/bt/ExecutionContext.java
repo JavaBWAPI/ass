@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Can be used to create tree stack traces and log performance numbers of nodes.
+ */
 public class ExecutionContext {
 
   public static final ExecutionContext NOOP =

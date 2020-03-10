@@ -5,7 +5,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Base class for non-leaf nodes. Usually not subclassed directly.
+ */
 public abstract class CompoundNode extends TreeNode {
+
   protected static final Comparator<TreeNode> UTILITY_COMPARATOR =
       Comparator.comparing(TreeNode::getUtility).reversed();
   protected final List<TreeNode> children;

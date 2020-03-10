@@ -1,7 +1,7 @@
 package org.bk.ass.bt;
 
 /**
- * Never fails, but
+ * Never fails, even if the delegate fails.
  */
 public class Succeeder extends Decorator {
 

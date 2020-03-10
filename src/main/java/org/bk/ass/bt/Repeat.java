@@ -2,14 +2,38 @@ package org.bk.ass.bt;
 
 import java.util.Objects;
 
+/**
+ * Repeatedly ticks a delegate node. If the delegate completes its operation, it will automatically
+ * be resetted and re-ticked.
+ * <p/>
+ * An internal {@link Policy} is used to determine the status of the Repeat node based on the result
+ * of the delegate.
+ * <p/>
+ * Use {@link Policy#SEQUENCE} to tick a delegate as long as it is succeeding. Use {@link
+ * Policy#SELECTOR} to tick a delegate until it succeeds. Use {@link Policy#SELECTOR_INVERTED} to
+ * tick a delegate until it fails.
+ */
 public class Repeat extends Decorator {
+
   private final int initialLimit;
   private int remaining;
   private final Policy policy;
 
   public enum Policy {
+    /**
+     * Repeat will have status {@link NodeStatus#RUNNING} while the delegate has status {@link
+     * NodeStatus#SUCCESS} or {@link NodeStatus#RUNNING}. It will fail otherwise.
+     */
     SEQUENCE,
+    /**
+     * Repeat will have status {@link NodeStatus#RUNNING} while the delegate has status {@link
+     * NodeStatus#FAILURE} or {@link NodeStatus#RUNNING}. It will succeed otherwise.
+     */
     SELECTOR,
+    /**
+     * Repeat will have status {@link NodeStatus#RUNNING} while the delegate has status {@link
+     * NodeStatus#SUCCESS} or {@link NodeStatus#RUNNING}. It will succeed otherwise.
+     */
     SELECTOR_INVERTED
   }
 

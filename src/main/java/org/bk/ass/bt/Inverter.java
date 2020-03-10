@@ -1,5 +1,9 @@
 package org.bk.ass.bt;
 
+/**
+ * Delegates execution but returns the inverted status (ie. failed -> success; success -> failed;
+ * running -> running).
+ */
 public class Inverter extends Decorator {
 
   public Inverter(TreeNode delegate) {

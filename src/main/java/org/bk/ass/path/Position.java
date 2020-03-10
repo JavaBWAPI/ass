@@ -2,7 +2,8 @@ package org.bk.ass.path;
 
 import bwapi.WalkPosition;
 
-public class Position {
+public final class Position {
+
   public final int x;
   public final int y;
 

@@ -2,10 +2,30 @@ package org.bk.ass.bt;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * A behavior tree. Main difference to other compound nodes is that the actual root tree node is
+ * constructed on initialization.
+ * <p/>
+ * This allows data oriented programming, with simplified access to some data:
+ * <pre>
+ *   {@code
+ *   public class MyTree extends BehaviorTree {
+ *     // Data shared by nodes of this tree
+ *     private Data myData = new Data(...);
+ *     protected TreeNode getRoot() {
+ *       return new Sequence(new SomeCondition(myData), new Action(myData));
+ *     }
+ *   }
+ *   }
+ * </pre>
+ */
 public abstract class BehaviorTree extends TreeNode {
 
   private TreeNode root;
 
+  /**
+   * Will be called <em>once</em> to create the actual root to be ticked.
+   */
   protected abstract TreeNode getRoot();
 
   @Override

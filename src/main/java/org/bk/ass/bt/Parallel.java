@@ -12,7 +12,13 @@ public class Parallel extends CompoundNode {
   private final Policy policy;
 
   public enum Policy {
+    /**
+     * Run all children in order, stop if one has {@link NodeStatus#FAILURE}
+     */
     SEQUENCE,
+    /**
+     * Run all children in order, stop if one has {@link NodeStatus#SUCCESS}
+     */
     SELECTOR
   }
 

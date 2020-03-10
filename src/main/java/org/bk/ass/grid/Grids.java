@@ -8,6 +8,48 @@ public final class Grids {
     // Utility class
   }
 
+  public static Grid<Boolean> oredGrid(Grid<Boolean>... grids) {
+    return new Grid<Boolean>() {
+      @Override
+      public int getWidth() {
+        return grids[0].getWidth();
+      }
+
+      @Override
+      public int getHeight() {
+        return grids[0].getHeight();
+      }
+
+      @Override
+      public Boolean get(int x, int y) {
+        for (Grid<Boolean> b: grids) {
+          if (b.get(x, y))
+            return true;
+        }
+        return false;
+      }
+    };
+  }
+
+  public static Grid<Boolean> negated(Grid<Boolean> grid) {
+    return new Grid<Boolean>() {
+      @Override
+      public int getWidth() {
+        return grid.getWidth();
+      }
+
+      @Override
+      public int getHeight() {
+        return grid.getHeight();
+      }
+
+      @Override
+      public Boolean get(int x, int y) {
+        return !grid.get(x, y);
+      }
+    };
+  }
+
   public static Grid<Boolean> fromBooleanArray(boolean[][] map) {
     return new Grid<Boolean>() {
       @Override

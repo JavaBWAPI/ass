@@ -3,7 +3,11 @@ package org.bk.ass.bt;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
+/**
+ * Node that will succeed if the given check passed, fails otherwise.
+ */
 public class Condition extends TreeNode {
+
   private final BooleanSupplier check;
 
   public Condition(BooleanSupplier check) {
