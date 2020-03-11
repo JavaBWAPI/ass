@@ -5,10 +5,10 @@ import java.util.Objects;
 /**
  * Repeatedly ticks a delegate node. If the delegate completes its operation, it will automatically
  * be resetted and re-ticked.
- * <p/>
+ * <p>
  * An internal {@link Policy} is used to determine the status of the Repeat node based on the result
  * of the delegate.
- * <p/>
+ * <p>
  * Use {@link Policy#SEQUENCE} to tick a delegate as long as it is succeeding. Use {@link
  * Policy#SELECTOR} to tick a delegate until it succeeds. Use {@link Policy#SELECTOR_INVERTED} to
  * tick a delegate until it fails.

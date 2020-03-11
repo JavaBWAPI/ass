@@ -1,8 +1,8 @@
 package org.bk.ass.bt;
 
 /**
- * Delegates execution but returns the inverted status (ie. failed -> success; success -> failed;
- * running -> running).
+ * Delegates execution but returns the inverted status (ie. failed &rarr; success; success &rarr; failed;
+ * running &rarr; running).
  */
 public class Inverter extends Decorator {
 

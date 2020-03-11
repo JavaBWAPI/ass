@@ -18,7 +18,7 @@ import org.bk.ass.bt.Parallel.Policy;
  * This is like <code>map</code> for streams. Maps each item of a given list to a node. New nodes
  * will only be created for new items. Nodes for items that are no longer present will be aborted
  * and discarded.
- * <p/>
+ * <p>
  * The created child nodes will be executed in parallel in the order of the item list.
  *
  * @param <T> the type of the item used to create new nodes

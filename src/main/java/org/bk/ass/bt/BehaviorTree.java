@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * A behavior tree. Main difference to other compound nodes is that the actual root tree node is
  * constructed on initialization.
- * <p/>
+ * <p>
  * This allows data oriented programming, with simplified access to some data:
  * <pre>
  *   {@code
