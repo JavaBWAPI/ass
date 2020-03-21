@@ -115,6 +115,7 @@ Simulates:
 * Stim, Armor, Weapon, Range and Speed upgrades
 * Effects like plague, lockdown, stasis, dark swarm
 * Frame skipping to improve simulation performance at cost of precision
+* Spider mines
 
 ## Limitations
 * Elevation is deemed "constant" within the simulation
@@ -187,4 +188,9 @@ Helps in managing resources and units with specific tasks:
 
 ## Grids
 Used for pathing. In addition to JPS, it's also possible to "cast rays" in a grid. This is mostly used
-for direct reachability checks (ie. can unit A reach position B without obstacle).  
+for direct reachability checks (ie. can unit A reach position B without obstacle).
+
+## Behavior Trees
+Can be used to control individual units, groups of units of even a complete bot (ie. 
+[StyxZ](https://github.com/Bytekeeper/Styx) is controlling basically everything using these).
+There are also nodes to simplify locking of resources (ie. units and minerals).
