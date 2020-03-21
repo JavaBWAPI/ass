@@ -1,13 +1,18 @@
 package org.bk.ass.path;
 
-import org.openjdk.jmh.annotations.*;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SplittableRandom;
+import javax.imageio.ImageIO;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 
 @Measurement(iterations = 3, time = 5)
 @Fork(3)
@@ -66,6 +71,16 @@ public class JpsBenchmark {
     List<Result> results = new ArrayList<>();
     for (Position[] p : state.positions) {
       results.add(state.PPJps.findPath(p[0], p[1]));
+    }
+    return results;
+  }
+
+  @Benchmark
+  @OperationsPerInvocation(100)
+  public List<Result> pathRandomStartToEndWithMaxPathLength(MyState state) {
+    List<Result> results = new ArrayList<>();
+    for (Position[] p : state.positions) {
+      results.add(state.jps.findPath(p[0], p[1], 400));
     }
     return results;
   }

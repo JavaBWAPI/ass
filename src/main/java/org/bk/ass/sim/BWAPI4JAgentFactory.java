@@ -1,17 +1,24 @@
 package org.bk.ass.sim;
 
+import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
+
+import java.util.EnumSet;
+import java.util.function.Consumer;
 import org.bk.ass.info.BWAPI4JUnitInfo;
 import org.openbw.bwapi4j.BWMap;
 import org.openbw.bwapi4j.Player;
-import org.openbw.bwapi4j.type.*;
-import org.openbw.bwapi4j.unit.*;
-
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.function.BiConsumer;
-
-import static java.lang.Math.max;
-import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
+import org.openbw.bwapi4j.type.ExplosionType;
+import org.openbw.bwapi4j.type.Race;
+import org.openbw.bwapi4j.type.TechType;
+import org.openbw.bwapi4j.type.UnitSizeType;
+import org.openbw.bwapi4j.type.UnitType;
+import org.openbw.bwapi4j.type.UpgradeType;
+import org.openbw.bwapi4j.type.WeaponType;
+import org.openbw.bwapi4j.unit.Burrowable;
+import org.openbw.bwapi4j.unit.Firebat;
+import org.openbw.bwapi4j.unit.Marine;
+import org.openbw.bwapi4j.unit.PlayerUnit;
+import org.openbw.bwapi4j.unit.SpellCaster;
 
 public class BWAPI4JAgentFactory {
 
@@ -26,12 +33,13 @@ public class BWAPI4JAgentFactory {
           UnitType.Terran_Marine, UnitType.Terran_Vulture,
           UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon);
 
-  private BiConsumer<Agent, Collection<Agent>> bunkerDeathHandler =
-      (bunker, agents) -> {
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
+  private final Consumer<UnitDeathContext> bunkerDeathHandler =
+      context -> {
+        Agent bunker = context.deadUnit;
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
       };
 
   private final BWMap map;
@@ -45,7 +53,7 @@ public class BWAPI4JAgentFactory {
   }
 
   public Agent of(UnitType unitType) {
-    return of(unitType, 0, 0, 0, 0, false, false);
+    return of(unitType, 0, 0, 0, 0, false, false, false);
   }
 
   public Agent of(
@@ -55,7 +63,8 @@ public class BWAPI4JAgentFactory {
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
       boolean speedUpgrade,
-      boolean energyUpgrade) {
+      boolean energyUpgrade,
+      boolean cooldownUpgrade) {
     return fromUnitType(
             unitType,
             groundWeaponUpgrades,
@@ -63,7 +72,8 @@ public class BWAPI4JAgentFactory {
             groundWeaponRangeUpgrade,
             airWeaponRangeUpgrade,
             speedUpgrade,
-            energyUpgrade)
+            energyUpgrade,
+            cooldownUpgrade)
         .setHealth(unitType.maxHitPoints())
         .setShields(unitType.maxShields())
         .setEnergy(unitType.maxEnergy());
@@ -76,7 +86,8 @@ public class BWAPI4JAgentFactory {
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
       boolean speedUpgrade,
-      boolean energyUpgrade) {
+      boolean energyUpgrade,
+      boolean cooldownUpgrade) {
     int rangeExtension = 0;
     int hitsFactor = 1;
     WeaponType airWeapon = unitType.airWeapon();
@@ -93,28 +104,18 @@ public class BWAPI4JAgentFactory {
       maxGroundHits = UnitType.Protoss_Scarab.maxGroundHits();
     }
 
-    float speed = (float) unitType.topSpeed();
-    if (speedUpgrade) {
-      if (unitType == UnitType.Protoss_Scout) {
-        speed = 6 + 2 / 3f;
-      } else {
-        speed *= 1.5f;
-        float minSpeed = 3 + 1 / 3f;
-        if (speed < minSpeed) {
-          speed = minSpeed;
-        }
-      }
-    }
-    int cd;
+    int groundCooldown;
+    int airCooldown;
     switch (unitType) {
       case Protoss_Interceptor:
-        cd = AgentUtil.INTERCEPTOR_COOLDOWN;
+        groundCooldown = airCooldown = AgentUtil.INTERCEPTOR_COOLDOWN;
         break;
       case Protoss_Reaver:
-        cd = AgentUtil.REAVER_COOLDOWN;
+        groundCooldown = airCooldown = AgentUtil.REAVER_COOLDOWN;
         break;
       default:
-        cd = max(groundWeapon.damageCooldown(), airWeapon.damageCooldown());
+        groundCooldown = groundWeapon.damageCooldown();
+        airCooldown = airWeapon.damageCooldown();
     }
 
     Agent agent =
@@ -126,21 +127,22 @@ public class BWAPI4JAgentFactory {
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-            .setMaxCooldown(cd)
             .setAirWeapon(
                 weapon(
                     airWeaponUpgrades,
                     rangeExtension + airWeaponRangeUpgrade,
                     hitsFactor,
                     airWeapon,
-                    maxAirHits))
+                    maxAirHits,
+                    airCooldown))
             .setGroundWeapon(
                 weapon(
                     groundWeaponUpgrades,
                     rangeExtension + groundWeaponRangeUpgrade,
                     hitsFactor,
                     groundWeapon,
-                    maxGroundHits))
+                    maxGroundHits,
+                    groundCooldown))
             .setMaxShields(unitType.maxShields())
             .setOrganic(unitType.isOrganic())
             .setRegeneratesHealth(
@@ -156,22 +158,34 @@ public class BWAPI4JAgentFactory {
             .setMaxEnergy(unitType.maxEnergy() + (energyUpgrade ? 50 : 0))
             .setDetected(true)
             .setBurrowedAttacker(unitType == UnitType.Zerg_Lurker)
-            .setSpeed(speed)
+            .setBaseSpeed((float) unitType.topSpeed())
+            .setScout(unitType == UnitType.Protoss_Scout)
+            .setSpeedUpgrade(speedUpgrade)
+            .setCooldownUpgrade(cooldownUpgrade)
             .setHpConstructionRate(unitType.buildTime())
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
-            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32)
+            .setGroundSeekRange(unitType == UnitType.Terran_Vulture_Spider_Mine ? unitType.seekRange() : 0)
+            .setSeekableTarget(!unitType.isWorker() && !unitType.isBuilding() && !unitType.isFlyer());
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerDeathHandler);
     } else if (unitType == UnitType.Protoss_Carrier) {
       agent.setOnDeathHandler(CARRIER_DEATH_HANDLER);
+    } else if (!unitType.canAttack() && !unitType.canMove()) {
+      agent.setPassive(true);
     }
     return agent;
   }
 
   private Weapon weapon(
-      int weaponUpgrades, int rangeExtension, int hitsFactor, WeaponType weapon, int maxHits) {
+      int weaponUpgrades,
+      int rangeExtension,
+      int hitsFactor,
+      WeaponType weapon,
+      int maxHits,
+      int cooldown) {
     return new Weapon()
         .setMaxRange(weapon.maxRange() + rangeExtension)
         .setMinRange(weapon.minRange())
@@ -181,7 +195,8 @@ public class BWAPI4JAgentFactory {
         .setInnerSplashRadius(weapon.innerSplashRadius())
         .setMedianSplashRadius(weapon.medianSplashRadius())
         .setOuterSplashRadius(weapon.medianSplashRadius())
-        .setHits(maxHits);
+        .setHits(maxHits)
+        .setCooldown(cooldown);
   }
 
   public Agent of(
@@ -191,7 +206,8 @@ public class BWAPI4JAgentFactory {
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
       boolean speedUpgrade,
-      boolean energyUpgrade) {
+      boolean energyUpgrade,
+      boolean cooldownUpgrade) {
     int energy = 0;
     if (unit instanceof SpellCaster) {
       energy = ((SpellCaster) unit).getEnergy();
@@ -204,7 +220,8 @@ public class BWAPI4JAgentFactory {
             groundWeaponRangeUpgrade,
             airWeaponRangeUpgrade,
             speedUpgrade,
-            energyUpgrade)
+            energyUpgrade,
+            cooldownUpgrade)
         .setHealth(unit.getHitPoints())
         .setShields(unit.getShields())
         .setEnergy(energy)
@@ -238,16 +255,17 @@ public class BWAPI4JAgentFactory {
             groundWeaponRangeUpgrade,
             airWeaponRangeUpgrade,
             hasSpeedUpgrade(unitType, player),
-            hasEnergyUpgrade(unitType, player));
+            hasEnergyUpgrade(unitType, player),
+            hasCooldownUpgrade(unitType, player));
     if (map != null && !unit.isFlying()) {
       agent.setElevationLevel(map.getGroundHeight(unit.getTilePosition()));
     }
     if (unitType == UnitType.Terran_Marine || unitType == UnitType.Terran_Firebat) {
       agent.setCanStim(player.hasResearched(TechType.Stim_Packs));
       if (unit instanceof Marine) {
-        agent.setRemainingStimFrames(((Marine) unit).getStimTimer());
+        agent.setStimTimer(((Marine) unit).getStimTimer());
       } else {
-        agent.setRemainingStimFrames(((Firebat) unit).getStimTimer());
+        agent.setStimTimer(((Firebat) unit).getStimTimer());
       }
     }
     return agent;
@@ -314,6 +332,11 @@ public class BWAPI4JAgentFactory {
             && player.getUpgradeLevel(UpgradeType.Leg_Enhancements) > 0
         || unitType == UnitType.Terran_Vulture
             && player.getUpgradeLevel(UpgradeType.Ion_Thrusters) > 0;
+  }
+
+  private boolean hasCooldownUpgrade(UnitType unitType, Player player) {
+    return unitType == UnitType.Zerg_Zergling
+        && player.getUpgradeLevel(UpgradeType.Adrenal_Glands) > 0;
   }
 
   private SplashType splashType(WeaponType weaponType) {

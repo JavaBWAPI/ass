@@ -1,9 +1,12 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.sin;
+
 import java.util.Collection;
 import java.util.SplittableRandom;
-
-import static java.lang.Math.*;
 
 public class AgentUtil {
   private static final SplittableRandom rnd = new SplittableRandom();
@@ -18,6 +21,7 @@ public class AgentUtil {
   }
 
   public static void moveToward(int frames, Agent agent, Agent target, float distance) {
+    agent.updateSpeed();
     float travelled = frames * agent.speed;
     if (distance <= travelled) {
       agent.vx = target.x - agent.x;
@@ -29,6 +33,7 @@ public class AgentUtil {
   }
 
   public static void moveAwayFrom(int frames, Agent agent, Agent target, float distance) {
+    agent.updateSpeed();
     float travelled = frames * agent.speed;
     if (distance == 0) {
       double a = rnd.nextDouble(Math.PI * 2);
@@ -59,6 +64,7 @@ public class AgentUtil {
       remainingDamage = remainingDamage * 255 / 256;
     }
 
+    agent.attackCounter++;
     applyDamage(target, wpn.damageType, remainingDamage, wpn.hits);
   }
 
@@ -110,8 +116,8 @@ public class AgentUtil {
   public static void randomizePositions(Collection<Agent> agents, int ax, int ay, int bx, int by) {
     SplittableRandom posRnd = new SplittableRandom(1337L);
     for (Agent agent : agents) {
-      agent.x = posRnd.nextInt(ax, bx - ax + 1);
-      agent.y = posRnd.nextInt(ay, by - ay + 1);
+      agent.nx = posRnd.nextInt(ax, bx + 1);
+      agent.ny = posRnd.nextInt(ay, by + 1);
     }
   }
 }

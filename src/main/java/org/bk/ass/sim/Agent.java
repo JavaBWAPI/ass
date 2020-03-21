@@ -1,20 +1,26 @@
 package org.bk.ass.sim;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import java.util.function.Consumer;
 
 public class Agent {
-  static final BiConsumer<Agent, Collection<Agent>> CARRIER_DEATH_HANDLER =
-      (carrier, agents) -> agents.removeAll(carrier.interceptors);
+
+  static final Consumer<UnitDeathContext> CARRIER_DEATH_HANDLER =
+      context -> {
+        Agent carrier = context.deadUnit;
+        context.removeAgents(carrier.interceptors);
+      };
   // Retrieved from OpenBW
   private static final int STIM_TIMER = 37;
-  private static final int STIM_ENERGY_COST_SHIFTED = 10 << 8;
+  private static final int STIM_HEALTH_COST_SHIFTED = 10 << 8;
+  private static final int ENSNARE_TIMER = 75;
+  private static final int ENSNARE_ENERGY_COST_SHIFTED = 75 << 8;
 
   private final String name;
   TargetingPriority attackTargetPriority = TargetingPriority.HIGHEST;
@@ -25,8 +31,14 @@ public class Agent {
   int elevationLevel = -2;
   int x;
   int y;
+  int nx;
+  int ny;
+  boolean speedUpgrade;
+  float baseSpeed;
   int speedSquared;
   float speed;
+  private float speedFactor = 1;
+  private boolean scout;
 
   // Velocity (pixel per frame) for this frame to apply
   int vx;
@@ -36,6 +48,9 @@ public class Agent {
   int maxHealthShifted;
   boolean healedThisFrame;
 
+  int stimTimer;
+  int ensnareTimer;
+
   int hpConstructionRate;
 
   int shieldsShifted;
@@ -44,11 +59,14 @@ public class Agent {
   int energyShifted;
   int maxEnergyShifted;
 
+  int attackCounter;
+
   int cooldown;
-  int maxCooldown;
-  // Number of frames a move would break the attack
+  boolean cooldownUpgrade;
+
+  // Number of frames to sleep (ie. to prevent a move to break the attack)
+  int sleepTimer;
   int stopFrames;
-  int remainingStimFrames;
   boolean canStim;
   int plagueDamagePerFrameShifted;
 
@@ -69,14 +87,15 @@ public class Agent {
   // Visible to the other force
   boolean detected;
 
-  boolean isStasised;
-  boolean isLockeddown;
+  int stasisTimer;
+  // Lockdown or no damage and no movement
 
   UnitSize size;
-
   boolean isMelee;
   Weapon airWeapon;
   Weapon groundWeapon;
+  boolean seekableTarget;
+  int groundSeekRangeSquared = 0;
 
   Agent attackTarget;
   // Target for healing/repairing
@@ -85,7 +104,8 @@ public class Agent {
   List<Agent> interceptors = Collections.emptyList();
 
   // Allow replacement of units on death (for example bunker -> marines)
-  BiConsumer<Agent, Collection<Agent>> onDeathHandler = (ignored1, ignored2) -> {};
+  Consumer<UnitDeathContext> onDeathHandler = (ignored1) -> {
+  };
 
   public Agent(String name) {
     this.name = name;
@@ -109,22 +129,29 @@ public class Agent {
     this.elevationLevel = other.elevationLevel;
     this.x = other.x;
     this.y = other.y;
+    this.nx = other.nx;
+    this.ny = other.ny;
+    this.speedUpgrade = other.speedUpgrade;
+    this.baseSpeed = other.baseSpeed;
     this.speedSquared = other.speedSquared;
     this.speed = other.speed;
+    this.scout = other.scout;
     this.vx = other.vx;
     this.vy = other.vy;
     this.healthShifted = other.healthShifted;
     this.maxHealthShifted = other.maxHealthShifted;
     this.healedThisFrame = other.healedThisFrame;
+    this.stimTimer = other.stimTimer;
+    this.ensnareTimer = other.ensnareTimer;
     this.hpConstructionRate = other.hpConstructionRate;
     this.shieldsShifted = other.shieldsShifted;
     this.maxShieldsShifted = other.maxShieldsShifted;
     this.energyShifted = other.energyShifted;
     this.maxEnergyShifted = other.maxEnergyShifted;
     this.cooldown = other.cooldown;
-    this.maxCooldown = other.maxCooldown;
+    this.cooldownUpgrade = other.cooldownUpgrade;
+    this.sleepTimer = other.sleepTimer;
     this.stopFrames = other.stopFrames;
-    this.remainingStimFrames = other.remainingStimFrames;
     this.canStim = other.canStim;
     this.plagueDamagePerFrameShifted = other.plagueDamagePerFrameShifted;
     this.regeneratesHealth = other.regeneratesHealth;
@@ -139,16 +166,13 @@ public class Agent {
     this.burrowed = other.burrowed;
     this.burrowedAttacker = other.burrowedAttacker;
     this.detected = other.detected;
-    this.isStasised = other.isStasised;
-    this.isLockeddown = other.isLockeddown;
+    this.stasisTimer = other.stasisTimer;
     this.size = other.size;
     this.isMelee = other.isMelee;
     this.airWeapon = other.airWeapon;
     this.groundWeapon = other.groundWeapon;
     this.onDeathHandler = other.onDeathHandler;
-    this.attackTarget = null;
-    this.restoreTarget = null;
-    this.interceptors = Collections.emptyList();
+    this.attackCounter = other.attackCounter;
   }
 
   public Agent setUserObject(Object userObject) {
@@ -180,32 +204,60 @@ public class Agent {
     return this;
   }
 
-  public Agent setRemainingStimFrames(int remainingStimFrames) {
-    this.remainingStimFrames = remainingStimFrames;
+  public Agent setStimTimer(int stimTimer) {
+    this.stimTimer = stimTimer;
     return this;
   }
 
-  public Agent setStasised(boolean stasised) {
-    isStasised = stasised;
+  /**
+   * Set the unit to sleep for some frames, it can still be attacked but is essentially "locked
+   * down" in that time. <em>Note: This will override lockdown.</em>
+   */
+  public Agent setSleepTimer(int sleepTimer) {
+    this.sleepTimer = sleepTimer;
     return this;
   }
 
-  public Agent setLockeddown(boolean lockeddown) {
-    isLockeddown = lockeddown;
+  public int getSleepTimer() {
+    return sleepTimer;
+  }
+
+  public Agent setEnsnareTimer(int ensnareTimer) {
+    this.ensnareTimer = ensnareTimer;
+    return this;
+  }
+
+  public Agent setStasisTimer(int stasisTimer) {
+    this.stasisTimer = stasisTimer;
+    return this;
+  }
+
+  final boolean isStasised() {
+    return stasisTimer > 0;
+  }
+
+  /**
+   * Marks this agent as being under lockdown. This is an alias for {@link #setPassive(boolean)}.
+   *
+   * @see #setPassive(boolean)
+   */
+  public Agent setLockDownTimer(int lockDownTimer) {
+    sleepTimer = max(sleepTimer, lockDownTimer);
+    return this;
+  }
+
+  /**
+   * Makes this agent passive in a simulation. It will not damage other units or move. It can still
+   * be attacked and destroyed.
+   */
+  public Agent setPassive(boolean passive) {
+    sleepTimer = passive ? Integer.MAX_VALUE : sleepTimer;
     return this;
   }
 
   @Override
   public String toString() {
-    return name
-        + " ("
-        + x
-        + ", "
-        + y
-        + "), hp: "
-        + getHealth()
-        + ", sh: "
-        + getShields();
+    return name + " (" + x + ", " + y + "), hp: " + getHealth() + ", sh: " + getShields();
   }
 
   public Agent setDetected(boolean detected) {
@@ -239,19 +291,59 @@ public class Agent {
   }
 
   public Agent setX(int x) {
-    this.x = x;
+    this.nx = x;
     return this;
   }
 
   public Agent setY(int y) {
-    this.y = y;
+    this.ny = y;
     return this;
   }
 
-  public Agent setSpeed(float speed) {
-    this.speedSquared = Math.round(speed * speed);
-    this.speed = speed;
+  public Agent setBaseSpeed(float speed) {
+    this.baseSpeed = speed;
     return this;
+  }
+
+  public Agent setSpeedUpgrade(boolean speedUpgrade) {
+    this.speedUpgrade = speedUpgrade;
+    return this;
+  }
+
+  /**
+   * Multiply the calculated speed by this factor. A potential use is to slow down units running
+   * away a bit to compensate for obstacles.
+   */
+  public Agent setSpeedFactor(float speedFactor) {
+    this.speedFactor = speedFactor;
+    return this;
+  }
+
+  public Agent setCooldownUpgrade(boolean cooldownUpgrade) {
+    this.cooldownUpgrade = cooldownUpgrade;
+    return this;
+  }
+
+  void updateSpeed() {
+    speed = baseSpeed;
+    int mod = 0;
+    if (stimTimer > 0) mod++;
+    if (speedUpgrade) mod++;
+    if (ensnareTimer > 0) mod--;
+    if (mod < 0) speed /= 2f;
+    if (mod > 0) {
+      if (scout) {
+        speed = 6 + 2 / 3f;
+      } else {
+        speed *= 1.5f;
+        float minSpeed = 3 + 1 / 3f;
+        if (speed < minSpeed) {
+          speed = minSpeed;
+        }
+      }
+    }
+    speed *= speedFactor;
+    this.speedSquared = Math.round(speed * speed);
   }
 
   public Agent setHealth(int health) {
@@ -284,11 +376,6 @@ public class Agent {
 
   public Agent setCooldown(int cooldown) {
     this.cooldown = cooldown;
-    return this;
-  }
-
-  public Agent setMaxCooldown(int maxCooldown) {
-    this.maxCooldown = maxCooldown;
     return this;
   }
 
@@ -337,7 +424,7 @@ public class Agent {
     return this;
   }
 
-  public Agent setOnDeathHandler(BiConsumer<Agent, Collection<Agent>> onDeathHandler) {
+  public Agent setOnDeathHandler(Consumer<UnitDeathContext> onDeathHandler) {
     this.onDeathHandler = onDeathHandler;
     return this;
   }
@@ -357,12 +444,25 @@ public class Agent {
     return this;
   }
 
+  /** Returns the number of times this agent has started an attack in simulations. */
+  public int getAttackCounter() {
+    return attackCounter;
+  }
+
+  public void resetAttackCounter() {
+    attackCounter = 0;
+  }
+
   /**
    * Sets the agents target to attack. Might be overridden by behavior. Ie. if the target is out of
    * range in a simulation frame.
    */
   public void setAttackTarget(Agent attackTarget) {
     this.attackTarget = attackTarget;
+  }
+
+  public void setRestoreTarget(Agent restoreTarget) {
+    this.restoreTarget = restoreTarget;
   }
 
   /** Set this carriers interceptors. These will be killed as well, if the carrier dies. */
@@ -397,6 +497,9 @@ public class Agent {
 
   /** Has to be called *after* max health has been set */
   public Agent setHpConstructionRate(int buildTime) {
+    if (buildTime == 0) {
+      return this;
+    }
     this.hpConstructionRate =
         max(1, (maxHealthShifted - maxHealthShifted / 10 + buildTime - 1) / buildTime);
     return this;
@@ -415,13 +518,33 @@ public class Agent {
     healthShifted = min(healthShifted, maxHealthShifted) - amountShifted;
   }
 
+  public Agent setScout(boolean scout) {
+    this.scout = scout;
+    return this;
+  }
+
+  public Agent setGroundSeekRange(int range) {
+    this.groundSeekRangeSquared = range * range;
+    return this;
+  }
+
+  public Agent setSeekableTarget(boolean seekableTarget) {
+    this.seekableTarget = seekableTarget;
+    return this;
+  }
+
   public final void heal(int amountShifted) {
     healthShifted += amountShifted;
   }
 
   public final void stim() {
-    remainingStimFrames = STIM_TIMER;
-    consumeHealth(STIM_ENERGY_COST_SHIFTED);
+    stimTimer = STIM_TIMER;
+    consumeHealth(STIM_HEALTH_COST_SHIFTED);
+  }
+
+  public final void ensnare() {
+    ensnareTimer = ENSNARE_TIMER;
+    consumeEnergy(ENSNARE_ENERGY_COST_SHIFTED);
   }
 
   public enum TargetingPriority {

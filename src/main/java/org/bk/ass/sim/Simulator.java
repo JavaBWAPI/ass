@@ -1,12 +1,12 @@
 package org.bk.ass.sim;
 
-import org.bk.ass.PositionOutOfBoundsException;
-import org.bk.ass.collection.UnorderedCollection;
-
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.ToIntFunction;
+import org.bk.ass.PositionOutOfBoundsException;
+import org.bk.ass.collection.UnorderedCollection;
 
 /**
  * Used to simulate 2 groups of agents engaging each other. Either use the default constructor which
@@ -33,9 +33,6 @@ public class Simulator {
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
-  // Hack to fix DTs not being able to hit a target in another TILE due to collision
-  public static final int MIN_SIMULATION_RANGE =
-      (TILE_SIZE + TILE_SIZE / 2) * (TILE_SIZE + TILE_SIZE / 2);
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
@@ -44,6 +41,7 @@ public class Simulator {
   private final Behavior playerABehavior;
   private final Behavior playerBBehavior;
   private final int frameSkip;
+  private final SimulatorDeathContext deathContext = new SimulatorDeathContext();
 
   private Simulator(int frameSkip, Behavior playerABehavior, Behavior playerBBehavior) {
     if (frameSkip < 1) throw new IllegalArgumentException("frameSkip must be >= 1");
@@ -56,7 +54,6 @@ public class Simulator {
   }
 
   public Simulator addAgentA(Agent agent) {
-    checkBounds(agent);
     playerA.add(agent);
     if (!agent.isFlyer) {
       collision[colindex(agent.x, agent.y)]++;
@@ -73,7 +70,6 @@ public class Simulator {
   }
 
   public Simulator addAgentB(Agent agent) {
-    checkBounds(agent);
     playerB.add(agent);
     if (!agent.isFlyer) {
       collision[colindex(agent.x, agent.y)]++;
@@ -127,6 +123,30 @@ public class Simulator {
    */
   public int simulate(int frames) {
     if (frames > 0) frames += Math.floorMod(frameSkip - frames, frameSkip);
+    for (int i = playerA.size() - 1; i >= 0; i--) {
+      Agent agent = playerA.get(i);
+      if (!agent.isFlyer) {
+        int oldCI = colindex(agent.x, agent.y);
+        int newCI = colindex(agent.nx, agent.ny);
+        collision[oldCI]--;
+        collision[newCI]++;
+      }
+      agent.x = agent.nx;
+      agent.y = agent.ny;
+      checkBounds(agent);
+    }
+    for (int i = playerB.size() - 1; i >= 0; i--) {
+      Agent agent = playerB.get(i);
+      if (!agent.isFlyer) {
+        int oldCI = colindex(agent.x, agent.y);
+        int newCI = colindex(agent.nx, agent.ny);
+        collision[oldCI]--;
+        collision[newCI]++;
+      }
+      agent.x = agent.nx;
+      agent.y = agent.ny;
+      checkBounds(agent);
+    }
     while (frames != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
       frames -= frameSkip;
       if (!step()) {
@@ -135,6 +155,16 @@ public class Simulator {
     }
     playerA.clearReferences();
     playerB.clearReferences();
+    for (int i = playerA.size() - 1; i >= 0; i--) {
+      Agent agent = playerA.get(i);
+      agent.nx = agent.x;
+      agent.ny = agent.y;
+    }
+    for (int i = playerB.size() - 1; i >= 0; i--) {
+      Agent agent = playerB.get(i);
+      agent.nx = agent.x;
+      agent.ny = agent.y;
+    }
     return frames;
   }
 
@@ -165,15 +195,15 @@ public class Simulator {
     for (int i = playerA.size() - 1; i >= 0; i--) {
       Agent agent = playerA.get(i);
       simRunning |=
-          agent.isLockeddown
-              || agent.isStasised
+          agent.isStasised()
+              || agent.sleepTimer > 0
               || playerABehavior.simUnit(frameSkip, agent, playerA, playerB);
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
       Agent agent = playerB.get(i);
       simRunning |=
-          agent.isLockeddown
-              || agent.isStasised
+          agent.isStasised()
+              || agent.sleepTimer > 0
               || playerBBehavior.simUnit(frameSkip, agent, playerB, playerA);
     }
     removeDead(playerA);
@@ -188,8 +218,12 @@ public class Simulator {
     while (i < agents.size()) {
       if (agents.get(i).healthShifted < 1) {
         Agent agent = agents.removeAt(i);
-        if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
-        agent.onDeathHandler.accept(agent, agents);
+        if (!agent.isFlyer) {
+          collision[colindex(agent.x, agent.y)]--;
+        }
+        deathContext.deadUnit = agent;
+        deathContext.myUnits = agents;
+        agent.onDeathHandler.accept(deathContext);
       } else {
         i++;
       }
@@ -206,14 +240,18 @@ public class Simulator {
       agent.vx = 0;
       agent.vy = 0;
       agent.healedThisFrame = false;
+      agent.sleepTimer -= frameSkip;
+      agent.stasisTimer -= frameSkip;
 
-      // Since these calls are potentially made every frame, no boundary checks are done for performance reasons!
+      // Since these calls are potentially made every frame, no boundary checks are done for
+      // performance reasons!
       // Bounds are established when the fields are modified.
       agent.cooldown -= frameSkip;
       agent.shieldsShifted += 7 * frameSkip;
       if (agent.plagueDamagePerFrameShifted * frameSkip < agent.healthShifted)
         agent.healthShifted -= agent.plagueDamagePerFrameShifted * frameSkip;
-      agent.remainingStimFrames -= frameSkip;
+      agent.stimTimer -= frameSkip;
+      agent.ensnareTimer -= frameSkip;
       if (agent.regeneratesHealth) agent.healthShifted += 4 * frameSkip;
       agent.energyShifted += 8 * frameSkip;
     }
@@ -231,10 +269,14 @@ public class Simulator {
       int newCI = colindex(tx, ty);
       if (oldCI != newCI) {
         if (collision[newCI] > TILE_SIZE / 8 - 1) {
-          return;
+          int cx = agent.x / TILE_SIZE * TILE_SIZE;
+          int cy = agent.y / TILE_SIZE * TILE_SIZE;
+          tx = Math.max(cx, Math.min(cx + TILE_SIZE - 1, tx));
+          ty = Math.max(cy, Math.min(cy + TILE_SIZE - 1, ty));
+        } else {
+          collision[oldCI]--;
+          collision[newCI]++;
         }
-        collision[oldCI]--;
-        collision[newCI]++;
       }
     }
 
@@ -281,15 +323,12 @@ public class Simulator {
         UnorderedCollection<Agent> enemies) {
       if (agent.isSuicider) {
         return suiciderSimulator.simUnit(frameSkip, agent, allies, enemies);
-      }
-      if (agent.isHealer) {
+      } else if (agent.isHealer) {
         return healerSimulator.simUnit(frameSkip, agent, allies, enemies);
-      }
-      if (agent.isRepairer && repairerSimulator.simUnit(frameSkip, agent, allies, enemies)) {
+      } else if (agent.isRepairer && repairerSimulator.simUnit(frameSkip, agent, allies, enemies)) {
         return true;
         // Otherwise FIGHT, you puny SCV!
-      }
-      return attackerSimulator.simUnit(frameSkip, agent, allies, enemies);
+      } else return attackerSimulator.simUnit(frameSkip, agent, allies, enemies);
     }
   }
 
@@ -300,50 +339,14 @@ public class Simulator {
   public interface Behavior {
 
     /**
-     * Simulate the given agent. Returns true if the agent was active (including waiting),
-     * false if the agent won't be able to do anything anymore.
+     * Simulate the given agent. Returns true if the agent was active (including waiting), false if
+     * the agent won't be able to do anything anymore.
      */
     boolean simUnit(
-            int frameSkip,
-            Agent agent,
-            UnorderedCollection<Agent> allies,
-            UnorderedCollection<Agent> enemies);
-  }
-
-  public static class IntEvaluation {
-    public final int evalA;
-    public final int evalB;
-
-    IntEvaluation(int evalA, int evalB) {
-      this.evalA = evalA;
-      this.evalB = evalB;
-    }
-
-    /**
-     * Returns the delta of the evaluations for player a and b (evalA - evalB). Evaluating before
-     * and after a simulation, the 2 resulting deltas can be used to determine a positive or
-     * negative outcome.
-     */
-    public int delta() {
-      return evalA - evalB;
-    }
-
-    public int dot(IntEvaluation other) {
-      return evalA * other.evalA - evalB * other.evalB;
-    }
-
-    public int cross(IntEvaluation other) {
-      return evalA * other.evalB - evalB * other.evalA;
-    }
-
-    /**
-     * Subtracts another evaluation and returns the result. Evaluating before and after a
-     * simulation, this can be used to calculate before - after. This in turn represents the loss
-     * each player had in the meantime.
-     */
-    public IntEvaluation subtract(IntEvaluation other) {
-      return new IntEvaluation(evalA - other.evalA, evalB - other.evalB);
-    }
+        int frameSkip,
+        Agent agent,
+        UnorderedCollection<Agent> allies,
+        UnorderedCollection<Agent> enemies);
   }
 
   public static final class Builder {
@@ -370,6 +373,44 @@ public class Simulator {
 
     public Simulator build() {
       return new Simulator(frameSkip, playerABehavior, playerBBehavior);
+    }
+  }
+
+  /**
+   * Context for death handlers
+   */
+  public final class SimulatorDeathContext extends UnitDeathContext {
+
+    Collection<Agent> myUnits;
+
+    public Collection<Agent> getMyUnits() {
+      return myUnits;
+    }
+
+    /**
+     * Adds the given agent to "our" agents. <em>Do not modify the position after adding it
+     * here!</em>
+     */
+    @Override
+    public void addAgent(Agent agent) {
+      agent.x = agent.nx;
+      agent.y = agent.ny;
+      myUnits.add(agent);
+      checkBounds(agent);
+      if (!agent.isFlyer) {
+        collision[colindex(agent.x, agent.y)]++;
+      }
+    }
+
+    @Override
+    public void removeAgents(List<Agent> agents) {
+      for (int i = 0; i < agents.size(); i++) {
+        Agent a = agents.get(i);
+        if (!a.isFlyer) {
+          collision[colindex(a.x, a.y)]--;
+        }
+        myUnits.remove(a);
+      }
     }
   }
 }

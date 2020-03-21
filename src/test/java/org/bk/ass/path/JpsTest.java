@@ -1,16 +1,16 @@
 package org.bk.ass.path;
 
-import org.bk.ass.grid.Grid;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.SplittableRandom;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.imageio.ImageIO;
+import org.bk.ass.grid.Grid;
+import org.junit.jupiter.api.Test;
 
 class JpsTest {
 
@@ -183,7 +183,7 @@ class JpsTest {
     Jps sut = new Jps(map);
     SplittableRandom rnd = new SplittableRandom(123456);
     Result result = null;
-    for (int i = 0; i < 500; i++) {
+    for (int i = 0; i < 50; i++) {
       Position start;
       do {
         start = new Position(rnd.nextInt(image.getWidth()), rnd.nextInt(image.getHeight()));
@@ -194,7 +194,8 @@ class JpsTest {
       } while (!map.get(end.x, end.y));
 
       // WHEN
-      result = sut.findPath(start, end);
+      result = sut.findPath(start, end, 3750);
+      assertThat(result.path).isNotEmpty();
     }
 
     // THEN

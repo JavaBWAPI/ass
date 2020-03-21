@@ -1,12 +1,12 @@
 plugins {
     java
     id("maven")
-    id("me.champeau.gradle.jmh") version "0.4.8"
+    id("me.champeau.gradle.jmh") version "0.5.0"
     id("com.github.ben-manes.versions") version "0.27.0"
 }
 
 group = "org.bk"
-version = "1.1"
+version = "1.2"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -20,11 +20,12 @@ repositories {
 
 dependencies {
     implementation(fileTree("lib").include("*.jar"))
-    implementation("com.github.JavaBWAPI:JBWAPI:0.8.2")
+    implementation("com.github.JavaBWAPI:JBwapi:1.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
-    testImplementation("org.assertj:assertj-core:3.13.2")
-    testImplementation("io.jenetics:jenetics:5.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.+")
+    testImplementation("org.assertj:assertj-core:3.+")
+    testImplementation("io.jenetics:jenetics:5.+")
+    testImplementation("org.mockito:mockito-core:3.+")
 }
 
 configure<JavaPluginConvention> {
@@ -32,7 +33,6 @@ configure<JavaPluginConvention> {
 }
 
 configurations.testImplementation.get().extendsFrom(configurations.implementation.get())
-configurations.jmhCompile.get().extendsFrom(configurations.implementation.get())
 
 tasks {
     check {
@@ -51,4 +51,5 @@ tasks {
 
 jmh {
     resultFormat = "JSON"
+    duplicateClassesStrategy = org.gradle.api.file.DuplicatesStrategy.EXCLUDE
 }

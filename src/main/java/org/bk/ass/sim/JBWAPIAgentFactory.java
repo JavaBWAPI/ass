@@ -1,21 +1,28 @@
 package org.bk.ass.sim;
 
-import bwapi.*;
-import org.bk.ass.info.BWMirrorUnitInfo;
-
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.function.BiConsumer;
-
 import static java.lang.Math.max;
 import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
+
+import bwapi.ExplosionType;
+import bwapi.Game;
+import bwapi.Player;
+import bwapi.Race;
+import bwapi.TechType;
+import bwapi.Unit;
+import bwapi.UnitSizeType;
+import bwapi.UnitType;
+import bwapi.UpgradeType;
+import bwapi.WeaponType;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.function.Consumer;
+import org.bk.ass.info.BWMirrorUnitInfo;
 
 /**
  * Be aware that for fogged units, BWMirror returns invalid coordinates. You'll have to adjust for
  * that, when using this factory!
  */
-public class BWMirrorAgentFactory {
+public class JBWAPIAgentFactory {
 
   private static final Set<UnitType> SUICIDERS =
       EnumSet.of(
@@ -30,26 +37,27 @@ public class BWMirrorAgentFactory {
           UnitType.Zerg_Mutalisk,
           UnitType.Protoss_Dragoon);
 
-  private BiConsumer<Agent, Collection<Agent>> bunkerReplacer =
-      (bunker, agents) -> {
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
+  private Consumer<UnitDeathContext> bunkerReplacer =
+      context -> {
+        Agent bunker = context.deadUnit;
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
       };
 
   private final Game game;
 
-  public BWMirrorAgentFactory(Game game) {
+  public JBWAPIAgentFactory(Game game) {
     this.game = game;
   }
 
-  public BWMirrorAgentFactory() {
+  public JBWAPIAgentFactory() {
     this(null);
   }
 
   public Agent of(UnitType unitType) {
-    return of(unitType, 0, 0, 0, 0, false, false);
+    return of(unitType, 0, 0, 0, 0, false, false, false);
   }
 
   public Agent of(
@@ -59,7 +67,8 @@ public class BWMirrorAgentFactory {
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
       boolean speedUpgrade,
-      boolean energyUpgrade) {
+      boolean energyUpgrade,
+      boolean cooldownUpgrade) {
     return fromUnitType(
             unitType,
             groundWeaponUpgrades,
@@ -67,7 +76,8 @@ public class BWMirrorAgentFactory {
             groundWeaponRangeUpgrade,
             airWeaponRangeUpgrade,
             speedUpgrade,
-            energyUpgrade)
+            energyUpgrade,
+            cooldownUpgrade)
         .setHealth(unitType.maxHitPoints())
         .setShields(unitType.maxShields())
         .setEnergy(unitType.maxEnergy());
@@ -80,7 +90,8 @@ public class BWMirrorAgentFactory {
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
       boolean speedUpgrade,
-      boolean energyUpgrade) {
+      boolean energyUpgrade,
+      boolean cooldownUpgrade) {
     int rangeExtension = 0;
     int hitsFactor = 1;
     WeaponType airWeapon = unitType.airWeapon();
@@ -97,29 +108,18 @@ public class BWMirrorAgentFactory {
       maxGroundHits = UnitType.Protoss_Scarab.maxGroundHits();
     }
 
-    float speed = (float) unitType.topSpeed();
-    if (speedUpgrade) {
-      if (unitType == UnitType.Protoss_Scout) {
-        speed = 6 + 2 / 3f;
-      } else {
-        speed *= 1.5f;
-        float minSpeed = 3 + 1 / 3f;
-        if (speed < minSpeed) {
-          speed = minSpeed;
-        }
-      }
-    }
-
-    int cd;
+    int groundCooldown;
+    int airCooldown;
     switch (unitType) {
       case Protoss_Interceptor:
-        cd = AgentUtil.INTERCEPTOR_COOLDOWN;
+        groundCooldown = airCooldown = AgentUtil.INTERCEPTOR_COOLDOWN;
         break;
       case Protoss_Reaver:
-        cd = AgentUtil.REAVER_COOLDOWN;
+        groundCooldown = airCooldown = AgentUtil.REAVER_COOLDOWN;
         break;
       default:
-        cd = max(groundWeapon.damageCooldown(), airWeapon.damageCooldown());
+        groundCooldown = groundWeapon.damageCooldown();
+        airCooldown = airWeapon.damageCooldown();
     }
 
     Agent agent =
@@ -131,21 +131,22 @@ public class BWMirrorAgentFactory {
             .setFlyer(unitType.isFlyer())
             .setHealer(unitType == UnitType.Terran_Medic)
             .setMaxHealth(unitType.maxHitPoints())
-                .setMaxCooldown(cd)
             .setAirWeapon(
                 weapon(
                     airWeaponUpgrades,
                     rangeExtension + airWeaponRangeUpgrade,
                     hitsFactor,
                     airWeapon,
-                    maxAirHits))
+                    maxAirHits,
+                    airCooldown))
             .setGroundWeapon(
                 weapon(
                     groundWeaponUpgrades,
                     rangeExtension + groundWeaponRangeUpgrade,
                     hitsFactor,
                     groundWeapon,
-                    maxGroundHits))
+                    maxGroundHits,
+                    groundCooldown))
             .setMaxShields(unitType.maxShields())
             .setOrganic(unitType.isOrganic())
             .setRegeneratesHealth(
@@ -161,22 +162,36 @@ public class BWMirrorAgentFactory {
             .setMaxEnergy(unitType.maxEnergy() + (energyUpgrade ? 50 : 0))
             .setDetected(true)
             .setBurrowedAttacker(unitType == UnitType.Zerg_Lurker)
-            .setSpeed(speed)
+            .setBaseSpeed((float) unitType.topSpeed())
+            .setScout(unitType == UnitType.Protoss_Scout)
+            .setSpeedUpgrade(speedUpgrade)
+            .setCooldownUpgrade(cooldownUpgrade)
             .setHpConstructionRate(unitType.buildTime())
             .setRepairer(unitType == UnitType.Terran_SCV)
             .setMechanic(unitType.isMechanical())
-            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32);
+            .setMelee(groundWeapon.damageAmount() > 0 && groundWeapon.maxRange() <= 32)
+            .setGroundSeekRange(
+                unitType == UnitType.Terran_Vulture_Spider_Mine ? unitType.seekRange() : 0)
+            .setSeekableTarget(
+                !unitType.isWorker() && !unitType.isBuilding() && !unitType.isFlyer());
 
     if (unitType == UnitType.Terran_Bunker) {
       agent.setOnDeathHandler(bunkerReplacer);
     } else if (unitType == UnitType.Protoss_Carrier) {
       agent.setOnDeathHandler(CARRIER_DEATH_HANDLER);
+    } else if (!unitType.canAttack() && !unitType.canMove()) {
+      agent.setPassive(true);
     }
     return agent;
   }
 
   private Weapon weapon(
-      int weaponUpgrades, int rangeExtension, int hitsFactor, WeaponType weapon, int maxHits) {
+      int weaponUpgrades,
+      int rangeExtension,
+      int hitsFactor,
+      WeaponType weapon,
+      int maxHits,
+      int cooldown) {
     return new Weapon()
         .setMaxRange(weapon.maxRange() + rangeExtension)
         .setMinRange(weapon.minRange())
@@ -186,7 +201,8 @@ public class BWMirrorAgentFactory {
         .setInnerSplashRadius(weapon.innerSplashRadius())
         .setMedianSplashRadius(weapon.medianSplashRadius())
         .setOuterSplashRadius(weapon.medianSplashRadius())
-        .setHits(maxHits);
+        .setHits(maxHits)
+        .setCooldown(cooldown);
   }
 
   public Agent of(
@@ -196,33 +212,42 @@ public class BWMirrorAgentFactory {
       int groundWeaponRangeUpgrade,
       int airWeaponRangeUpgrade,
       boolean speedUpgrade,
-      boolean energyUpgrade) {
+      boolean energyUpgrade,
+      boolean cooldownUpgrade) {
     int energy = 0;
     if (unit.getType().isSpellcaster()) {
       energy = unit.getEnergy();
     }
 
-    return fromUnitType(
-            unit.getType(),
-            groundWeaponUpgrades,
-            airWeaponUpgrades,
-            groundWeaponRangeUpgrade,
-            airWeaponRangeUpgrade,
-            speedUpgrade,
-            energyUpgrade)
-        .setHealth(unit.getHitPoints())
-        .setShields(unit.getShields())
-        .setEnergy(energy)
-        .setX(unit.getX())
-        .setY(unit.getY())
-        // Should be "adjusted" for own cloaked units
-        .setDetected(unit.isDetected())
-        // By default set unit as user object
-        .setUserObject(unit)
-        .setBurrowed(unit.isBurrowed())
-        .setStasised(unit.isStasised())
-        .setLockeddown(unit.isLockedDown())
-        .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0);
+    Agent agent =
+        fromUnitType(
+                unit.getType(),
+                groundWeaponUpgrades,
+                airWeaponUpgrades,
+                groundWeaponRangeUpgrade,
+                airWeaponRangeUpgrade,
+                speedUpgrade,
+                energyUpgrade,
+                cooldownUpgrade)
+            .setHealth(unit.getHitPoints())
+            .setShields(unit.getShields())
+            .setEnergy(energy)
+            .setX(unit.getX())
+            .setY(unit.getY())
+            // Should be "adjusted" for own cloaked units
+            .setDetected(unit.isDetected())
+            // By default set unit as user object
+            .setUserObject(unit)
+            .setBurrowed(unit.isBurrowed())
+            .setStasisTimer(unit.getStasisTimer())
+            .setLockDownTimer(unit.getLockdownTimer())
+            .setPlagueDamage(unit.isPlagued() ? WeaponType.Plague.damageAmount() : 0)
+            .setEnsnareTimer(unit.getEnsnareTimer());
+    agent.setSleepTimer(max(agent.getSleepTimer(), unit.getRemainingBuildTime()));
+    if (!unit.isPowered()) {
+      agent.setPassive(true);
+    }
+    return agent;
   }
 
   public Agent of(Unit unit) {
@@ -245,14 +270,15 @@ public class BWMirrorAgentFactory {
             groundWeaponRangeUpgrade,
             airWeaponRangeUpgrade,
             hasSpeedUpgrade(unitType, player),
-            hasEnergyUpgrade(unitType, player));
+            hasEnergyUpgrade(unitType, player),
+            hasCooldownUpgrade(unitType, player));
     if (game != null && !unit.isFlying()) {
       agent.setElevationLevel(game.getGroundHeight(unit.getTilePosition()));
       agent.setProtectedByDarkSwarm(unit.isUnderDarkSwarm());
     }
     if (unitType == UnitType.Terran_Marine || unitType == UnitType.Terran_Firebat) {
       agent.setCanStim(player.hasResearched(TechType.Stim_Packs));
-      agent.setRemainingStimFrames(unit.getStimTimer());
+      agent.setStimTimer(unit.getStimTimer());
     }
     return agent;
   }
@@ -318,6 +344,11 @@ public class BWMirrorAgentFactory {
             && player.getUpgradeLevel(UpgradeType.Leg_Enhancements) > 0
         || unitType == UnitType.Terran_Vulture
             && player.getUpgradeLevel(UpgradeType.Ion_Thrusters) > 0;
+  }
+
+  private boolean hasCooldownUpgrade(UnitType unitType, Player player) {
+    return unitType == UnitType.Zerg_Zergling
+        && player.getUpgradeLevel(UpgradeType.Adrenal_Glands) > 0;
   }
 
   private SplashType splashType(WeaponType weaponType) {

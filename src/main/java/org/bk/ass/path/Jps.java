@@ -1,8 +1,7 @@
 package org.bk.ass.path;
 
-import org.bk.ass.grid.Grid;
-
 import java.util.Collections;
+import org.bk.ass.grid.Grid;
 
 /**
  * Jump point search. Initialize with a {@link Grid} instance and call {@link #findPath(Position,
@@ -23,18 +22,22 @@ public class Jps {
    * @return a valid path or a path with infinite length if none could be found. Never returns null.
    */
   public Result findPath(Position start, Position end) {
+    return findPath(start, end, Float.MAX_VALUE);
+  }
+
+  public Result findPath(Position start, Position end, float maxLength) {
     if (start.equals(end)) {
       return new Result(0, Collections.singletonList(start));
     }
-    return new PathFinder(end, map).searchFrom(start);
+    return new PathFinder(end, map, maxLength).searchFrom(start);
   }
 
   private static class PathFinder extends AbstractPathFinder {
 
     private final Grid<Boolean> map;
 
-    protected PathFinder(Position target, Grid<Boolean> map) {
-      super(target, map);
+    protected PathFinder(Position target, Grid<Boolean> map, float maxLength) {
+      super(target, map, maxLength);
       this.map = map;
     }
 

@@ -1,5 +1,8 @@
 package org.bk.ass.sim;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.bk.ass.PositionOutOfBoundsException;
 import org.bk.ass.sim.Simulator.Builder;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openbw.bwapi4j.type.WeaponType;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SimulatorTest {
 
@@ -30,6 +30,7 @@ class SimulatorTest {
     simulator.addAgentA(factory.of(UnitType.Terran_Marine));
     simulator.addAgentB(factory.of(UnitType.Terran_Marine).setCanStim(true));
     simulator.addAgentB(factory.of(UnitType.Terran_Marine).setCanStim(true));
+    simulator.addAgentB(factory.of(UnitType.Terran_Medic));
     simulator.addAgentB(factory.of(UnitType.Terran_Medic));
 
     // WHEN
@@ -419,7 +420,7 @@ class SimulatorTest {
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(150).setY(50));
 
     for (int i = 0; i < 12; i++) {
-      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
+      simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(16 * i + 76).setY(20));
     }
 
     // WHEN
@@ -470,9 +471,9 @@ class SimulatorTest {
   void _5MutaVs1Bunker() {
     // GIVEN
     for (int i = 0; i < 5; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(1000));
     }
-    simulator.addAgentB(factory.of(UnitType.Terran_Bunker));
+    simulator.addAgentB(factory.of(UnitType.Terran_Bunker).setX(1100));
 
     // WHEN
     simulator.simulate(-1);
@@ -509,7 +510,7 @@ class SimulatorTest {
     for (int i = 0; i < 6; i++) {
       simulator.addAgentB(
           factory
-              .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false)
+              .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false, false)
               .setX(1000 + i * 8)
               .setY(1200));
     }
@@ -518,7 +519,29 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).size().isLessThanOrEqualTo(3);
+    assertThat(simulator.getAgentsA()).hasSizeLessThanOrEqualTo(3);
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void _8DragoonsWithRangeUpgradeVs6Hydras() {
+    // GIVEN
+    for (int i = 0; i < 8; i++) {
+      simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon, 0, 0, 64, 64, false, false, false).setX(1000 + i * 8).setY(800));
+    }
+    for (int i = 0; i < 6; i++) {
+      simulator.addAgentB(
+          factory
+              .of(UnitType.Zerg_Hydralisk, 0, 0, 0, 0, false, false, false)
+              .setX(1000 + i * 8)
+              .setY(1200));
+    }
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(8);
     assertThat(simulator.getAgentsB()).isEmpty();
   }
 
@@ -530,7 +553,7 @@ class SimulatorTest {
     }
     for (int i = 0; i < 10; i++) {
       simulator.addAgentB(
-          factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false).setX(200 + i * 8));
+          factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false, false).setX(200 + i * 8));
     }
 
     // WHEN
@@ -673,16 +696,20 @@ class SimulatorTest {
 
   @Test
   void addAgentAAtInvalidPositionShouldThrowException() {
+    simulator.addAgentA(factory.of(UnitType.Protoss_Scout).setX(9000));
+
     assertThrows(
         PositionOutOfBoundsException.class,
-        () -> simulator.addAgentA(factory.of(UnitType.Protoss_Scout).setX(9000)));
+        () -> simulator.simulate(1));
   }
 
   @Test
   void addAgentBAtInvalidPositionShouldThrowException() {
+    simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setY(9000));
+
     assertThrows(
         PositionOutOfBoundsException.class,
-        () -> simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setY(9000)));
+        () -> simulator.simulate(1));
   }
 
   @Test
@@ -705,7 +732,8 @@ class SimulatorTest {
   void shouldNotAttackStasisedUnitsNorBeAttackedByThem() {
     // GIVEN
     simulator = new Builder().build();
-    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true));
+    simulator.addAgentA(
+        factory.of(UnitType.Terran_Goliath).setX(500).setStasisTimer(Integer.MAX_VALUE));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
     // WHEN
@@ -720,7 +748,8 @@ class SimulatorTest {
   void shouldAttackLockeddownUnitsButDontBeAttackedByThem() {
     // GIVEN
     simulator = new Builder().build();
-    simulator.addAgentA(factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true));
+    simulator.addAgentA(
+        factory.of(UnitType.Terran_Goliath).setX(500).setLockDownTimer(Integer.MAX_VALUE));
     simulator.addAgentB(factory.of(UnitType.Terran_Wraith).setX(495));
 
     // WHEN
@@ -736,7 +765,11 @@ class SimulatorTest {
     // GIVEN
     simulator = new Builder().build();
     simulator.addAgentA(
-        factory.of(UnitType.Terran_Goliath).setX(500).setStasised(true).setHealth(97));
+        factory
+            .of(UnitType.Terran_Goliath)
+            .setX(500)
+            .setStasisTimer(Integer.MAX_VALUE)
+            .setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN
@@ -751,7 +784,11 @@ class SimulatorTest {
     // GIVEN
     simulator = new Builder().build();
     simulator.addAgentA(
-        factory.of(UnitType.Terran_Goliath).setX(500).setLockeddown(true).setHealth(97));
+        factory
+            .of(UnitType.Terran_Goliath)
+            .setX(500)
+            .setLockDownTimer(Integer.MAX_VALUE)
+            .setHealth(97));
     simulator.addAgentA(factory.of(UnitType.Terran_SCV).setX(500));
 
     // WHEN
@@ -780,19 +817,39 @@ class SimulatorTest {
   @Test
   void InterceptorsShouldDieIfCarrierDies() {
     // GIVEN
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
-    simulator.addAgentA(factory.of(UnitType.Protoss_Interceptor).setX(500));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
+    simulator.addAgentA(
+        factory
+            .of(UnitType.Protoss_Interceptor)
+            .setX(500)
+            .setAttackTargetPriority(Agent.TargetingPriority.MEDIUM));
     Agent carrier = factory.of(UnitType.Protoss_Carrier);
     carrier.setInterceptors(simulator.getAgentsA());
     simulator.addAgentA(carrier.setX(500));
 
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(10));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(30));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(50));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(500).setY(70));
 
     // WHEN
     simulator.simulate(-1);
@@ -882,7 +939,7 @@ class SimulatorTest {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Reaver));
 
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 13; i++) {
       simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(i * 30));
     }
 
@@ -932,7 +989,6 @@ class SimulatorTest {
     assertThat(simulator.getAgentsB()).size().isZero();
   }
 
-
   @Test
   void approxReaverVs12Zergling() {
     // GIVEN
@@ -977,11 +1033,11 @@ class SimulatorTest {
 
   private void approxSim() {
     simulator =
-            new Builder()
-                    .withFrameSkip(37)
-                    .withPlayerABehavior(new ApproxAttackBehavior())
-                    .withPlayerBBehavior(new ApproxAttackBehavior())
-                    .build();
+        new Builder()
+            .withFrameSkip(37)
+            .withPlayerABehavior(new ApproxAttackBehavior())
+            .withPlayerBBehavior(new ApproxAttackBehavior())
+            .build();
   }
 
   @Test
@@ -1008,5 +1064,128 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).hasSizeLessThan(2);
     assertThat(simulator.getAgentsB()).hasSizeLessThan(4);
+  }
+
+  @Test
+  void shouldDieWhenRunningAwayWithSpeedPenalty() {
+    // GIVEN
+    simulator = new Builder().withPlayerABehavior(new RetreatBehavior()).build();
+    simulator.addAgentA(
+        factory.of(UnitType.Zerg_Zergling).setX(120).setY(100).setSpeedFactor(0.9f));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(100).setY(100));
+
+    // WHEN
+    simulator.simulate(100);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).size().isZero();
+    assertThat(simulator.getAgentsB()).size().isOne();
+  }
+
+  @Test
+  void spiderMineShouldNotAttackBuilding() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Sunken_Colony));
+
+    // WHEN
+    simulator.simulate(200);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(1);
+    assertThat(simulator.getAgentsB()).hasSize(1);
+  }
+
+  @Test
+  void spiderMineShouldAttackWithinSeekRange() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void spiderMineShouldNotAttackOutsideOfSeekRange() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(128));
+
+    // WHEN
+    simulator.simulate(200);
+
+    // THEN
+    assertThat(simulator.getAgentsA())
+        .first()
+        .extracting(it -> it.x, it -> it.y)
+        .containsExactly(0, 0);
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void spiderMineShouldDoSplashDamage() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(16));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(16));
+
+    // WHEN
+    simulator.simulate(20);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void hydrasShouldTakeCareOfSpiderMines() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Hydralisk).setX(96).setHealth(1));
+
+    // WHEN
+    simulator.simulate(20);
+
+    // THEN
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
+  void spiderMineShouldNotAttackWorker() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Vulture_Spider_Mine).setDetected(false).setBurrowed(true));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Drone));
+    simulator.addAgentB(factory.of(UnitType.Terran_SCV));
+    simulator.addAgentB(factory.of(UnitType.Protoss_Probe));
+
+    // WHEN
+    simulator.simulate(200);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).hasSize(1);
+    assertThat(simulator.getAgentsB()).hasSize(3);
+  }
+
+  @Test
+  void mutaWillLoseVsGoliath() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+    simulator.addAgentB(factory.of(UnitType.Terran_Goliath));
+
+    // WHEN
+    simulator.simulate(300);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).hasSize(1);
   }
 }

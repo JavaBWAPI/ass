@@ -1,13 +1,15 @@
 package org.bk.ass.path;
 
-import org.bk.ass.grid.Grid;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.PriorityQueue;
-
-import static java.lang.Math.*;
+import org.bk.ass.grid.Grid;
 
 abstract class AbstractPathFinder {
   private final Node CLOSED = new Node();
@@ -15,10 +17,15 @@ abstract class AbstractPathFinder {
   private final Node[] nodes;
   final Position target;
   private final Grid<Boolean> map;
+  private float maxLength;
 
-  AbstractPathFinder(Position target, Grid<Boolean> map) {
-    this.target = target;
-    this.map = map;
+  AbstractPathFinder(Position target, Grid<Boolean> map, float maxLength) {
+    if (maxLength <= 0) {
+      throw new IllegalArgumentException("maxLength must be > 0");
+    }
+    this.maxLength = maxLength * 10f;
+    this.target = Objects.requireNonNull(target);
+    this.map = Objects.requireNonNull(map);
     nodes = new Node[map.getHeight() * map.getWidth()];
   }
 
@@ -106,13 +113,15 @@ abstract class AbstractPathFinder {
       int index = idx(pos);
       if (nodes[index] != CLOSED) {
         Node node = new Node(parent, pos);
-        Node existing = nodes[index];
-        if (existing == null || existing.f > node.f) {
-          if (existing != null) {
-            openQueue.remove(existing);
+        if (node.f <= maxLength) {
+          Node existing = nodes[index];
+          if (existing == null || existing.f > node.f) {
+            if (existing != null) {
+              openQueue.remove(existing);
+            }
+            openQueue.add(node);
+            nodes[index] = node;
           }
-          openQueue.add(node);
-          nodes[index] = node;
         }
       }
     }

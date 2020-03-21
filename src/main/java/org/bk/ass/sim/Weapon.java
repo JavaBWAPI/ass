@@ -11,6 +11,7 @@ public class Weapon {
   int innerSplashRadiusSquared;
   int medianSplashRadiusSquared;
   int outerSplashRadiusSquared;
+  int cooldown;
 
   DamageType damageType;
   SplashType splashType;
@@ -60,6 +61,11 @@ public class Weapon {
 
   public Weapon setDamageType(DamageType damageType) {
     this.damageType = damageType;
+    return this;
+  }
+
+  public Weapon setCooldown(int cooldown) {
+    this.cooldown = cooldown;
     return this;
   }
 }

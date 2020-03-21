@@ -1,17 +1,23 @@
 package org.bk.ass.query;
 
-import org.bk.ass.path.Position;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.bk.ass.query.Distances.EUCLIDEAN_DISTANCE;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.SplittableRandom;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.bk.ass.path.Position;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 class PositionQueriesTest {
   private static List<Position> positions;
@@ -42,6 +48,19 @@ class PositionQueriesTest {
               .orElseThrow(RuntimeException::new);
       assertThat(nearest).isEqualTo(actualNearest);
     }
+  }
+
+  @Test
+  void shouldNotFindOutOfMaxRadius() {
+    // GIVEN
+    PositionQueries<Position> tree = new PositionQueries<>(positions, Function.identity());
+
+    // WHEN
+    Position nearest = tree
+        .nearest(500, 500, 500, it -> EUCLIDEAN_DISTANCE.distance(it.x, it.y, 500, 500) > 500);
+
+    // THEN
+    assertThat(nearest).isNull();
   }
 
   @Test

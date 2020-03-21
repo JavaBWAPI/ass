@@ -1,13 +1,18 @@
 package org.bk.ass;
 
+import bwapi.UnitType;
 import org.bk.ass.sim.AgentUtil;
 import org.bk.ass.sim.ApproxAttackBehavior;
-import org.bk.ass.sim.BWAPI4JAgentFactory;
+import org.bk.ass.sim.JBWAPIAgentFactory;
 import org.bk.ass.sim.Simulator;
 import org.bk.ass.sim.Simulator.Builder;
-import org.openbw.bwapi4j.test.BWDataProvider;
-import org.openbw.bwapi4j.type.UnitType;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 
 @Measurement(iterations = 5, time = 5)
 @Fork(3)
@@ -19,7 +24,7 @@ public class SimulatorBenchmark {
     Simulator simulator;
     Simulator simulatorFS4;
     Simulator approxSim;
-    BWAPI4JAgentFactory factory = new BWAPI4JAgentFactory(null);
+    JBWAPIAgentFactory factory = new JBWAPIAgentFactory(null);
 
     @Setup(Level.Invocation)
     public void setup() {
@@ -40,14 +45,6 @@ public class SimulatorBenchmark {
 
       AgentUtil.randomizePositions(approxSim.getAgentsA(), 0, 0, 32, 32);
       AgentUtil.randomizePositions(approxSim.getAgentsB(), 32, 0, 64, 64);
-    }
-  }
-
-  static {
-    try {
-      BWDataProvider.injectValues();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
   }
 
