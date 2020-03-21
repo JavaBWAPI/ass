@@ -44,18 +44,30 @@ public class Repeat extends Decorator {
     this.policy = policy;
   }
 
+  /**
+   * Initializes with the default policy {@link Policy#SEQUENCE}.
+   */
   public Repeat(TreeNode delegate) {
     this(Policy.SEQUENCE, delegate);
   }
 
+  /**
+   * Initializes with the default policy {@link Policy#SEQUENCE}.
+   */
   public Repeat(int limit, TreeNode delegate) {
     this(Policy.SEQUENCE, limit, delegate);
   }
 
+  /**
+   * Allows to configure a limit of repeats. After exhaustion, it will either succeed, if policy is
+   * SEQUENCE or fail if the policy is SELECTOR.
+   */
   public Repeat(Policy policy, int limit, TreeNode delegate) {
     super(delegate);
     Objects.requireNonNull(policy, "policy must be set");
-    if (limit < 0) throw new IllegalArgumentException("limit must be >= 0");
+    if (limit < 0) {
+      throw new IllegalArgumentException("limit must be >= 0");
+    }
     this.remaining = this.initialLimit = limit;
     this.policy = policy;
   }

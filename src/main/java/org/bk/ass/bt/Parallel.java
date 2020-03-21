@@ -22,6 +22,9 @@ public class Parallel extends CompoundNode {
     SELECTOR
   }
 
+  /**
+   * Initializes with the default policy {@link Policy#SEQUENCE}.
+   */
   public Parallel(TreeNode... children) {
     super(children);
     policy = Policy.SEQUENCE;
