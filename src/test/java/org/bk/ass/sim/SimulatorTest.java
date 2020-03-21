@@ -696,16 +696,20 @@ class SimulatorTest {
 
   @Test
   void addAgentAAtInvalidPositionShouldThrowException() {
+    simulator.addAgentA(factory.of(UnitType.Protoss_Scout).setX(9000));
+
     assertThrows(
         PositionOutOfBoundsException.class,
-        () -> simulator.addAgentA(factory.of(UnitType.Protoss_Scout).setX(9000)));
+        () -> simulator.simulate(1));
   }
 
   @Test
   void addAgentBAtInvalidPositionShouldThrowException() {
+    simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setY(9000));
+
     assertThrows(
         PositionOutOfBoundsException.class,
-        () -> simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setY(9000)));
+        () -> simulator.simulate(1));
   }
 
   @Test
@@ -935,7 +939,7 @@ class SimulatorTest {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Reaver));
 
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 13; i++) {
       simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(i * 30));
     }
 

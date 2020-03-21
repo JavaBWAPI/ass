@@ -78,8 +78,7 @@ public class AttackerBehavior implements Behavior {
     }
 
     if (agent.cooldown <= 0
-        && selectedDistanceSquared
-            <= Math.max(Simulator.MIN_SIMULATION_RANGE, selectedWeapon.maxRangeSquared)) {
+        && selectedDistanceSquared <= selectedWeapon.maxRangeSquared) {
       simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
     }
 

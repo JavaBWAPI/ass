@@ -32,9 +32,6 @@ public class Simulator {
 
   private static final int MAX_MAP_DIMENSION = 8192;
   private static final int TILE_SIZE = 16;
-  // Hack to fix DTs not being able to hit a target in another TILE due to collision
-  public static final int MIN_SIMULATION_RANGE =
-      (TILE_SIZE + TILE_SIZE / 2) * (TILE_SIZE + TILE_SIZE / 2);
   private static final int COLLISION_MAP_DIMENSION = MAX_MAP_DIMENSION / TILE_SIZE;
   private final UnorderedCollection<Agent> playerA = new UnorderedCollection<>();
   private final UnorderedCollection<Agent> playerB = new UnorderedCollection<>();
@@ -55,7 +52,6 @@ public class Simulator {
   }
 
   public Simulator addAgentA(Agent agent) {
-    checkBounds(agent);
     playerA.add(agent);
     if (!agent.isFlyer) {
       collision[colindex(agent.x, agent.y)]++;
@@ -72,7 +68,6 @@ public class Simulator {
   }
 
   public Simulator addAgentB(Agent agent) {
-    checkBounds(agent);
     playerB.add(agent);
     if (!agent.isFlyer) {
       collision[colindex(agent.x, agent.y)]++;
@@ -126,6 +121,30 @@ public class Simulator {
    */
   public int simulate(int frames) {
     if (frames > 0) frames += Math.floorMod(frameSkip - frames, frameSkip);
+    for (int i = playerA.size() - 1; i >= 0; i--) {
+      Agent agent = playerA.get(i);
+      if (!agent.isFlyer) {
+        int oldCI = colindex(agent.x, agent.y);
+        int newCI = colindex(agent.nx, agent.ny);
+        collision[oldCI]--;
+        collision[newCI]++;
+      }
+      agent.x = agent.nx;
+      agent.y = agent.ny;
+      checkBounds(agent);
+    }
+    for (int i = playerB.size() - 1; i >= 0; i--) {
+      Agent agent = playerB.get(i);
+      if (!agent.isFlyer) {
+        int oldCI = colindex(agent.x, agent.y);
+        int newCI = colindex(agent.nx, agent.ny);
+        collision[oldCI]--;
+        collision[newCI]++;
+      }
+      agent.x = agent.nx;
+      agent.y = agent.ny;
+      checkBounds(agent);
+    }
     while (frames != 0 && !playerA.isEmpty() && !playerB.isEmpty()) {
       frames -= frameSkip;
       if (!step()) {
@@ -134,6 +153,16 @@ public class Simulator {
     }
     playerA.clearReferences();
     playerB.clearReferences();
+    for (int i = playerA.size() - 1; i >= 0; i--) {
+      Agent agent = playerA.get(i);
+      agent.nx = agent.x;
+      agent.ny = agent.y;
+    }
+    for (int i = playerB.size() - 1; i >= 0; i--) {
+      Agent agent = playerB.get(i);
+      agent.nx = agent.x;
+      agent.ny = agent.y;
+    }
     return frames;
   }
 
@@ -234,10 +263,14 @@ public class Simulator {
       int newCI = colindex(tx, ty);
       if (oldCI != newCI) {
         if (collision[newCI] > TILE_SIZE / 8 - 1) {
-          return;
+          int cx = agent.x / TILE_SIZE * TILE_SIZE;
+          int cy = agent.y / TILE_SIZE * TILE_SIZE;
+          tx = Math.max(cx, Math.min(cx + TILE_SIZE - 1, tx));
+          ty = Math.max(cy, Math.min(cy + TILE_SIZE - 1, ty));
+        } else {
+          collision[oldCI]--;
+          collision[newCI]++;
         }
-        collision[oldCI]--;
-        collision[newCI]++;
       }
     }
 

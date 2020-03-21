@@ -27,6 +27,8 @@ public class Agent {
   int elevationLevel = -2;
   int x;
   int y;
+  int nx;
+  int ny;
   boolean speedUpgrade;
   float baseSpeed;
   int speedSquared;
@@ -122,6 +124,8 @@ public class Agent {
     this.elevationLevel = other.elevationLevel;
     this.x = other.x;
     this.y = other.y;
+    this.nx = other.nx;
+    this.ny = other.ny;
     this.speedUpgrade = other.speedUpgrade;
     this.baseSpeed = other.baseSpeed;
     this.speedSquared = other.speedSquared;
@@ -282,12 +286,12 @@ public class Agent {
   }
 
   public Agent setX(int x) {
-    this.x = x;
+    this.nx = x;
     return this;
   }
 
   public Agent setY(int y) {
-    this.y = y;
+    this.ny = y;
     return this;
   }
 

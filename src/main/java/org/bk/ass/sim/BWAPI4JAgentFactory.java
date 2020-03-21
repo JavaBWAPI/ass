@@ -36,6 +36,7 @@ public class BWAPI4JAgentFactory {
 
   private BiConsumer<Agent, Collection<Agent>> bunkerDeathHandler =
       (bunker, agents) -> {
+    // TODO: Fix collision map not being updated here
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
         agents.add(of(UnitType.Terran_Marine));
