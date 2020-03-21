@@ -25,6 +25,7 @@ public class Evaluator {
       };
   private final Parameters parameters;
   private SplittableRandom prng = new SplittableRandom();
+  private EvaluatorDeathContext deathContext = new EvaluatorDeathContext();
 
   public Evaluator(Parameters parameters) {
     this.parameters = parameters;
@@ -40,9 +41,17 @@ public class Evaluator {
    */
   public EvaluationResult evaluate(Collection<Agent> agentsA, Collection<Agent> agentsB) {
     List<Agent> finalAgentsA = new ArrayList<>();
-    agentsA.forEach(a -> a.onDeathHandler.accept(a, finalAgentsA));
+    deathContext.target = finalAgentsA;
+    agentsA.forEach(a -> {
+      deathContext.deadUnit = a;
+      a.onDeathHandler.accept(deathContext);
+    });
     List<Agent> finalAgentsB = new ArrayList<>();
-    agentsB.forEach(a -> a.onDeathHandler.accept(a, finalAgentsB));
+    deathContext.target = finalAgentsB;
+    agentsB.forEach(a -> {
+      deathContext.deadUnit = a;
+      a.onDeathHandler.accept(deathContext);
+    });
     finalAgentsA.addAll(agentsA);
     finalAgentsA.forEach(Agent::updateSpeed);
     finalAgentsB.addAll(agentsB);
@@ -293,6 +302,21 @@ public class Evaluator {
     public EvalWithAgents(double eval, List<Agent> agents) {
       this.eval = eval;
       this.agents = Collections.unmodifiableList(agents);
+    }
+  }
+
+  private static final class EvaluatorDeathContext extends UnitDeathContext {
+
+    Collection<Agent> target;
+
+    @Override
+    public void addAgent(Agent agent) {
+      target.add(agent);
+    }
+
+    @Override
+    public void removeAgents(List<Agent> agents) {
+      throw new UnsupportedOperationException();
     }
   }
 

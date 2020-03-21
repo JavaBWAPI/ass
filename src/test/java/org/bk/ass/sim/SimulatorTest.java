@@ -471,9 +471,9 @@ class SimulatorTest {
   void _5MutaVs1Bunker() {
     // GIVEN
     for (int i = 0; i < 5; i++) {
-      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk));
+      simulator.addAgentA(factory.of(UnitType.Zerg_Mutalisk).setX(1000));
     }
-    simulator.addAgentB(factory.of(UnitType.Terran_Bunker));
+    simulator.addAgentB(factory.of(UnitType.Terran_Bunker).setX(1100));
 
     // WHEN
     simulator.simulate(-1);

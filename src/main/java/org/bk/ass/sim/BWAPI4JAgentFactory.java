@@ -2,9 +2,8 @@ package org.bk.ass.sim;
 
 import static org.bk.ass.sim.Agent.CARRIER_DEATH_HANDLER;
 
-import java.util.Collection;
 import java.util.EnumSet;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import org.bk.ass.info.BWAPI4JUnitInfo;
 import org.openbw.bwapi4j.BWMap;
 import org.openbw.bwapi4j.Player;
@@ -34,13 +33,13 @@ public class BWAPI4JAgentFactory {
           UnitType.Terran_Marine, UnitType.Terran_Vulture,
           UnitType.Zerg_Mutalisk, UnitType.Protoss_Dragoon);
 
-  private BiConsumer<Agent, Collection<Agent>> bunkerDeathHandler =
-      (bunker, agents) -> {
-    // TODO: Fix collision map not being updated here
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
+  private final Consumer<UnitDeathContext> bunkerDeathHandler =
+      context -> {
+        Agent bunker = context.deadUnit;
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
       };
 
   private final BWMap map;

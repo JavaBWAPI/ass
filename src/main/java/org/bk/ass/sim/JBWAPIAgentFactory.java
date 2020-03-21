@@ -13,10 +13,9 @@ import bwapi.UnitSizeType;
 import bwapi.UnitType;
 import bwapi.UpgradeType;
 import bwapi.WeaponType;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import org.bk.ass.info.BWMirrorUnitInfo;
 
 /**
@@ -38,13 +37,13 @@ public class JBWAPIAgentFactory {
           UnitType.Zerg_Mutalisk,
           UnitType.Protoss_Dragoon);
 
-  private BiConsumer<Agent, Collection<Agent>> bunkerReplacer =
-      (bunker, agents) -> {
-        // TODO: Fix collision map not being updated here
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
-        agents.add(of(UnitType.Terran_Marine));
+  private Consumer<UnitDeathContext> bunkerReplacer =
+      context -> {
+        Agent bunker = context.deadUnit;
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
+        context.addAgent(of(UnitType.Terran_Marine).setX(bunker.x).setY(bunker.y));
       };
 
   private final Game game;

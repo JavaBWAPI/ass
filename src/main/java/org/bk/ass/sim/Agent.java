@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Agent {
-  static final BiConsumer<Agent, Collection<Agent>> CARRIER_DEATH_HANDLER =
-      (carrier, agents) -> agents.removeAll(carrier.interceptors);
+
+  static final Consumer<UnitDeathContext> CARRIER_DEATH_HANDLER =
+      context -> {
+        Agent carrier = context.deadUnit;
+        context.removeAgents(carrier.interceptors);
+      };
   // Retrieved from OpenBW
   private static final int STIM_TIMER = 37;
   private static final int STIM_HEALTH_COST_SHIFTED = 10 << 8;
@@ -100,7 +104,8 @@ public class Agent {
   List<Agent> interceptors = Collections.emptyList();
 
   // Allow replacement of units on death (for example bunker -> marines)
-  BiConsumer<Agent, Collection<Agent>> onDeathHandler = (ignored1, ignored2) -> {};
+  Consumer<UnitDeathContext> onDeathHandler = (ignored1) -> {
+  };
 
   public Agent(String name) {
     this.name = name;
@@ -419,7 +424,7 @@ public class Agent {
     return this;
   }
 
-  public Agent setOnDeathHandler(BiConsumer<Agent, Collection<Agent>> onDeathHandler) {
+  public Agent setOnDeathHandler(Consumer<UnitDeathContext> onDeathHandler) {
     this.onDeathHandler = onDeathHandler;
     return this;
   }

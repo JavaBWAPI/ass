@@ -2,6 +2,7 @@ package org.bk.ass.sim;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.ToIntFunction;
 import org.bk.ass.PositionOutOfBoundsException;
@@ -40,6 +41,7 @@ public class Simulator {
   private final Behavior playerABehavior;
   private final Behavior playerBBehavior;
   private final int frameSkip;
+  private final SimulatorDeathContext deathContext = new SimulatorDeathContext();
 
   private Simulator(int frameSkip, Behavior playerABehavior, Behavior playerBBehavior) {
     if (frameSkip < 1) throw new IllegalArgumentException("frameSkip must be >= 1");
@@ -216,8 +218,12 @@ public class Simulator {
     while (i < agents.size()) {
       if (agents.get(i).healthShifted < 1) {
         Agent agent = agents.removeAt(i);
-        if (!agent.isFlyer) collision[colindex(agent.x, agent.y)]--;
-        agent.onDeathHandler.accept(agent, agents);
+        if (!agent.isFlyer) {
+          collision[colindex(agent.x, agent.y)]--;
+        }
+        deathContext.deadUnit = agent;
+        deathContext.myUnits = agents;
+        agent.onDeathHandler.accept(deathContext);
       } else {
         i++;
       }
@@ -367,6 +373,44 @@ public class Simulator {
 
     public Simulator build() {
       return new Simulator(frameSkip, playerABehavior, playerBBehavior);
+    }
+  }
+
+  /**
+   * Context for death handlers
+   */
+  public final class SimulatorDeathContext extends UnitDeathContext {
+
+    Collection<Agent> myUnits;
+
+    public Collection<Agent> getMyUnits() {
+      return myUnits;
+    }
+
+    /**
+     * Adds the given agent to "our" agents. <em>Do not modify the position after adding it
+     * here!</em>
+     */
+    @Override
+    public void addAgent(Agent agent) {
+      agent.x = agent.nx;
+      agent.y = agent.ny;
+      myUnits.add(agent);
+      checkBounds(agent);
+      if (!agent.isFlyer) {
+        collision[colindex(agent.x, agent.y)]++;
+      }
+    }
+
+    @Override
+    public void removeAgents(List<Agent> agents) {
+      for (int i = 0; i < agents.size(); i++) {
+        Agent a = agents.get(i);
+        if (!a.isFlyer) {
+          collision[colindex(a.x, a.y)]--;
+        }
+        myUnits.remove(a);
+      }
     }
   }
 }
