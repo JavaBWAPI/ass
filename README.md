@@ -9,6 +9,9 @@ ASS tries to answer that question by allowing a simulation of possible outcome.
 
 Additionally, various utilities for path-finding or fast location queries are also available. 
 
+## JavaDoc
+http://ass.bytekeeper.org/
+
 ## References
 
 [Appveyor Build Artifact](https://ci.appveyor.com/project/Bytekeeper/ass/build/artifacts)
