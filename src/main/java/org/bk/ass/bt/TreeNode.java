@@ -56,21 +56,21 @@ public abstract class TreeNode {
   /**
    * Mark node as successful.
    */
-  public final void success() {
+  protected final void success() {
     status = NodeStatus.SUCCESS;
   }
 
   /**
    * Mark node as running.
    */
-  public final void running() {
+  protected final void running() {
     status = NodeStatus.RUNNING;
   }
 
   /**
    * Mark node as failed.
    */
-  public final void failed() {
+  protected final void failed() {
     status = NodeStatus.FAILURE;
   }
 
