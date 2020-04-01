@@ -83,7 +83,9 @@ public final class Grids {
 
       @Override
       public Boolean get(int x, int y) {
-        return game.isWalkable(x * 4, y * 4)
+        return x < game.mapWidth() * 4 && x >= 0
+            && y < game.mapHeight() * 4 && y >= 0
+            && game.isWalkable(x * 4, y * 4)
             && game.isWalkable(x * 4 + 1, y * 4)
             && game.isWalkable(x * 4, y * 4 + 1)
             && game.isWalkable(x * 4 + 1, y * 4 + 1);

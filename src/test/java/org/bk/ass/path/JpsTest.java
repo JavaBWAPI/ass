@@ -94,6 +94,22 @@ class JpsTest {
             new Position(2, 2), new Position(2, 1), new Position(1, 0), new Position(0, 0));
   }
 
+//  @Test
+  void shouldNotJumpThroughDiagonally() {
+    // GIVEN
+    Jps sut =
+        new Jps(
+            PPMap.fromBooleanArray(
+                new boolean[][] {{true, false}, {false, true}}));
+
+    // WHEN
+    Result result = sut.findPath(new Position(0, 0), new Position(1, 1));
+
+    // THEN
+    assertThat(result.path)
+        .isEmpty();
+  }
+
   @Test
   void shouldNotFindPathWhenBlockedButWithCircle() {
     // GIVEN

@@ -8,7 +8,7 @@ public class BooleanGrid extends VersionedGrid<Boolean> {
 
   @Override
   public Boolean get(int x, int y) {
-    return dataVersion[y][x] == version;
+    return x >= 0 && y >= 0 && x < getWidth() && y < getHeight() && dataVersion[y][x] == version;
   }
 
   @Override

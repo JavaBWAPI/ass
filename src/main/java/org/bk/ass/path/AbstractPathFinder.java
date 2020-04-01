@@ -30,7 +30,20 @@ abstract class AbstractPathFinder {
   }
 
   Result searchFrom(Position start) {
-    openQueue.add(new Node(start));
+    if (start.equals(target)) {
+      return new Result(0f, Collections.singletonList(start));
+    }
+    Node startNode = new Node(start);
+    addToOpenSet(startNode, jumpHorizontal(start.x, start.y, -1));
+    addToOpenSet(startNode, jumpHorizontal(start.x, start.y, 1));
+
+    addToOpenSet(startNode, jumpVertical(start.x, start.y, -1));
+    addToOpenSet(startNode, jumpVertical(start.x, start.y, 1));
+
+    addToOpenSet(startNode, jumpDiag(start.x, start.y, 1, 1));
+    addToOpenSet(startNode, jumpDiag(start.x, start.y, -1, 1));
+    addToOpenSet(startNode, jumpDiag(start.x, start.y, -1, -1));
+    addToOpenSet(startNode, jumpDiag(start.x, start.y, 1, -1));
     Node best;
     while ((best = openQueue.poll()) != null) {
       if (best.position.equals(target)) {
@@ -47,47 +60,34 @@ abstract class AbstractPathFinder {
       int index = idx(p);
       if (nodes[index] != CLOSED) {
         nodes[index] = CLOSED;
-        if (best.parent == null) {
-          addToOpenSet(best, jumpHorizontal(p.x, p.y, -1));
-          addToOpenSet(best, jumpHorizontal(p.x, p.y, 1));
+        int dx = Integer.signum(p.x - best.parent.position.x);
+        int dy = Integer.signum(p.y - best.parent.position.y);
 
-          addToOpenSet(best, jumpVertical(p.x, p.y, -1));
-          addToOpenSet(best, jumpVertical(p.x, p.y, 1));
-
-          addToOpenSet(best, jumpDiag(p.x, p.y, 1, 1));
-          addToOpenSet(best, jumpDiag(p.x, p.y, -1, 1));
-          addToOpenSet(best, jumpDiag(p.x, p.y, -1, -1));
-          addToOpenSet(best, jumpDiag(p.x, p.y, 1, -1));
+        if (dx != 0 && dy != 0) {
+          addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
+          addToOpenSet(best, jumpVertical(p.x, p.y, dy));
+          addToOpenSet(best, jumpDiag(p.x, p.y, dx, dy));
+          if (!map.get(p.x - dx, p.y)) {
+            addToOpenSet(best, jumpDiag(p.x, p.y, -dx, dy));
+          }
+          if (!map.get(p.x, p.y - dy)) {
+            addToOpenSet(best, jumpDiag(p.x, p.y, dx, -dy));
+          }
+        } else if (dx != 0) {
+          addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
+          if (!map.get(p.x, p.y - 1)) {
+            addToOpenSet(best, jumpDiag(p.x, p.y, dx, -1));
+          }
+          if (!map.get(p.x, p.y + 1)) {
+            addToOpenSet(best, jumpDiag(p.x, p.y, dx, 1));
+          }
         } else {
-          int dx = Integer.signum(p.x - best.parent.position.x);
-          int dy = Integer.signum(p.y - best.parent.position.y);
-
-          if (dx != 0 && dy != 0) {
-            addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
-            addToOpenSet(best, jumpVertical(p.x, p.y, dy));
-            addToOpenSet(best, jumpDiag(p.x, p.y, dx, dy));
-            if (!map.get(p.x - dx, p.y)) {
-              addToOpenSet(best, jumpDiag(p.x, p.y, -dx, dy));
-            }
-            if (!map.get(p.x, p.y - dy)) {
-              addToOpenSet(best, jumpDiag(p.x, p.y, dx, -dy));
-            }
-          } else if (dx != 0) {
-            addToOpenSet(best, jumpHorizontal(p.x, p.y, dx));
-            if (!map.get(p.x, p.y - 1)) {
-              addToOpenSet(best, jumpDiag(p.x, p.y, dx, -1));
-            }
-            if (!map.get(p.x, p.y + 1)) {
-              addToOpenSet(best, jumpDiag(p.x, p.y, dx, 1));
-            }
-          } else {
-            addToOpenSet(best, jumpVertical(p.x, p.y, dy));
-            if (!map.get(p.x - 1, p.y)) {
-              addToOpenSet(best, jumpDiag(p.x, p.y, -1, dy));
-            }
-            if (!map.get(p.x + 1, p.y)) {
-              addToOpenSet(best, jumpDiag(p.x, p.y, 1, dy));
-            }
+          addToOpenSet(best, jumpVertical(p.x, p.y, dy));
+          if (!map.get(p.x - 1, p.y)) {
+            addToOpenSet(best, jumpDiag(p.x, p.y, -1, dy));
+          }
+          if (!map.get(p.x + 1, p.y)) {
+            addToOpenSet(best, jumpDiag(p.x, p.y, 1, dy));
           }
         }
       }
