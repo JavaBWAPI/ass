@@ -9,10 +9,17 @@ import org.bk.ass.sim.Simulator.Behavior;
 
 public class RetreatBehavior implements Behavior {
 
+  private AttackerBehavior staticDefenseBehaviour = new AttackerBehavior();
+
   @Override
   public boolean simUnit(
-          int frameSkip, Agent agent, UnorderedCollection<Agent> allies, UnorderedCollection<Agent> enemies) {
-    return simFlee(frameSkip, agent, enemies);
+      int frameSkip, Agent agent, UnorderedCollection<Agent> allies,
+      UnorderedCollection<Agent> enemies) {
+    if (agent.speedSquared == 0) {
+      return staticDefenseBehaviour.simUnit(frameSkip, agent, allies, enemies);
+    } else {
+      return simFlee(frameSkip, agent, enemies);
+    }
   }
 
   static boolean simFlee(int frames, Agent agent, UnorderedCollection<Agent> enemies) {

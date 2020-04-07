@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.bk.ass.PositionOutOfBoundsException;
 import org.bk.ass.sim.Simulator.Builder;
+import org.bk.ass.sim.Simulator.RoleBasedBehavior;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.test.BWDataProvider;
@@ -1187,5 +1188,21 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isEmpty();
     assertThat(simulator.getAgentsB()).hasSize(1);
+  }
+
+  @Test
+  void staticDefenseShouldKeepAttackingOnRetreat() {
+    // GIVEN
+    simulator = new Builder().withPlayerABehavior(new RetreatBehavior())
+        .withPlayerBBehavior(new RoleBasedBehavior()).build();
+    simulator.addAgentA(factory.of(UnitType.Zerg_Sunken_Colony));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
   }
 }
