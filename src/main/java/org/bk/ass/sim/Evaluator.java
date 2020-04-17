@@ -316,7 +316,7 @@ public class Evaluator {
 
     @Override
     public void removeAgents(List<Agent> agents) {
-      throw new UnsupportedOperationException();
+      // NOOP in evaluator
     }
   }
 

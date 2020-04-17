@@ -547,4 +547,16 @@ class EvaluatorTest {
     // THEN
     assertThat(result.value).isBetween(0.3, 0.4);
   }
+
+  @Test
+  void carrierVsCarrier() {
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Protoss_Carrier));
+    List<Agent> b = Collections.singletonList(factory.of(UnitType.Protoss_Carrier));
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result.value).isBetween(0.49, 0.51);
+  }
 }
