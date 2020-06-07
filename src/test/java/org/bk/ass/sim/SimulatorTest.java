@@ -1068,6 +1068,25 @@ class SimulatorTest {
   }
 
   @Test
+  void approx1ScourceVs2Overlords() {
+    // GIVEN
+    approxSim();
+
+    simulator.reset();
+    simulator.addAgentA(factory.of(UnitType.Zerg_Scourge));
+
+    simulator.addAgentB(factory.of(UnitType.Zerg_Overlord));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Overlord));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
+  }
+
+  @Test
   void shouldDieWhenRunningAwayWithSpeedPenalty() {
     // GIVEN
     simulator = new Builder().withPlayerABehavior(new RetreatBehavior()).build();

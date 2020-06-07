@@ -19,11 +19,15 @@ public class ApproxAttackBehavior implements Behavior {
                     && enemy.detected
                     && !enemy.isStasised()) {
                 if (agent.canStim
-                        && agent.stimTimer <= 0
-                        && agent.healthShifted >= agent.maxHealthShifted / 2) {
+                    && agent.stimTimer <= 0
+                    && agent.healthShifted >= agent.maxHealthShifted / 2) {
                     agent.stim();
                 }
                 attack(agent, wpn, enemy, allies, enemies);
+                if (agent.isSuicider) {
+                    agent.healthShifted = 0;
+                    break;
+                }
             } else
                 i--;
         }
