@@ -72,7 +72,7 @@ public class EvaluatorParameterTuner {
         candidates.set(min, sub);
         if (sub.score > best) {
           best = sub.score;
-          System.out.println("Best: " + best);
+          System.out.println("Best: " + best + "/" + TEST_METHODS.length);
           System.out.println(Arrays.stream(sub.d)
                   .mapToObj(String::valueOf)
                   .collect(Collectors.joining(", ", "new double[] {", "}")));

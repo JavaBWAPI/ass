@@ -537,6 +537,8 @@ class EvaluatorTest {
     List<Agent> a = Collections.singletonList(factory.of(UnitType.Terran_Vulture_Spider_Mine));
     List<Agent> b =
         Arrays.asList(
+            factory.of(UnitType.Terran_Marine),
+            factory.of(UnitType.Protoss_Zealot),
             factory.of(UnitType.Zerg_Zergling));
 
     // WHEN
@@ -556,17 +558,5 @@ class EvaluatorTest {
 
     // THEN
     assertThat(result.value).isBetween(0.49, 0.51);
-  }
-
-  @Test
-  void scourgeVs2Overlords() {
-    List<Agent> a = Collections.singletonList(factory.of(UnitType.Zerg_Scourge));
-    List<Agent> b = Arrays.asList(factory.of(UnitType.Zerg_Overlord), factory.of(UnitType.Zerg_Overlord), factory.of(UnitType.Zerg_Overlord));
-
-    // WHEN
-    EvaluationResult result = evaluator.evaluate(a, b);
-
-    // THEN
-    assertThat(result.value).isBetween(0.40, 0.60);
   }
 }
