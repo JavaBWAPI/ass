@@ -31,6 +31,29 @@ public final class Grids {
     };
   }
 
+  public static Grid<Boolean> andedGrid(Grid<Boolean>... grids) {
+    return new Grid<Boolean>() {
+      @Override
+      public int getWidth() {
+        return grids[0].getWidth();
+      }
+
+      @Override
+      public int getHeight() {
+        return grids[0].getHeight();
+      }
+
+      @Override
+      public Boolean get(int x, int y) {
+        for (Grid<Boolean> b: grids) {
+          if (!b.get(x, y))
+            return false;
+        }
+        return true;
+      }
+    };
+  }
+
   public static Grid<Boolean> negated(Grid<Boolean> grid) {
     return new Grid<Boolean>() {
       @Override
@@ -107,7 +130,9 @@ public final class Grids {
 
       @Override
       public Boolean get(int x, int y) {
-        return map.isWalkable(x * 4, y * 4)
+        return x < map.mapWidth() * 4 && x >= 0
+            && y < map.mapHeight() * 4 && y >= 0
+            && map.isWalkable(x * 4, y * 4)
             && map.isWalkable(x * 4 + 1, y * 4)
             && map.isWalkable(x * 4, y * 4 + 1)
             && map.isWalkable(x * 4 + 1, y * 4 + 1);
