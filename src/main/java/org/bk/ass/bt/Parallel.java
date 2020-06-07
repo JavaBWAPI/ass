@@ -37,8 +37,8 @@ public class Parallel extends CompoundNode {
 
   @Override
   public void exec(ExecutionContext context) {
+    children.sort(UTILITY_COMPARATOR);
     if (policy == Policy.SELECTOR) {
-      children.sort(UTILITY_COMPARATOR);
       status = NodeStatus.FAILURE;
       execChildren(context, NodeStatus.SUCCESS);
     } else if (policy == Policy.SEQUENCE) {
