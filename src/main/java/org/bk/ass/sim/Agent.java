@@ -533,6 +533,10 @@ public class Agent {
     return this;
   }
 
+  public boolean isMovable() {
+    return baseSpeed > 0;
+  }
+
   public final void heal(int amountShifted) {
     healthShifted += amountShifted;
   }

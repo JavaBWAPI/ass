@@ -2,7 +2,7 @@ plugins {
     java
     id("maven")
     id("me.champeau.gradle.jmh") version "0.5.0"
-    id("com.github.ben-manes.versions") version "0.27.0"
+    id("com.github.ben-manes.versions") version "0.28.0"
 }
 
 group = "org.bk"

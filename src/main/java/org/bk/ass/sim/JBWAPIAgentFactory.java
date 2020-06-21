@@ -215,13 +215,15 @@ public class JBWAPIAgentFactory {
       boolean energyUpgrade,
       boolean cooldownUpgrade) {
     int energy = 0;
-    if (unit.getType().isSpellcaster()) {
+    UnitType unitType = unit.getType();
+    if (unitType.isSpellcaster()) {
       energy = unit.getEnergy();
     }
 
+    boolean detected = unit.isDetected();
     Agent agent =
         fromUnitType(
-                unit.getType(),
+            unitType,
                 groundWeaponUpgrades,
                 airWeaponUpgrades,
                 groundWeaponRangeUpgrade,
@@ -229,13 +231,13 @@ public class JBWAPIAgentFactory {
                 speedUpgrade,
                 energyUpgrade,
                 cooldownUpgrade)
-            .setHealth(unit.getHitPoints())
-            .setShields(unit.getShields())
-            .setEnergy(energy)
+            .setHealth(detected ? unit.getHitPoints() : unitType.maxHitPoints())
+            .setShields(detected ? unit.getShields() : unitType.maxShields())
+            .setEnergy(detected ? energy : unitType.maxEnergy())
             .setX(unit.getX())
             .setY(unit.getY())
             // Should be "adjusted" for own cloaked units
-            .setDetected(unit.isDetected())
+            .setDetected(detected)
             // By default set unit as user object
             .setUserObject(unit)
             .setBurrowed(unit.isBurrowed())

@@ -20,6 +20,10 @@ import org.openbw.bwapi4j.unit.Marine;
 import org.openbw.bwapi4j.unit.PlayerUnit;
 import org.openbw.bwapi4j.unit.SpellCaster;
 
+/**
+ * @deprecated BWAPI4J is not actively developed, please use JBWAPI.
+ */
+@Deprecated
 public class BWAPI4JAgentFactory {
 
   private static final EnumSet<UnitType> SUICIDERS =

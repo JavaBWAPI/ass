@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 
 class JBWAPIAgentFactoryTest {
@@ -72,6 +74,22 @@ class JBWAPIAgentFactoryTest {
     assertThat(agent.sleepTimer).isEqualTo(374);
   }
 
+  @ParameterizedTest
+  @MethodSource("undetected")
+  void undetectedUnitsShouldUseDefaults(UnitType type) {
+    // GIVEN
+    Unit unit = mockUnit(type);
+
+    // WHEN
+    Agent agent = sut.of(unit);
+
+    // THEN
+    assertThat(agent.shieldsShifted).isEqualTo(type.maxShields() << 8);
+    assertThat(agent.healthShifted).isEqualTo(type.maxHitPoints() << 8);
+    assertThat(agent.baseSpeed).isEqualTo((float) type.topSpeed());
+    assertThat(agent.energyShifted).isEqualTo(type.maxEnergy() << 8);
+  }
+
   private static Stream<UnitType> buildings() {
     return Arrays.stream(UnitType.values())
         .filter(it -> it.isBuilding() &&
@@ -90,5 +108,9 @@ class JBWAPIAgentFactoryTest {
     return Arrays.stream(UnitType.values())
         .filter(it -> it.canAttack() ||
             it == UnitType.Terran_Bunker);
+  }
+
+  private static Stream<UnitType> undetected() {
+    return Stream.of(UnitType.Protoss_Dark_Templar, UnitType.Terran_Wraith);
   }
 }
