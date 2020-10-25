@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class Agent {
+public class Agent implements Cloneable {
 
   static final Consumer<UnitDeathContext> CARRIER_DEATH_HANDLER =
       context -> {
@@ -111,68 +111,17 @@ public class Agent {
     this.name = name;
   }
 
-  /**
-   * Copy constructor. References to other agents are cleared:
-   *
-   * <ul>
-   *   <li>attackTarget
-   *   <li>restoreTarget
-   *   <li>interceptors
-   * </ul>
-   */
-  public Agent(Agent other) {
-    this.name = other.name;
-    this.attackTargetPriority = other.attackTargetPriority;
-    this.armorShifted = other.armorShifted;
-    this.shieldUpgrades = other.shieldUpgrades;
-    this.userObject = other.userObject;
-    this.elevationLevel = other.elevationLevel;
-    this.x = other.x;
-    this.y = other.y;
-    this.nx = other.nx;
-    this.ny = other.ny;
-    this.speedUpgrade = other.speedUpgrade;
-    this.baseSpeed = other.baseSpeed;
-    this.speedSquared = other.speedSquared;
-    this.speed = other.speed;
-    this.scout = other.scout;
-    this.vx = other.vx;
-    this.vy = other.vy;
-    this.healthShifted = other.healthShifted;
-    this.maxHealthShifted = other.maxHealthShifted;
-    this.healedThisFrame = other.healedThisFrame;
-    this.stimTimer = other.stimTimer;
-    this.ensnareTimer = other.ensnareTimer;
-    this.hpConstructionRate = other.hpConstructionRate;
-    this.shieldsShifted = other.shieldsShifted;
-    this.maxShieldsShifted = other.maxShieldsShifted;
-    this.energyShifted = other.energyShifted;
-    this.maxEnergyShifted = other.maxEnergyShifted;
-    this.cooldown = other.cooldown;
-    this.cooldownUpgrade = other.cooldownUpgrade;
-    this.sleepTimer = other.sleepTimer;
-    this.stopFrames = other.stopFrames;
-    this.canStim = other.canStim;
-    this.plagueDamagePerFrameShifted = other.plagueDamagePerFrameShifted;
-    this.regeneratesHealth = other.regeneratesHealth;
-    this.isSuicider = other.isSuicider;
-    this.isHealer = other.isHealer;
-    this.isFlyer = other.isFlyer;
-    this.isOrganic = other.isOrganic;
-    this.isMechanic = other.isMechanic;
-    this.isKiter = other.isKiter;
-    this.isRepairer = other.isRepairer;
-    this.protectedByDarkSwarm = other.protectedByDarkSwarm;
-    this.burrowed = other.burrowed;
-    this.burrowedAttacker = other.burrowedAttacker;
-    this.detected = other.detected;
-    this.stasisTimer = other.stasisTimer;
-    this.size = other.size;
-    this.isMelee = other.isMelee;
-    this.airWeapon = other.airWeapon;
-    this.groundWeapon = other.groundWeapon;
-    this.onDeathHandler = other.onDeathHandler;
-    this.attackCounter = other.attackCounter;
+  @Override
+  public Agent clone() {
+    try {
+      Agent agent = (Agent) super.clone();
+      agent.attackTarget = null;
+      agent.restoreTarget = null;
+      agent.interceptors = Collections.emptyList();
+      return agent;
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public Agent setUserObject(Object userObject) {

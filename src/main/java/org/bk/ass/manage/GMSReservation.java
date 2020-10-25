@@ -37,8 +37,11 @@ public class GMSReservation implements Reservation<GMS> {
   }
 
   @Override
-  public boolean itemAvailableInFuture(Object source, GMS futureItem, int futureFrames) {
-    GMS futureGMS = gmsPrediction.apply(futureFrames).add(gms);
+  public boolean itemReservableInFuture(Object source, GMS futureItem, int futureFrames) {
+    GMS futureGMS = gmsPrediction.apply(futureFrames)
+        .add(gms)
+        // Already reserved
+        .add(futureItem);
     return futureGMS.canAfford(futureItem);
   }
 

@@ -12,7 +12,7 @@ class SequenceTest {
     Sequence sut = new Sequence();
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.SUCCESS);
@@ -26,7 +26,7 @@ class SequenceTest {
             new LambdaNode(() -> NodeStatus.SUCCESS), new LambdaNode(() -> NodeStatus.FAILURE));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.FAILURE);
@@ -42,7 +42,7 @@ class SequenceTest {
             new LambdaNode(() -> NodeStatus.FAILURE));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.RUNNING);

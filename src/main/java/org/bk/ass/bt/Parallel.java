@@ -1,5 +1,6 @@
 package org.bk.ass.bt;
 
+import java.util.Objects;
 import org.bk.ass.StopWatch;
 
 /**
@@ -10,6 +11,7 @@ import org.bk.ass.StopWatch;
 public class Parallel extends CompoundNode {
 
   private final Policy policy;
+  private NodeStatus statusToSet;
 
   public enum Policy {
     /**
@@ -25,37 +27,69 @@ public class Parallel extends CompoundNode {
   /**
    * Initializes with the default policy {@link Policy#SEQUENCE}.
    */
+  public Parallel(String name, TreeNode... children) {
+    super(name, children);
+    policy = Policy.SEQUENCE;
+  }
+
+  /**
+   * Initializes with the default policy {@link Policy#SEQUENCE}.
+   */
   public Parallel(TreeNode... children) {
     super(children);
     policy = Policy.SEQUENCE;
   }
 
+  public Parallel(String name, Policy policy, TreeNode... children) {
+    super(name, children);
+    Objects.requireNonNull(policy);
+    this.policy = policy;
+  }
+
   public Parallel(Policy policy, TreeNode... children) {
     super(children);
+    Objects.requireNonNull(policy);
     this.policy = policy;
   }
 
   @Override
-  public void exec(ExecutionContext context) {
-    children.sort(UTILITY_COMPARATOR);
+  public void startExecPhase() {
+    super.startExecPhase();
     if (policy == Policy.SELECTOR) {
-      status = NodeStatus.FAILURE;
+      statusToSet = NodeStatus.FAILURE;
+    } else if (policy == Policy.SEQUENCE) {
+      statusToSet = NodeStatus.SUCCESS;
+    }
+  }
+
+  @Override
+  protected void exec(ExecutionContext context) {
+    if (policy == Policy.SELECTOR) {
       execChildren(context, NodeStatus.SUCCESS);
     } else if (policy == Policy.SEQUENCE) {
-      status = NodeStatus.SUCCESS;
       execChildren(context, NodeStatus.FAILURE);
     }
   }
 
   private void execChildren(ExecutionContext context, NodeStatus statusToStop) {
     StopWatch stopWatch = new StopWatch();
-    for (TreeNode child : children) {
-      execChild(child, context);
-      if (child.getStatus() == statusToStop) {
-        status = child.getStatus();
-        abortRunningChildren();
-        break;
-      } else if (child.getStatus() == NodeStatus.RUNNING) status = NodeStatus.RUNNING;
+    if (!remainingChildren.isEmpty()) {
+      TreeNode currentChild = nextMaxUtilityChild();
+      execChild(currentChild, context);
+      NodeStatus nodeStatus = currentChild.status;
+      if (nodeStatus != NodeStatus.INCOMPLETE) {
+        remainingChildren.remove(currentChild);
+        if (nodeStatus == statusToStop) {
+          statusToSet = nodeStatus;
+          abortRunningChildren();
+          remainingChildren.clear();
+        } else if (nodeStatus == NodeStatus.RUNNING) {
+          statusToSet = nodeStatus;
+        }
+      }
+    }
+    if (remainingChildren.isEmpty() && status == NodeStatus.INCOMPLETE) {
+      status = statusToSet;
     }
     stopWatch.registerWith(context, this);
   }

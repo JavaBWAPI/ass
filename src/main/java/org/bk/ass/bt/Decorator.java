@@ -9,6 +9,12 @@ public abstract class Decorator extends TreeNode {
 
   private final TreeNode delegate;
 
+  public Decorator(String name, TreeNode delegate) {
+    super(name);
+    Objects.requireNonNull(delegate, "delegate must not be set");
+    this.delegate = delegate;
+  }
+
   public Decorator(TreeNode delegate) {
     Objects.requireNonNull(delegate, "delegate must not be set");
     this.delegate = delegate;
@@ -16,6 +22,7 @@ public abstract class Decorator extends TreeNode {
 
   @Override
   public void init() {
+    super.init();
     delegate.init();
   }
 
@@ -25,15 +32,21 @@ public abstract class Decorator extends TreeNode {
   }
 
   @Override
-  public void exec(ExecutionContext executionContext) {
+  public void startExecPhase() {
+    delegate.startExecPhase();
+  }
+
+  @Override
+  protected void exec(ExecutionContext executionContext) {
     executionContext.push(delegate);
     delegate.exec(executionContext);
+    delegate.verifyExecution();
     executionContext.pop();
     updateStatusFromDelegate(delegate.getStatus());
   }
 
   @Override
-  public void exec() {
+  protected void exec() {
     exec(ExecutionContext.NOOP);
   }
 

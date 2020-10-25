@@ -3,15 +3,14 @@ package org.bk.ass.bt;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-import org.bk.ass.StopWatch;
+import java.util.stream.Collectors;
 import org.bk.ass.bt.Parallel.Policy;
 
 /**
@@ -29,6 +28,8 @@ public class Distributor<T> extends TreeNode {
   private final Supplier<Collection<T>> itemSupplier;
   private final Function<T, TreeNode> nodeFactory;
   private final Map<T, TreeNode> itemNodes = new HashMap<>();
+  private List<TreeNode> remainingChildren;
+  private NodeStatus statusToSet;
 
   public Distributor(
       Policy policy, Supplier<Collection<T>> itemSupplier, Function<T, TreeNode> nodeFactory) {
@@ -38,43 +39,54 @@ public class Distributor<T> extends TreeNode {
   }
 
   @Override
-  public void exec() {
+  public void startExecPhase() {
+    super.startExecPhase();
+    status = NodeStatus.INCOMPLETE;
+    itemNodes.values().forEach(TreeNode::startExecPhase);
+
+    if (policy == Policy.SELECTOR) {
+      statusToSet = NodeStatus.FAILURE;
+    } else if (policy == Policy.SEQUENCE) {
+      statusToSet = NodeStatus.SUCCESS;
+    }
+    remainingChildren = updateMappedNodes().stream().map(itemNodes::get)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  protected void exec() {
     exec(ExecutionContext.NOOP);
   }
 
   @Override
-  public void exec(ExecutionContext executionContext) {
-    Collection<T> mappedItems = updateMappedNodes();
-
-    if (policy == Policy.SELECTOR) {
-      Stream<TreeNode> children = mappedItems.stream().map(itemNodes::get);
-      status = NodeStatus.FAILURE;
-      execChildren(executionContext, children, NodeStatus.SUCCESS);
-    } else if (policy == Policy.SEQUENCE) {
-      Stream<TreeNode> children =
-          itemNodes.values().stream().sorted(Comparator.comparing(TreeNode::getUtility).reversed());
-      status = NodeStatus.SUCCESS;
-      execChildren(executionContext, children, NodeStatus.FAILURE);
+  protected void exec(ExecutionContext executionContext) {
+    if (!remainingChildren.isEmpty()) {
+      TreeNode toExec;
+      if (policy == Policy.SELECTOR) {
+        toExec =
+            remainingChildren.stream()
+                .max(CompoundNode.UTILITY_COMPARATOR)
+                .orElseThrow(IllegalStateException::new);
+      } else {
+        toExec = remainingChildren.get(0);
+      }
+      execChild(toExec, executionContext);
+      NodeStatus toExecStatus = toExec.status;
+      if (toExecStatus != NodeStatus.INCOMPLETE) {
+        remainingChildren.remove(toExec);
+        if (toExecStatus == NodeStatus.SUCCESS && policy == Policy.SELECTOR
+            || toExecStatus == NodeStatus.FAILURE && policy == Policy.SEQUENCE) {
+          statusToSet = toExecStatus;
+          abortRunningChildren();
+          remainingChildren.clear();
+        } else if (toExecStatus == NodeStatus.RUNNING) {
+          statusToSet = NodeStatus.RUNNING;
+        }
+      }
     }
-  }
-
-  private void execChildren(
-      ExecutionContext context, Stream<TreeNode> children, NodeStatus stopStatus) {
-    StopWatch stopWatch = new StopWatch();
-    children
-        .filter(
-            child -> {
-              execChild(child, context);
-              if (child.status == stopStatus) {
-                status = child.status;
-                abortRunningChildren();
-                return true;
-              } else if (child.status == NodeStatus.RUNNING) status = NodeStatus.RUNNING;
-
-              return false;
-            })
-        .findFirst(); // Workaround for missing takeWhile
-    stopWatch.registerWith(context, this);
+    if (remainingChildren.isEmpty() && status == NodeStatus.INCOMPLETE) {
+      status = statusToSet;
+    }
   }
 
   private void abortRunningChildren() {
@@ -107,6 +119,7 @@ public class Distributor<T> extends TreeNode {
                 itemForNode -> {
                   TreeNode node = nodeFactory.apply(itemForNode);
                   node.init();
+                  node.startExecPhase();
                   return node;
                 }));
     return updatedItemList;

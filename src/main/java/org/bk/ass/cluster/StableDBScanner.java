@@ -93,7 +93,7 @@ public class StableDBScanner<U> {
 
     while ((!remainingDbEntries.isEmpty() || !horizon.isEmpty()) && maxMarkedElements != 0) {
       while (!horizon.isEmpty() && maxMarkedElements-- != 0) {
-        WrappedElement<U> q = horizon.removeAt(0);
+        WrappedElement<U> q = horizon.swapRemove(0);
         if (q.marked) {
           continue;
         }
@@ -108,7 +108,7 @@ public class StableDBScanner<U> {
       }
 
       if (horizon.isEmpty() && !remainingDbEntries.isEmpty()) {
-        WrappedElement<U> p = remainingDbEntries.removeAt(0);
+        WrappedElement<U> p = remainingDbEntries.swapRemove(0);
         if (!p.marked) {
           List<WrappedElement<U>> n = elementsWithinRadius(p);
           if (n.size() >= minPoints) {

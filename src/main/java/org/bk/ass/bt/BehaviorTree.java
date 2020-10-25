@@ -23,6 +23,13 @@ public abstract class BehaviorTree extends TreeNode {
 
   private TreeNode root;
 
+  public BehaviorTree() {
+  }
+
+  public BehaviorTree(String name) {
+    super(name);
+  }
+
   /**
    * Will be called <em>once</em> to create the actual root to be ticked.
    */
@@ -37,14 +44,14 @@ public abstract class BehaviorTree extends TreeNode {
   }
 
   @Override
-  public void exec(ExecutionContext executionContext) {
+  protected void exec(ExecutionContext executionContext) {
     checkInitWasCalled();
     root.exec(executionContext);
     status = root.getStatus();
   }
 
   @Override
-  public final void exec() {
+  protected final void exec() {
     exec(ExecutionContext.NOOP);
   }
 
@@ -56,6 +63,17 @@ public abstract class BehaviorTree extends TreeNode {
   public void close() {
     checkInitWasCalled();
     root.close();
+  }
+
+  @Override
+  public void startExecPhase() {
+    checkInitWasCalled();
+    root.startExecPhase();
+  }
+
+  @Override
+  protected void verifyExecution() {
+    root.verifyExecution();
   }
 
   @Override

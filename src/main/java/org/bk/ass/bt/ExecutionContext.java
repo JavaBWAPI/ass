@@ -24,12 +24,12 @@ public class ExecutionContext {
         }
 
         @Override
-        public void registerExecutionTime(TreeNode node, int millis) {
+        public void registerExecutionTime(TreeNode node, long nanos) {
         }
       };
 
   private Deque<TreeNode> stack = new ArrayDeque<>();
-  private Map<TreeNode, Integer> executionTime = new HashMap<>();
+  private Map<TreeNode, Long> executionTime = new HashMap<>();
 
   public void push(TreeNode node) {
     stack.addLast(node);
@@ -43,11 +43,11 @@ public class ExecutionContext {
     return new ArrayList<>(stack);
   }
 
-  public void registerExecutionTime(TreeNode node, int millis) {
-    executionTime.put(node, millis);
+  public void registerExecutionTime(TreeNode node, long nanos) {
+    executionTime.compute(node, (n, ov) -> ov == null ? nanos : ov + nanos);
   }
 
-  public Map<TreeNode, Integer> getExecutionTime() {
+  public Map<TreeNode, Long> getExecutionTime() {
     return new HashMap<>(executionTime);
   }
 }

@@ -1,15 +1,21 @@
 package org.bk.ass.collection;
 
-import java.util.*;
-
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
+import java.util.AbstractCollection;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A collection implementation that does not guarantee the order of elements stays constant of
  * manipulation. All operations generally use identity and not equality!
  */
 public class UnorderedCollection<T> extends AbstractCollection<T> {
+
   T[] items;
   private int size;
 
@@ -23,7 +29,8 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
 
   public UnorderedCollection(Collection<T> source) {
     this((int) (source.size() * 7L / 4));
-    addAll(source);
+    size = source.size();
+    items = (T[]) Arrays.copyOf(source.toArray(), size);
   }
 
   public void clearReferences() {
@@ -48,9 +55,9 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
     if (targetSize >= items.length) {
       resize(targetSize * 7 / 4);
     }
-    for (T e : elementsToAdd) {
-      items[size++] = e;
-    }
+    Object[] src = elementsToAdd.toArray();
+    System.arraycopy(src, 0, items, size, src.length);
+    size += src.length;
     return true;
   }
 
@@ -58,14 +65,14 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
   public boolean remove(Object value) {
     for (int i = 0; i < size; i++) {
       if (items[i] == value) {
-        removeAt(i);
+        swapRemove(i);
         return true;
       }
     }
     return false;
   }
 
-  public T removeAt(int index) {
+  public T swapRemove(int index) {
     if (index >= size) {
       throw new IndexOutOfBoundsException("index " + index + " must be >= 0 and < " + size);
     }
@@ -73,6 +80,22 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
     T last = items[--size];
     items[index] = last;
     return removed;
+  }
+
+  public T removeMax(Comparator<T> comparator) {
+    if (size == 0) {
+      throw new NoSuchElementException();
+    }
+    int maxIndex = -1;
+    T max = null;
+    for (int i = size - 1; i >= 0; i--) {
+      T current = items[i];
+      if (max == null || comparator.compare(current, max) > 0) {
+        max = current;
+        maxIndex = i;
+      }
+    }
+    return swapRemove(maxIndex);
   }
 
   private void resize(int newCapacity) {
@@ -135,7 +158,7 @@ public class UnorderedCollection<T> extends AbstractCollection<T> {
     @Override
     public void remove() {
       index--;
-      UnorderedCollection.this.removeAt(index);
+      UnorderedCollection.this.swapRemove(index);
     }
 
     @Override

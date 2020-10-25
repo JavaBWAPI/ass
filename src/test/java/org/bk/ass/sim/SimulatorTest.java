@@ -310,8 +310,8 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).isEmpty();
-    assertThat(simulator.getAgentsB()).isNotEmpty();
+    assertThat(simulator.getAgentsA()).isNotEmpty();
+    assertThat(simulator.getAgentsB()).isEmpty();
   }
 
   @Test
@@ -367,7 +367,7 @@ class SimulatorTest {
   }
 
   @Test
-  void MarineVsLurker() {
+  void LurkerShouldBurrow() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Marine));
     simulator.addAgentB(factory.of(UnitType.Zerg_Lurker));
@@ -376,8 +376,8 @@ class SimulatorTest {
     simulator.simulate(-1);
 
     // THEN
-    assertThat(simulator.getAgentsA()).isNotEmpty();
-    assertThat(simulator.getAgentsB()).isEmpty();
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
   }
 
   @Test
@@ -401,7 +401,7 @@ class SimulatorTest {
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(200).setY(200))
         .addAgentA(factory.of(UnitType.Zerg_Lurker).setBurrowed(true).setX(210).setY(200));
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 9; i++) {
       simulator.addAgentB(factory.of(UnitType.Terran_Marine).setX(10 * i).setY(20));
     }
 
@@ -521,7 +521,7 @@ class SimulatorTest {
 
     // THEN
     assertThat(simulator.getAgentsA()).hasSizeLessThanOrEqualTo(3);
-    assertThat(simulator.getAgentsB()).isEmpty();
+    assertThat(simulator.getAgentsB()).hasSizeLessThanOrEqualTo(3);
   }
 
   @Test
@@ -552,7 +552,7 @@ class SimulatorTest {
     for (int i = 0; i < 12; i++) {
       simulator.addAgentA(factory.of(UnitType.Protoss_Dragoon).setX(400 + i * 8).setY(400));
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
       simulator.addAgentB(
           factory.of(UnitType.Zerg_Hydralisk, 0, 0, 32, 32, true, false, false).setX(200 + i * 8));
     }
@@ -614,9 +614,9 @@ class SimulatorTest {
   }
 
   @Test
-  void _10HydrasVsDT() {
+  void _3HydrasVsDT() {
     // GIVEN
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 3; i++) {
       simulator.addAgentA(factory.of(UnitType.Zerg_Hydralisk).setX(1000 + i * 8).setY(1000));
     }
     simulator.addAgentB(
@@ -936,12 +936,12 @@ class SimulatorTest {
   }
 
   @Test
-  void reaverVs12Lings() {
+  void reaverVs14Lings() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Protoss_Reaver));
 
-    for (int i = 0; i < 13; i++) {
-      simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(i * 30));
+    for (int i = 0; i < 30; i++) {
+      simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(i * 8));
     }
 
     // WHEN
@@ -978,6 +978,7 @@ class SimulatorTest {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(100));
     simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(120));
+    simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(140));
     simulator.addAgentA(factory.of(UnitType.Zerg_Scourge).setX(100).setY(140));
 
     simulator.addAgentB(factory.of(UnitType.Protoss_Scout).setX(200).setY(100));
@@ -1096,7 +1097,7 @@ class SimulatorTest {
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(100).setY(100));
 
     // WHEN
-    simulator.simulate(100);
+    simulator.simulate(120);
 
     // THEN
     assertThat(simulator.getAgentsA()).size().isZero();

@@ -13,6 +13,7 @@ class CompoundNodeTest {
         new NodeWithUtility(1.0, NodeStatus.SUCCESS),
         new NodeWithUtility(0.5, NodeStatus.INITIAL)
     );
+    sut.startExecPhase();
 
     // WHEN
     double utility = sut.getUtility();
@@ -28,6 +29,7 @@ class CompoundNodeTest {
         new NodeWithUtility(1.0, NodeStatus.SUCCESS),
         new NodeWithUtility(0.5, NodeStatus.RUNNING)
     );
+    sut.startExecPhase();
 
     // WHEN
     double utility = sut.getUtility();
@@ -43,6 +45,7 @@ class CompoundNodeTest {
         new NodeWithUtility(1.0, NodeStatus.INITIAL),
         new NodeWithUtility(0.5, NodeStatus.RUNNING)
     );
+    sut.startExecPhase();
 
     // WHEN
     double utility = sut.getUtility();

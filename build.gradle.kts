@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.bk"
-version = "1.3"
+version = "2.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,20 +19,23 @@ repositories {
 }
 
 dependencies {
-    implementation(fileTree("lib").include("*.jar"))
-    implementation("com.github.JavaBWAPI:JBwapi:1.0.0")
+    compileOnly(fileTree("lib").include("*.jar"))
+    compileOnly("com.github.JavaBWAPI:JBwapi:1.5")
+    compileOnly("com.github.luben:zstd-jni:1.4.+")
+    compileOnly("com.jsoniter:jsoniter:0.9.+")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.+")
     testImplementation("org.assertj:assertj-core:3.+")
     testImplementation("io.jenetics:jenetics:5.+")
     testImplementation("org.mockito:mockito-core:3.+")
+    testImplementation("com.github.davidmoten:rtree:0.8.7")
 }
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-configurations.testImplementation.get().extendsFrom(configurations.implementation.get())
+configurations.testImplementation.get().extendsFrom(configurations.compileOnly.get())
 
 tasks {
     check {

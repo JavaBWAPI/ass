@@ -25,7 +25,7 @@ class DistributorTest {
             });
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(nodeCreationCalls).hasValue(2);
@@ -41,7 +41,7 @@ class DistributorTest {
             s -> new LambdaNode(() -> NodeStatus.RUNNING));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.RUNNING);
@@ -57,7 +57,7 @@ class DistributorTest {
             s -> new LambdaNode(() -> NodeStatus.FAILURE));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.FAILURE);
@@ -73,7 +73,7 @@ class DistributorTest {
             s -> new LambdaNode(() -> "a".equals(s) ? NodeStatus.RUNNING : NodeStatus.FAILURE));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.FAILURE);
@@ -89,7 +89,7 @@ class DistributorTest {
             s -> new LambdaNode(() -> "a".equals(s) ? NodeStatus.RUNNING : NodeStatus.FAILURE));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.RUNNING);
@@ -105,7 +105,7 @@ class DistributorTest {
             s -> new LambdaNode(() -> "a".equals(s) ? NodeStatus.FAILURE : NodeStatus.SUCCESS));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.SUCCESS);
@@ -126,11 +126,11 @@ class DistributorTest {
             }));
     items.add("a");
     items.add("b");
-    sut.exec();
+    Executor.execute(sut);
     items.remove(1);
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(nodeExecCalls).hasValue(2 + 1);
@@ -150,11 +150,11 @@ class DistributorTest {
               return NodeStatus.RUNNING;
             }));
     items.add("a");
-    sut.exec();
+    Executor.execute(sut);
     items.add("b");
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(nodeExecCalls).hasValue(2 + 1);
@@ -176,7 +176,7 @@ class DistributorTest {
             s -> treeNode);
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(treeNode.status).isEqualTo(NodeStatus.INITIAL);

@@ -21,12 +21,14 @@ class LockTest {
           }
 
           @Override
-          public void release(Object lock, String item) {}
+          public void release(Object lock, String item) {
+          }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
+    Lock<String> sut = new Lock<>(reservation);
+    sut.setItem(STRING_ITEM);
 
     // WHEN
-    boolean acquire = sut.acquire();
+    boolean acquire = sut.tryLock();
 
     // THEN
     assertThat(acquire).isTrue();
@@ -51,8 +53,9 @@ class LockTest {
             released.set(true);
           }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
-    sut.acquire();
+    Lock<String> sut = new Lock<>(reservation);
+    sut.setItem("Hello World");
+    sut.tryLock();
 
     // WHEN
     sut.release();
@@ -74,12 +77,14 @@ class LockTest {
           }
 
           @Override
-          public void release(Object lock, String item) {}
+          public void release(Object lock, String item) {
+          }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
+    Lock<String> sut = new Lock<>(reservation);
+    sut.setItem(STRING_ITEM);
 
     // WHEN
-    boolean satisfied = sut.acquire();
+    boolean satisfied = sut.tryLock();
 
     // THEN
     assertThat(satisfied).isFalse();
@@ -97,10 +102,12 @@ class LockTest {
           }
 
           @Override
-          public void release(Object lock, String item) {}
+          public void release(Object lock, String item) {
+          }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
-    sut.acquire();
+    Lock<String> sut = new Lock<>(reservation);
+    sut.setItem("Hello World");
+    sut.tryLock();
 
     // WHEN
     sut.reset();
@@ -123,21 +130,23 @@ class LockTest {
           }
 
           @Override
-          public void release(Object lock, String item) {}
+          public void release(Object lock, String item) {
+          }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> "Hello World");
-    sut.acquire();
+    Lock<String> sut = new Lock<>(reservation);
+    sut.setItem("Hello World");
+    sut.tryLock();
     reserveCalls.set(0);
 
     // WHEN
-    sut.acquire();
+    sut.tryLock();
 
     // THEN
     assertThat(reserveCalls).hasValue(1);
   }
 
   @Test
-  public void shouldNotBeSatisfiedIfSelectorReturnsNull() {
+  public void shouldNotBeSatisfiedIfItemIsNull() {
     // GIVEN
     Reservation<String> reservation =
         new Reservation<String>() {
@@ -147,48 +156,23 @@ class LockTest {
           }
 
           @Override
-          public boolean itemAvailableInFuture(Object lock, String item, int futureFrames) {
-            return true;
-          }
-
-          @Override
-          public void release(Object lock, String item) {}
-        };
-    Lock<String> sut = new Lock<>(reservation, () -> null);
-
-    // WHEN
-    boolean satisfied = sut.acquire();
-
-    // THEN
-    assertThat(satisfied).isFalse();
-    assertThat(sut.isSatisfied()).isFalse();
-    assertThat(sut.isSatisfiedLater()).isFalse();
-  }
-
-  @Test
-  void shouldNotReleaseOnReacquire() {
-    // GIVEN
-    AtomicBoolean released = new AtomicBoolean();
-    Reservation<String> reservation =
-        new Reservation<String>() {
-          @Override
-          public boolean reserve(Object lock, String item) {
+          public boolean itemReservableInFuture(Object lock, String item, int futureFrames) {
             return true;
           }
 
           @Override
           public void release(Object lock, String item) {
-            released.set(true);
           }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
-    sut.acquire();
+    Lock<String> sut = new Lock<>(reservation);
 
     // WHEN
-    sut.reacquire();
+    boolean satisfied = sut.tryLock();
 
     // THEN
-    assertThat(released).isFalse();
+    assertThat(satisfied).isFalse();
+    assertThat(sut.isSatisfied()).isFalse();
+    assertThat(sut.isSatisfiedLater()).isFalse();
   }
 
   @Test
@@ -203,19 +187,21 @@ class LockTest {
           }
 
           @Override
-          public boolean itemAvailableInFuture(Object lock, String item, int futureFrames) {
+          public boolean itemReservableInFuture(Object lock, String item, int futureFrames) {
             frames.set(futureFrames);
             return true;
           }
 
           @Override
-          public void release(Object lock, String item) {}
+          public void release(Object lock, String item) {
+          }
         };
-    Lock<String> sut = new Lock<>(reservation, () -> STRING_ITEM);
-    sut.acquire();
+    Lock<String> sut = new Lock<>(reservation);
+    sut.setItem(STRING_ITEM);
+    sut.tryLock();
 
     // WHEN
-    sut.acquire();
+    sut.tryLock();
 
     // THEN
     assertThat(frames).hasValue(Lock.DEFAULT_HYSTERESIS);
@@ -232,40 +218,17 @@ class LockTest {
           }
 
           @Override
-          public void release(Object lock, Integer item) {}
+          public void release(Object lock, Integer item) {
+          }
         };
-    Lock<Integer> sut = new Lock<>(reservation, value::incrementAndGet);
-    sut.acquire();
+    Lock<Integer> sut = new Lock<>(reservation);
+    sut.setItem(value.incrementAndGet());
+    sut.tryLock();
 
     // WHEN
-    sut.acquire();
+    sut.tryLock();
 
     // THEN
     assertThat(value).hasValue(1);
-  }
-
-  @Test
-  void shouldReselectIfPreviousValueFailsCriteria() {
-    AtomicInteger value = new AtomicInteger();
-    Reservation<Integer> reservation =
-        new Reservation<Integer>() {
-          @Override
-          public boolean reserve(Object lock, Integer item) {
-            return true;
-          }
-
-          @Override
-          public void release(Object lock, Integer item) {}
-        };
-    Lock<Integer> sut = new Lock<>(reservation, value::incrementAndGet);
-    sut.setCriteria(val -> val == 2);
-    sut.acquire();
-
-    // WHEN
-    boolean secondAcquire = sut.acquire();
-
-    // THEN
-    assertThat(value).hasValue(2);
-    assertThat(secondAcquire).isTrue();
   }
 }

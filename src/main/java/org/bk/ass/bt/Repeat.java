@@ -74,16 +74,26 @@ public class Repeat extends Decorator {
 
   @Override
   protected void updateStatusFromDelegate(NodeStatus status) {
-    if (status == NodeStatus.RUNNING) running();
-    else if (policy == Policy.SEQUENCE) {
-      if (status == NodeStatus.FAILURE) failed();
-      else if (repeatAndCheckExhausted()) success();
+    if (status == NodeStatus.RUNNING || status == NodeStatus.INCOMPLETE) {
+      this.status = status;
+    } else if (policy == Policy.SEQUENCE) {
+      if (status == NodeStatus.FAILURE) {
+        failed();
+      } else if (repeatAndCheckExhausted()) {
+        success();
+      }
     } else if (policy == Policy.SELECTOR) {
-      if (status == NodeStatus.SUCCESS) success();
-      else if (repeatAndCheckExhausted()) failed();
+      if (status == NodeStatus.SUCCESS) {
+        success();
+      } else if (repeatAndCheckExhausted()) {
+        failed();
+      }
     } else if (policy == Policy.SELECTOR_INVERTED) {
-      if (status == NodeStatus.FAILURE) success();
-      else if (repeatAndCheckExhausted()) failed();
+      if (status == NodeStatus.FAILURE) {
+        success();
+      } else if (repeatAndCheckExhausted()) {
+        failed();
+      }
     }
   }
 

@@ -197,14 +197,14 @@ public class Simulator {
       simRunning |=
           agent.isStasised()
               || agent.sleepTimer > 0
-              || playerABehavior.simUnit(frameSkip, agent, playerA, playerB);
+              || simUnit(agent, playerABehavior, frameSkip, playerA, playerB);
     }
     for (int i = playerB.size() - 1; i >= 0; i--) {
       Agent agent = playerB.get(i);
       simRunning |=
           agent.isStasised()
               || agent.sleepTimer > 0
-              || playerBBehavior.simUnit(frameSkip, agent, playerB, playerA);
+              || simUnit(agent, playerBBehavior, frameSkip, playerB, playerA);
     }
     removeDead(playerA);
     removeDead(playerB);
@@ -213,11 +213,17 @@ public class Simulator {
     return simRunning;
   }
 
+  private boolean simUnit(Agent agent, Behavior playerABehavior, int frameSkip,
+      UnorderedCollection<Agent> playerA, UnorderedCollection<Agent> playerB) {
+    agent.updateSpeed();
+    return playerABehavior.simUnit(frameSkip, agent, playerA, playerB);
+  }
+
   private void removeDead(UnorderedCollection<Agent> agents) {
     int i = 0;
     while (i < agents.size()) {
       if (agents.get(i).healthShifted < 1) {
-        Agent agent = agents.removeAt(i);
+        Agent agent = agents.swapRemove(i);
         if (!agent.isFlyer) {
           collision[colindex(agent.x, agent.y)]--;
         }

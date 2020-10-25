@@ -1,5 +1,7 @@
 package org.bk.ass.bt;
 
+import java.util.Objects;
+import java.util.function.Supplier;
 import org.bk.ass.manage.Lock;
 
 /**
@@ -10,14 +12,19 @@ import org.bk.ass.manage.Lock;
 public class AcquireLock<T> extends TreeNode {
 
   private final Lock<T> lock;
+  private final Supplier<T> selector;
 
-  public AcquireLock(Lock<T> lock) {
-    this.lock = lock;
+  public AcquireLock(Lock<T> lock, Supplier<T> selector) {
+    this.lock = Objects.requireNonNull(lock);
+    this.selector = Objects.requireNonNull(selector);
   }
 
   @Override
   public void exec() {
-    if (lock.acquire()) {
+    if (!lock.isSatisfied()) {
+      lock.setItem(selector.get());
+    }
+    if (lock.tryLock()) {
       success();
     } else {
       failed();

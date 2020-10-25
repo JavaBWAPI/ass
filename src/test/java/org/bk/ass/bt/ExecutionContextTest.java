@@ -25,7 +25,7 @@ class ExecutionContextTest {
     Sequence sut = new Sequence(level1Sequence);
 
     // WHEN
-    sut.exec(new ExecutionContext());
+    Executor.execute(new ExecutionContext(), sut);
 
     // THEN
     assertThat(trace.get()).containsExactly(level1Sequence, leafNode);

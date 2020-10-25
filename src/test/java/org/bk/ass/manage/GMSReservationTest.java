@@ -42,7 +42,7 @@ class GMSReservationTest {
     sut.setGms(initialGMS);
 
     // WHEN
-    boolean reserved = sut.itemAvailableInFuture(null, new GMS(1, 1, 1), 11);
+    boolean reserved = sut.itemReservableInFuture(null, new GMS(1, 1, 1), 11);
 
     // THEN
     assertThat(reserved).isTrue();

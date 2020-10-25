@@ -17,14 +17,20 @@ public class CostLocks {
   }
 
   public Lock<GMS> unitCostLock(UnitType type) {
-    return new Lock<>(reservation, () -> GMS.unitCost(type));
+    Lock<GMS> gmsLock = new Lock<>(reservation);
+    gmsLock.setItem(GMS.unitCost(type));
+    return gmsLock;
   }
 
   public Lock<GMS> techCostLock(TechType type) {
-    return new Lock<>(reservation, () -> GMS.techCost(type));
+    Lock<GMS> gmsLock = new Lock<>(reservation);
+    gmsLock.setItem(GMS.techCost(type));
+    return gmsLock;
   }
 
   public Lock<GMS> upgradeCostLock(UpgradeType type, int level) {
-    return new Lock<>(reservation, () -> GMS.upgradeCost(type, level));
+    Lock<GMS> gmsLock = new Lock<>(reservation);
+    gmsLock.setItem(GMS.upgradeCost(type, level));
+    return gmsLock;
   }
 }

@@ -1,12 +1,23 @@
 package org.bk.ass.bt;
 
+import java.util.Objects;
+
 /**
  * Base class of all of ASS' behavior trees.
  */
 public abstract class TreeNode {
 
-  String name = getClass().getSimpleName();
+  final String name;
   NodeStatus status;
+
+  protected TreeNode() {
+    name = getClass().getSimpleName();
+  }
+
+  protected TreeNode(String name) {
+    Objects.requireNonNull(name);
+    this.name = name;
+  }
 
   /**
    * Should be called before using this node.
@@ -24,21 +35,34 @@ public abstract class TreeNode {
   }
 
   /**
+   *
+   */
+  protected void startExecPhase() {
+  }
+
+  protected void verifyExecution() {
+    if (status == NodeStatus.INITIAL) {
+      throw new IllegalStateException("Node " + this.name + " is still in initial state!");
+    }
+  }
+
+  /**
    * Executes this node, with an {@link ExecutionContext} for meta data.
    */
-  public void exec(ExecutionContext executionContext) {
+  protected void exec(ExecutionContext executionContext) {
     exec();
   }
 
   /**
    * Executes this node without any meta data context.
    */
-  public abstract void exec();
+  protected abstract void exec();
 
   /**
    * Used by {@link CompoundNode}s to determine order of execution. Generally, nodes with {@link
    * Selector} like behavior will run children in decreasing order of utility. Nodes with {@link
-   * Sequence} like behavior will not change the order of children unless explicitly stated.
+   * Sequence} like behavior will not change the order of children unless explicitly stated. This
+   * method might be called quite frequently, so make sure it runs fast.
    *
    * @return 0 by default.
    */
@@ -87,15 +111,7 @@ public abstract class TreeNode {
    * ensure status is correct.
    */
   public void reset() {
-    status = NodeStatus.INITIAL;
-  }
-
-  /**
-   * Sets a name for this node which can be used to identify it in the complete tree.
-   */
-  public final TreeNode withName(String name) {
-    this.name = name;
-    return this;
+    init();
   }
 
   /**

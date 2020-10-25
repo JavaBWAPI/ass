@@ -22,10 +22,12 @@ class ListLockTest {
           }
 
           @Override
-          public void release(Object lock, List<String> item) {}
+          public void release(Object lock, List<String> item) {
+          }
         };
-    ListLock<String> sut = new ListLock<>(reservation, () -> new ArrayList<>(Arrays.asList("a", "b")));
-    sut.acquire();
+    ListLock<String> sut = new ListLock<>(reservation);
+    sut.setItem(new ArrayList<>(Arrays.asList("a", "b")));
+    sut.tryLock();
 
     // WHEN
     sut.releasePartially(Collections.singletonList("a"));
@@ -45,16 +47,18 @@ class ListLockTest {
           }
 
           @Override
-          public void release(Object lock, List<String> item) {}
+          public void release(Object lock, List<String> item) {
+          }
         };
-    ListLock<String> sut = new ListLock<>(reservation, Collections::emptyList);
-    sut.acquire();
+    ListLock<String> sut = new ListLock<>(reservation);
+    sut.setItem(Collections.emptyList());
+    sut.tryLock();
 
     assertThatThrownBy(
-            () -> {
-              // WHEN
-              sut.releasePartially(Collections.singletonList("a"));
-            }) // THEN
+        () -> {
+          // WHEN
+          sut.releasePartially(Collections.singletonList("a"));
+        }) // THEN
         .isInstanceOf(IllegalArgumentException.class);
   }
 
@@ -69,11 +73,13 @@ class ListLockTest {
           }
 
           @Override
-          public void release(Object lock, List<String> item) {}
+          public void release(Object lock, List<String> item) {
+          }
         };
-    ListLock<String> sut = new ListLock<>(reservation, () -> new ArrayList<>(Arrays.asList("a", "b")));
+    ListLock<String> sut = new ListLock<>(reservation);
     sut.setCriteria(x -> x.contains("a"));
-    sut.acquire();
+    sut.setItem(new ArrayList<>(Arrays.asList("a", "b")));
+    sut.tryLock();
 
     // WHEN
     boolean stillSatisfied = sut.releasePartially(Collections.singletonList("a"));

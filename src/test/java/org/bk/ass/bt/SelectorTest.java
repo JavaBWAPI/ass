@@ -12,7 +12,7 @@ class SelectorTest {
     Selector sut = new Selector();
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.FAILURE);
@@ -26,7 +26,7 @@ class SelectorTest {
             new LambdaNode(() -> NodeStatus.FAILURE), new LambdaNode(() -> NodeStatus.FAILURE));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.FAILURE);
@@ -40,7 +40,7 @@ class SelectorTest {
             new LambdaNode(() -> NodeStatus.FAILURE), new LambdaNode(() -> NodeStatus.SUCCESS));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.SUCCESS);
@@ -56,7 +56,7 @@ class SelectorTest {
             new LambdaNode(() -> NodeStatus.SUCCESS));
 
     // WHEN
-    sut.exec();
+    Executor.execute(sut);
 
     // THEN
     assertThat(sut.getStatus()).isEqualTo(NodeStatus.RUNNING);

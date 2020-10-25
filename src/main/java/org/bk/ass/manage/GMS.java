@@ -1,6 +1,7 @@
 package org.bk.ass.manage;
 
 import static java.lang.Integer.max;
+import static java.lang.Integer.min;
 
 import bwapi.Player;
 import bwapi.TechType;
@@ -59,6 +60,12 @@ public final class GMS {
 
   public GMS multiply(int factor) {
     return new GMS(gas * factor, minerals * factor, supply * factor);
+  }
+
+  public int div(GMS other) {
+    return min(min(other.gas > 0 ? gas / other.gas : Integer.MAX_VALUE,
+        other.minerals > 0 ? minerals / other.minerals : Integer.MAX_VALUE),
+        other.supply > 0 ? supply / other.supply : Integer.MAX_VALUE);
   }
 
   /**

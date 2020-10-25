@@ -69,18 +69,20 @@ public class AttackerBehavior implements Behavior {
       return !agent.burrowed && simFlee(frameSkip, agent, enemies);
     }
 
-    if (!agent.burrowed) {
-      simCombatMove(frameSkip, agent, selectedEnemy, selectedDistanceSquared, selectedWeapon);
+    if (selectedDistanceSquared <= selectedWeapon.maxRangeSquared) {
+      if (agent.burrowedAttacker != agent.burrowed) {
+        agent.setBurrowed(true);
+        agent.setSleepTimer(AgentUtil.BURROW_FRAMES);
+        return true;
+      }
+
+      if (agent.cooldown <= 0) {
+        simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
+        return true;
+      }
     }
 
-    if (agent.burrowedAttacker != agent.burrowed) {
-      return false;
-    }
-
-    if (agent.cooldown <= 0
-        && selectedDistanceSquared <= selectedWeapon.maxRangeSquared) {
-      simAttack(agent, allies, enemies, selectedEnemy, selectedWeapon);
-    }
+    simCombatMove(frameSkip, agent, selectedEnemy, selectedDistanceSquared, selectedWeapon);
 
     return true;
   }
@@ -236,17 +238,24 @@ public class AttackerBehavior implements Behavior {
       Agent selectedEnemy,
       int selectedDistanceSquared,
       Weapon selectedWeapon) {
+    if (agent.burrowed) {
+      agent.setBurrowed(false);
+      agent.setSleepTimer(AgentUtil.UNBURROW_FRAMES);
+      return;
+    }
+    Weapon enemyWeapon = selectedEnemy.weaponVs(agent);
     boolean shouldKite =
         agent.isKiter
             && agent.cooldown > 0
-            && selectedEnemy.weaponVs(agent).minRangeSquared <= selectedDistanceSquared
+            && enemyWeapon.maxRangeSquared < selectedWeapon.maxRangeSquared
             && selectedEnemy.speed < agent.speed;
     float distance = (float) sqrt(selectedDistanceSquared);
     if (shouldKite) {
-      if (distance + agent.speed * frameSkip <= selectedWeapon.maxRange) {
-        moveAwayFrom(frameSkip, agent, selectedEnemy, distance);
-      }
-    } else {
+//      if (distance + agent.speed * frameSkip <= selectedWeapon.maxRange) {
+      moveAwayFrom(frameSkip, agent, selectedEnemy, distance);
+//      }
+    } else if (selectedDistanceSquared > selectedWeapon.maxRangeSquared ||
+        enemyWeapon.minRangeSquared > 0) {
       moveToward(frameSkip, agent, selectedEnemy, distance);
     }
   }

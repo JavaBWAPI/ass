@@ -10,6 +10,12 @@ public class Condition extends TreeNode {
 
   private final BooleanSupplier check;
 
+  public Condition(String name, BooleanSupplier check) {
+    super(name);
+    Objects.requireNonNull(check, "condition must be set");
+    this.check = check;
+  }
+
   public Condition(BooleanSupplier check) {
     Objects.requireNonNull(check, "condition must be set");
     this.check = check;

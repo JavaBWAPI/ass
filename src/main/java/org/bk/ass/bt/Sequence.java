@@ -12,23 +12,36 @@ import org.bk.ass.StopWatch;
  */
 public class Sequence extends CompoundNode {
 
+  public Sequence(String name, TreeNode... children) {
+    super(name, children);
+  }
+
   public Sequence(TreeNode... children) {
     super(children);
   }
 
   @Override
-  public void exec(ExecutionContext context) {
+  protected void exec(ExecutionContext context) {
     StopWatch stopWatch = new StopWatch();
-    for (TreeNode child : children) {
-      execChild(child, context);
-      if (child.status != NodeStatus.SUCCESS) {
-        status = child.getStatus();
-        if (child.status == NodeStatus.FAILURE) abortRunningChildren();
-        stopWatch.registerWith(context, this);
-        return;
+    if (!remainingChildren.isEmpty()) {
+      TreeNode toExec = remainingChildren.get(0);
+      execChild(toExec, context);
+      NodeStatus childStatus = toExec.status;
+      if (childStatus != NodeStatus.INCOMPLETE) {
+        remainingChildren.remove(0);
+        if (childStatus != NodeStatus.SUCCESS) {
+          status = childStatus;
+          if (childStatus == NodeStatus.FAILURE) {
+            abortRunningChildren();
+          }
+          remainingChildren.clear();
+        } else if (remainingChildren.isEmpty()) {
+          success();
+        }
       }
+    } else {
+      success();
     }
-    success();
     stopWatch.registerWith(context, this);
   }
 }

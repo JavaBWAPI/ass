@@ -19,7 +19,7 @@ public interface Reservation<T> {
    * already be reserved when this is called! If used for {@link GMS}, you should re-add the given
    * {@link GMS} before checking for sufficient resources.
    */
-  default boolean itemAvailableInFuture(Object source, T item, int futureFrames) {
+  default boolean itemReservableInFuture(Object source, T item, int futureFrames) {
     return false;
   }
 

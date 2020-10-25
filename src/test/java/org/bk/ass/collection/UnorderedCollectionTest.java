@@ -1,11 +1,10 @@
 package org.bk.ass.collection;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class UnorderedCollectionTest {
 
@@ -29,7 +28,7 @@ class UnorderedCollectionTest {
   public void shouldNotHoldReferencesAfterRemoveAndRelease() {
     // GIVEN
     sut.add("a");
-    sut.removeAt(0);
+    sut.swapRemove(0);
 
     // WHEN
     sut.clearReferences();

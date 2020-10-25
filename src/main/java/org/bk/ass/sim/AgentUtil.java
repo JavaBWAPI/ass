@@ -9,11 +9,16 @@ import java.util.Collection;
 import java.util.SplittableRandom;
 
 public class AgentUtil {
+
   private static final SplittableRandom rnd = new SplittableRandom();
 
   // Retrieved from OpenBW
   public static final int INTERCEPTOR_COOLDOWN = 45;
   public static final int REAVER_COOLDOWN = 60;
+
+  // Guesswork/Stolen somewhere else
+  public static final int BURROW_FRAMES = 24;
+  public static final int UNBURROW_FRAMES = 5;
 
 
   private AgentUtil() {
@@ -21,7 +26,6 @@ public class AgentUtil {
   }
 
   public static void moveToward(int frames, Agent agent, Agent target, float distance) {
-    agent.updateSpeed();
     float travelled = frames * agent.speed;
     if (distance <= travelled) {
       agent.vx = target.x - agent.x;
@@ -33,7 +37,6 @@ public class AgentUtil {
   }
 
   public static void moveAwayFrom(int frames, Agent agent, Agent target, float distance) {
-    agent.updateSpeed();
     float travelled = frames * agent.speed;
     if (distance == 0) {
       double a = rnd.nextDouble(Math.PI * 2);

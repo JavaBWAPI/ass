@@ -15,8 +15,8 @@ public class StopWatch {
     return stopped;
   }
 
-  public int ms() {
-    return (int) ((stop() - started) / 1_000_000);
+  public long ms() {
+    return (int) (stop() - started);
   }
 
   public void registerWith(ExecutionContext context, TreeNode node) {

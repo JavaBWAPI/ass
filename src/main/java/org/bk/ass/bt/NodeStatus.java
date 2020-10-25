@@ -28,7 +28,12 @@ public enum NodeStatus {
     public TreeNode after(Runnable block) {
       throw new UnsupportedOperationException("Abort should not be used this way.");
     }
-  };
+  },
+  /**
+   * Node needs more ticks to determine the result.
+   */
+  INCOMPLETE;
+
 
   /**
    * Executes the given code block but will return this NodeStatus' value.
