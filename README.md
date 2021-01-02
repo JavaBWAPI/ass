@@ -123,7 +123,7 @@ Simulates:
 ## Limitations
 * Elevation is deemed "constant" within the simulation
 * Visibility is ignored (visibility is "constant" within the simulation)
-* Spellcasters are doing nothing
+* (Most) Spellcasters are doing nothing
 * Distance mechanism does not match BW's "boxed" distances
 * Instant acceleration 
 
