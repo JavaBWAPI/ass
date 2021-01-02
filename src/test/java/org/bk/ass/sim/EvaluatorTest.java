@@ -559,4 +559,18 @@ class EvaluatorTest {
     // THEN
     assertThat(result.value).isBetween(0.49, 0.51);
   }
+
+  @Test
+  void firebatsVs3Lings() {
+    List<Agent> a = Collections.singletonList(factory.of(UnitType.Terran_Firebat));
+    List<Agent> b = Arrays
+        .asList(factory.of(UnitType.Zerg_Zergling), factory.of(UnitType.Zerg_Zergling),
+            factory.of(UnitType.Zerg_Zergling));
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+    assertThat(result.value).isBetween(0.35, 0.45);
+  }
 }
