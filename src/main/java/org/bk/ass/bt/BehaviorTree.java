@@ -27,7 +27,7 @@ public abstract class BehaviorTree extends TreeNode {
   }
 
   public BehaviorTree(String name) {
-    super(name);
+    withName(name);
   }
 
   /**
@@ -44,14 +44,14 @@ public abstract class BehaviorTree extends TreeNode {
   }
 
   @Override
-  protected void exec(ExecutionContext executionContext) {
+  public void exec(ExecutionContext executionContext) {
     checkInitWasCalled();
     root.exec(executionContext);
     status = root.getStatus();
   }
 
   @Override
-  protected final void exec() {
+  public final void exec() {
     exec(ExecutionContext.NOOP);
   }
 
@@ -63,17 +63,6 @@ public abstract class BehaviorTree extends TreeNode {
   public void close() {
     checkInitWasCalled();
     root.close();
-  }
-
-  @Override
-  public void startExecPhase() {
-    checkInitWasCalled();
-    root.startExecPhase();
-  }
-
-  @Override
-  protected void verifyExecution() {
-    root.verifyExecution();
   }
 
   @Override

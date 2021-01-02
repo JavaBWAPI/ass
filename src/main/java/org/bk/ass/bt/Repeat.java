@@ -74,8 +74,8 @@ public class Repeat extends Decorator {
 
   @Override
   protected void updateStatusFromDelegate(NodeStatus status) {
-    if (status == NodeStatus.RUNNING || status == NodeStatus.INCOMPLETE) {
-      this.status = status;
+    if (status == NodeStatus.RUNNING) {
+      running();
     } else if (policy == Policy.SEQUENCE) {
       if (status == NodeStatus.FAILURE) {
         failed();

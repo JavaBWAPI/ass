@@ -260,7 +260,7 @@ class SimulatorTest {
   void fireBatVs2Lings() {
     // GIVEN
     simulator.addAgentA(factory.of(UnitType.Terran_Firebat).setX(20));
-    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setX(40));
     simulator.addAgentB(factory.of(UnitType.Zerg_Zergling));
 
     // WHEN
@@ -269,6 +269,23 @@ class SimulatorTest {
     // THEN
     assertThat(simulator.getAgentsA()).isNotEmpty();
     assertThat(simulator.getAgentsB()).isEmpty();
+  }
+
+  @Test
+  void fireBatVs4Lings() {
+    // GIVEN
+    simulator.addAgentA(factory.of(UnitType.Terran_Firebat).setX(60));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setY(20));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setY(40));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setY(60));
+    simulator.addAgentB(factory.of(UnitType.Zerg_Zergling).setY(80));
+
+    // WHEN
+    simulator.simulate(-1);
+
+    // THEN
+    assertThat(simulator.getAgentsA()).isEmpty();
+    assertThat(simulator.getAgentsB()).isNotEmpty();
   }
 
   @Test
