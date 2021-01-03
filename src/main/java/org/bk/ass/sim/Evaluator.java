@@ -337,13 +337,13 @@ public class Evaluator {
       radialSplashScale = source[3];
       lineSplashScale = source[4];
       bounceSplashFactor = source[5];
-      heal = source[6] * 500000;
+      heal = source[6] * 50000;
     }
 
     public Parameters() {
       this(
-          new double[]{4.1073760812937365, 9.406299471853998, 0.3187030930291376, 4.168181253247036,
-              9.692917500259298, 6.775061462047722, 7.989573615123854});
+          new double[]{3.7589130065126692, 9.135443746638094, 0.29826652184445357,
+              4.545501352858482, 9.883795770345088, 7.97786051048949, 0.5573597680456545});
     }
   }
 }

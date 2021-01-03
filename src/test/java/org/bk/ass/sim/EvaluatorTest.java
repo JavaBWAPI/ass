@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.bk.ass.sim.Evaluator.EvalWithAgents;
 import org.bk.ass.sim.Evaluator.EvaluationResult;
@@ -573,4 +574,25 @@ class EvaluatorTest {
     // THEN
     assertThat(result.value).isBetween(0.35, 0.45);
   }
+
+  @Test
+  void mmVsLingSunken() {
+    // GIVEN
+    List<Agent> a = Stream
+        .concat(IntStream.range(0, 16).mapToObj(_i -> factory.of(UnitType.Zerg_Zergling)),
+            Stream.of(factory.of(UnitType.Zerg_Sunken_Colony),
+                factory.of(UnitType.Zerg_Sunken_Colony))).collect(Collectors.toList());
+    List<Agent> b = Stream
+        .concat(IntStream.range(0, 12).mapToObj(_i -> factory.of(UnitType.Terran_Marine)),
+            IntStream.range(0, 4).mapToObj(_i -> factory.of(UnitType.Terran_Medic)))
+        .collect(Collectors.toList());
+
+    // WHEN
+    EvaluationResult result = evaluator.evaluate(a, b);
+
+    // THEN
+
+    assertThat(result.value).isBetween(0.45, 0.55);
+  }
+
 }
